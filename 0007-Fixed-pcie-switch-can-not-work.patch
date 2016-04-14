@@ -1,0 +1,29 @@
+From 4e5a8a62db5af17d845033f4a6c42702db953544 Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Thu, 10 Mar 2016 10:21:03 +0800
+Subject: [PATCH 7/7] Fixed pcie switch can not work.
+
+---
+ kernel/drivers/pci/host/pci-imx6.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/kernel/drivers/pci/host/pci-imx6.c b/kernel/drivers/pci/host/pci-imx6.c
+index 1c781f9..5ddc2dc 100644
+--- a/kernel/drivers/pci/host/pci-imx6.c
++++ b/kernel/drivers/pci/host/pci-imx6.c
+@@ -488,12 +488,6 @@ static int imx6_pcie_start_link(struct pcie_port *pp)
+ 	if (ret)
+ 		goto out;
+ 
+-	/* Allow Gen2 mode after the link is up. */
+-	tmp = readl(pp->dbi_base + PCIE_RC_LCR);
+-	tmp &= ~PCIE_RC_LCR_MAX_LINK_SPEEDS_MASK;
+-	tmp |= PCIE_RC_LCR_MAX_LINK_SPEEDS_GEN2;
+-	writel(tmp, pp->dbi_base + PCIE_RC_LCR);
+-
+ 	/*
+ 	 * Start Directed Speed Change so the best possible speed both link
+ 	 * partners support can be negotiated.
+-- 
+1.9.1
+
