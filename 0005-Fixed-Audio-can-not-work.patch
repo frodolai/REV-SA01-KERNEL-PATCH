@@ -1,0 +1,24 @@
+From 4a2f73a9648279a0c27185d0583517021e62730c Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Wed, 16 Dec 2015 16:53:15 +0800
+Subject: [PATCH 5/7] Fixed Audio can not work.
+
+---
+ kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+index 635e1e7..636002a 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+@@ -407,6 +407,7 @@
+ 				MX6QDL_PAD_CSI0_DAT4__AUD3_TXC		0x130b0
+ 				MX6QDL_PAD_CSI0_DAT5__AUD3_TXD		0x110b0
+ 				MX6QDL_PAD_CSI0_DAT6__AUD3_TXFS		0x130b0
++				MX6QDL_PAD_GPIO_0__CCM_CLKO1		0x130b0
+ 				MX6QDL_PAD_SD1_DAT1__GPIO1_IO17		0x80000000
+ 				MX6QDL_PAD_EIM_DA6__GPIO3_IO06		0x80000000
+                         >;
+-- 
+1.9.1
+
