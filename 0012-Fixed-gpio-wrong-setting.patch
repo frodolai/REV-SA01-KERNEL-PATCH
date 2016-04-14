@@ -1,0 +1,57 @@
+From 82eb1f172d6f2cbb9e0d9a2a032883bb8e0100ca Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Thu, 4 Jun 2015 14:14:50 +0800
+Subject: [PATCH 12/17] Fixed gpio wrong setting.
+
+---
+ kernel/arch/arm/mach-mx6/smarc/rev_sa01.c | 2 +-
+ kernel/arch/arm/mach-mx6/smarc/rev_sa01.h | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
+index 86d07e9..8e83690 100644
+--- a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
++++ b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
+@@ -382,7 +382,7 @@ static struct wm8962_pdata wm8962_config_data = {
+ };
+ 
+ static struct regulator_consumer_supply smarc_vwm8962_consumers[] = {
+-	#ifdef	MACH_MX6_SMARC
++	#ifdef	CONFIG_SMARC_PMIC_WM8326
+ 	REGULATOR_SUPPLY("DCVDD", "0-001a"),
+ 	REGULATOR_SUPPLY("DBVDD", "0-001a"),
+ 	REGULATOR_SUPPLY("AVDD", "0-001a"),
+diff --git a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.h b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.h
+index d6e7feb..f45827c 100644
+--- a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.h
++++ b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.h
+@@ -16,7 +16,7 @@
+ #define	SMARC_GPIO1			IMX_GPIO_NR(1, 17)
+ #define	SMARC_CODEC_PWR_EN		IMX_GPIO_NR(1, 17)
+ 
+-#ifdef  CONFIG_MACH_MX6_SMARC_P
++#ifdef  CONFIG_SMARC_PMIC_PFUZE
+ #define	SMARC_GPIO2			IMX_GPIO_NR(2, 3)
+ #define	SMARC_GPIO3			IMX_GPIO_NR(2, 4)
+ #else
+@@ -48,7 +48,7 @@
+ static iomux_v3_cfg_t mx6q_smarc_gpio_pads[] = {
+ 	MX6Q_PAD_SD1_DAT0__GPIO_1_16,		// GPIO 0
+ 	MX6Q_PAD_SD1_DAT1__GPIO_1_17,		// GPIO 1
+-	#ifdef	CONFIG_MACH_MX6_SMARC_P
++	#ifdef	CONFIG_SMARC_PMIC_PFUZE
+ 	MX6Q_PAD_NANDF_D3__GPIO_2_3,		// GPIO 2
+ 	MX6Q_PAD_NANDF_D4__GPIO_2_4,		// GPIO 3
+ 	#else
+@@ -112,7 +112,7 @@ static const struct esdhc_platform_data mx6q_smarc_sdio3_data __initconst = {
+ static iomux_v3_cfg_t mx6solo_smarc_gpio_pads[] = {
+ 	MX6DL_PAD_SD1_DAT0__GPIO_1_16,		// GPIO 0
+ 	MX6DL_PAD_SD1_DAT1__GPIO_1_17,		// GPIO 1
+-	#ifdef  CONFIG_MACH_MX6_SMARC_P
++	#ifdef  CONFIG_SMARC_PMIC_PFUZE
+ 	MX6DL_PAD_NANDF_D3__GPIO_2_3,		// GPIO 2
+ 	MX6DL_PAD_NANDF_D4__GPIO_2_4,		// GPIO 3
+ 	#else
+-- 
+1.9.1
+
