@@ -1,0 +1,25 @@
+From 21bf6658ad65ef1785cbfb7eee492e6d165439d2 Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Tue, 7 Apr 2015 10:24:14 +0800
+Subject: [PATCH 6/6] Fixed wrong name in Makefile
+
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 526a99a..f09c7c8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -18,7 +18,7 @@ rev-sa01-kernel.bin: cleankernel
+ 	${CROSS_COMPILE}objcopy -O binary -R .note -R .comment -S kernel/arch/arm/boot/compressed/vmlinux out/linux.bin
+ 	mkimage -A arm -O linux -T kernel -C none -a 0x10008000 -e 0x10008000 -d out/linux.bin out/uImage
+ 	rm out/linux.bin
+-	install kernel/arch/arm/boot/dts/imx6solo-rev-sa01.dtb out/imx6q-rev-sa01.dtb
++	install kernel/arch/arm/boot/dts/imx6q-rev-sa01.dtb out/imx6q-rev-sa01.dtb
+ 	install kernel/arch/arm/boot/dts/imx6solo-rev-sa01.dtb out/imx6solo-rev-sa01.dtb
+ 
+ ##########
+-- 
+1.9.1
+
