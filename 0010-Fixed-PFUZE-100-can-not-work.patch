@@ -1,0 +1,54 @@
+From f2162561e25d418556db1bed8a85aa27501f2fa0 Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Fri, 22 May 2015 17:52:02 +0800
+Subject: [PATCH 10/17] Fixed PFUZE-100 can not work.
+
+---
+ kernel/arch/arm/mach-mx6/smarc/rev_sa01.c | 2 ++
+ u-boot/include/configs/mx6_smarc.h        | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
+index 6458491..f57f237 100644
+--- a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
++++ b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
+@@ -391,12 +391,14 @@ static struct wm8962_pdata wm8962_config_data = {
+ };
+ 
+ static struct regulator_consumer_supply smarc_vwm8962_consumers[] = {
++	#ifdef	MACH_MX6_SMARC
+ 	REGULATOR_SUPPLY("DCVDD", "0-001a"),
+ 	REGULATOR_SUPPLY("DBVDD", "0-001a"),
+ 	REGULATOR_SUPPLY("AVDD", "0-001a"),
+ 	REGULATOR_SUPPLY("CPVDD", "0-001a"),
+ 	REGULATOR_SUPPLY("MICVDD", "0-001a"),
+ 	REGULATOR_SUPPLY("PLLVDD", "0-001a"),
++	#endif
+ 	REGULATOR_SUPPLY("SPKVDD1", "0-001a"),
+ 	REGULATOR_SUPPLY("SPKVDD2", "0-001a"),
+ };
+diff --git a/u-boot/include/configs/mx6_smarc.h b/u-boot/include/configs/mx6_smarc.h
+index 24b86d0..947fd9f 100644
+--- a/u-boot/include/configs/mx6_smarc.h
++++ b/u-boot/include/configs/mx6_smarc.h
+@@ -84,7 +84,7 @@
+ #define CONFIG_BOOTP_DNS
+ 
+ //#define CONFIG_CMD_SPI
+-//#define CONFIG_CMD_I2C
++#define CONFIG_CMD_I2C
+ #define CONFIG_CMD_IMXOTP
+ 
+ /* Enable below configure when supporting nand */
+@@ -194,7 +194,7 @@
+ #ifdef CONFIG_CMD_I2C
+ 	#define CONFIG_HARD_I2C         1
+ 	#define CONFIG_I2C_MXC          1
+-	#define CONFIG_SYS_I2C_PORT             I2C2_BASE_ADDR
++	#define CONFIG_SYS_I2C_PORT             I2C1_BASE_ADDR
+ 	#define CONFIG_SYS_I2C_SPEED            100000
+ 	#define CONFIG_SYS_I2C_SLAVE            0x8
+ 	#define CONFIG_MX6_INTER_LDO_BYPASS		0
+-- 
+1.9.1
+
