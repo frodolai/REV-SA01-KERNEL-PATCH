@@ -1,0 +1,53 @@
+From 79c062c64e6508e6863b7f74841090e38d71b02d Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Fri, 9 Jan 2015 15:02:19 +0800
+Subject: [PATCH 04/17] Fixed PCI-E can not work
+
+---
+ kernel/arch/arm/configs/imx6_rev_sa01_defconfig | 6 ++----
+ kernel/arch/arm/mach-mx6/board-mx6_smarc.c      | 3 ---
+ 2 files changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/arch/arm/configs/imx6_rev_sa01_defconfig b/kernel/arch/arm/configs/imx6_rev_sa01_defconfig
+index eb3bb4b..6e5a0b8 100644
+--- a/kernel/arch/arm/configs/imx6_rev_sa01_defconfig
++++ b/kernel/arch/arm/configs/imx6_rev_sa01_defconfig
+@@ -2638,10 +2638,8 @@ CONFIG_MXC_MIPI_CSI2=y
+ #
+ # CONFIG_MXC_HDMI_CEC is not set
+ CONFIG_SMARC=y
+-# CONFIG_SMARC_RAP_SA01 is not set
+-# CONFIG_SMARC_KONTRON is not set
+ CONFIG_SMARC_REV_SA01=y
+-# CONFIG_SMARC_RAP_SA02 is not set
++# CONFIG_SMARC_MFG is not set
+ 
+ #
+ # File systems
+@@ -2833,7 +2831,7 @@ CONFIG_NLS_UTF8=m
+ #
+ # Kernel hacking
+ #
+-# CONFIG_PRINTK_TIME is not set
++CONFIG_PRINTK_TIME=y
+ CONFIG_DEFAULT_MESSAGE_LOGLEVEL=4
+ CONFIG_ENABLE_WARN_DEPRECATED=y
+ CONFIG_ENABLE_MUST_CHECK=y
+diff --git a/kernel/arch/arm/mach-mx6/board-mx6_smarc.c b/kernel/arch/arm/mach-mx6/board-mx6_smarc.c
+index 91bdf04..cda2625 100644
+--- a/kernel/arch/arm/mach-mx6/board-mx6_smarc.c
++++ b/kernel/arch/arm/mach-mx6/board-mx6_smarc.c
+@@ -457,10 +457,7 @@ static void __init mx6_smarc_board_init(void)
+ 	imx6q_add_viim();
+ 	imx6q_add_imx2_wdt(0, NULL);
+ 	imx6q_add_dma();
+-
+-	#ifndef CONFIG_SMARC_REV_SA01
+ 	imx6q_add_pcie(&mx6_smarc_pcie_data);
+-	#endif
+ 
+ 	gp_reg_id = smarc_dvfscore_data.reg_id;
+ 	soc_reg_id = smarc_dvfscore_data.soc_id;
+-- 
+1.9.1
+
