@@ -1,0 +1,28 @@
+From 8b6d6ae5d98dc05a1e3102beb7b2094b44b5a363 Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Thu, 3 Mar 2016 11:46:27 +0800
+Subject: [PATCH 16/17] Enable read NTFS.
+
+---
+ kernel/arch/arm/configs/imx6_rev_sa01_defconfig | 4 +++-
+ 1 files changed, 3 insertions(+), 1 deletion(-)
+ delete mode 100644 EMPTY
+
+diff --git a/kernel/arch/arm/configs/imx6_rev_sa01_defconfig b/kernel/arch/arm/configs/imx6_rev_sa01_defconfig
+index e04c52e..706177c 100644
+--- a/kernel/arch/arm/configs/imx6_rev_sa01_defconfig
++++ b/kernel/arch/arm/configs/imx6_rev_sa01_defconfig
+@@ -2671,7 +2671,9 @@ CONFIG_MSDOS_FS=y
+ CONFIG_VFAT_FS=y
+ CONFIG_FAT_DEFAULT_CODEPAGE=437
+ CONFIG_FAT_DEFAULT_IOCHARSET="iso8859-1"
+-# CONFIG_NTFS_FS is not set
++CONFIG_NTFS_FS=y
++# CONFIG_NTFS_DEBUG is not set
++CONFIG_NTFS_RW=y
+ 
+ #
+ # Pseudo filesystems
+-- 
+1.9.1
+
