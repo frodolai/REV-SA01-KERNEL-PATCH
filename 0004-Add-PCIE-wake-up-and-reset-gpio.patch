@@ -1,0 +1,37 @@
+From 3c5f16adf97ddc3d054d7c2998f80a22779c917b Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Tue, 13 Jan 2015 16:50:20 +0800
+Subject: [PATCH 4/6] Add PCIE wake-up and reset gpio.
+
+---
+ kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+index 91e7279..5cebf38 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+@@ -168,6 +168,9 @@
+ 				/* LVDS Power */
+ 				MX6QDL_PAD_EIM_A16__GPIO2_IO22  0x80000000
+ 				MX6QDL_PAD_EIM_DA0__GPIO3_IO00  0x80000000
++				/* PCIE GPIO */
++				MX6QDL_PAD_EIM_DA10__GPIO3_IO10 0x80000000
++				MX6QDL_PAD_GPIO_19__GPIO4_IO05  0x80000000
+ 			>;
+ 		};
+ 	};
+@@ -201,8 +204,8 @@
+ };
+ 
+ &pcie {
+-	power-on-gpio = <&gpio3 19 0>;
+-	reset-gpio = <&gpio7 12 0>;
++	wake-up-gpio = <&gpio3 10 0>;
++	reset-gpio = <&gpio4 5 0>;
+ 	status = "okay";
+ };
+ 
+-- 
+1.9.1
+
