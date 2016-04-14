@@ -1,0 +1,24 @@
+From 16fc6532b58075c9cca6ea6aec3748308020238d Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Mon, 1 Jun 2015 15:45:20 +0800
+Subject: [PATCH 2/7] Fixed imx6 solo can not boot.
+
+---
+ kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+index 876925e..7aea1c5 100644
+--- a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
++++ b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+@@ -1,6 +1,6 @@
+ /dts-v1/;
+ 
+-#include "imx6q.dtsi"
++#include "imx6dl.dtsi"
+ #include "imx6qdl-smarc.dtsi"
+ #include "imx6qdl-rev-sa01-pfuze100.dtsi"
+ 
+-- 
+1.9.1
+
