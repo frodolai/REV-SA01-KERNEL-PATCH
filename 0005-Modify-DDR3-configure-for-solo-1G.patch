@@ -1,0 +1,48 @@
+From ab65da2efc75e8d8a958d814fa88e98aa6636c96 Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Tue, 20 Jan 2015 15:27:56 +0800
+Subject: [PATCH 5/6] Modify DDR3 configure for solo-1G
+
+---
+ u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg b/u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg
+index 0321872..98a0d29 100644
+--- a/u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg
++++ b/u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg
+@@ -92,11 +92,11 @@ DATA 4,	0x020e047c, 0x00000030
+ DATA 4,	0x021b0800, 0xa1390003
+ DATA 4,	0x021b080c, 0x001F001F
+ DATA 4,	0x021b0810, 0x001F001F
+-DATA 4,	0x021b083c, 0x4220021F
+-DATA 4,	0x021b0840, 0x020C020F
++DATA 4,	0x021b083c, 0x4234022C
++DATA 4,	0x021b0840, 0x02100218
+ DATA 4,	0x021b483c, 0x4201020C
+-DATA 4,	0x021b0848, 0x4F504D4D
+-DATA 4,	0x021b0850, 0x41322E31
++DATA 4,	0x021b0848, 0x42444846
++DATA 4,	0x021b0850, 0x38342C36
+ DATA 4,	0x021b081c, 0x33333333
+ DATA 4,	0x021b0820, 0x33333333
+ DATA 4,	0x021b0824, 0x33333333
+@@ -108,13 +108,13 @@ DATA 4,	0x021b4828, 0x33333333
+ DATA 4,	0x021b08b8, 0x00000800
+ DATA 4,	0x021b0004, 0x0002002D
+ DATA 4,	0x021b0008, 0x00333030
+-DATA 4,	0x021b000c, 0x3F435313
++DATA 4,	0x021b000c, 0x676B5333
+ DATA 4,	0x021b0010, 0xB66E8B63
+ DATA 4,	0x021b0014, 0x01FF00DB
+ DATA 4,	0x021b0018, 0x00001740
+ DATA 4,	0x021b001c, 0x00008000
+ DATA 4,	0x021b002c, 0x000026d2
+-DATA 4,	0x021b0030, 0x00431023
++DATA 4,	0x021b0030, 0x006B1023
+ DATA 4,	0x021b0040, 0x00000027
+ DATA 4,	0x021b0000, 0x84190000
+ DATA 4,	0x021b001c, 0x04008032
+-- 
+1.9.1
+
