@@ -1,0 +1,50 @@
+From 17de74e9f793082f2345e45671eac5b63ecee9f5 Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Mon, 8 Jun 2015 13:06:20 +0800
+Subject: [PATCH 14/17] Fixed kernel build error.
+
+---
+ kernel/arch/arm/mach-mx6/smarc/rev_sa01.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
+
+diff --git a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
+index d7d9655..3929e9e 100644
+--- a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
++++ b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
+@@ -203,6 +203,15 @@ void set_smarc_hdmi(void)
+ }
+ 
+ #ifdef	CONFIG_SMARC_DISPLAY_LVDS
++static struct fsl_mxc_ldb_platform_data ldb_data = {
++        .ipu_id                 = 0,
++        .disp_id                = 1,
++        .ext_ref                = 1,
++        .mode                   = LDB_SEP0,
++        .sec_ipu_id             = 0,
++        .sec_disp_id    = 0,
++};
++
+ void set_smarc_lvds(void)
+ {
+ 	if(cpu_is_mx6q()) {
+@@ -267,17 +276,6 @@ static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
+ 	.reserved_mem_size = SZ_128M + SZ_64M - SZ_16M,
+ };
+ 
+-#ifdef	CONFIG_SMARC_DISPLAY_LVDS
+-static struct fsl_mxc_ldb_platform_data ldb_data = {
+-	.ipu_id			= 0,
+-	.disp_id		= 1,
+-	.ext_ref		= 1,
+-	.mode			= LDB_SEP0,
+-	.sec_ipu_id		= 0,
+-	.sec_disp_id	= 0,
+-};
+-#endif
+-
+ static struct imx_ipuv3_platform_data ipu_data[] = {
+ {
+ 	.rev = 4,
+-- 
+1.9.1
+
