@@ -1,0 +1,25 @@
+From 182245a24b85f84a7c7859cb03b8361d99d4d8e1 Mon Sep 17 00:00:00 2001
+From: Bingru Tsai <ben_tsai@avalue.com.tw>
+Date: Thu, 10 Mar 2016 11:21:38 +0800
+Subject: [PATCH 17/17] Fixed PCIE WAKE define.
+
+---
+ kernel/arch/arm/mach-mx6/board-mx6_smarc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/arch/arm/mach-mx6/board-mx6_smarc.h b/kernel/arch/arm/mach-mx6/board-mx6_smarc.h
+index 70cf9c4..2ca087c 100644
+--- a/kernel/arch/arm/mach-mx6/board-mx6_smarc.h
++++ b/kernel/arch/arm/mach-mx6/board-mx6_smarc.h
+@@ -8,7 +8,7 @@
+ #define SMARC_SD2_WP    	IMX_GPIO_NR(3, 13)	// GPIO3[13] EIM_DA13
+ #define SMARC_USB_OTG_PWR	IMX_GPIO_NR(3, 22)	// GPIO3[22] EIM_D22
+ 
+-#define	SMARC_PCIE_WAKE		IMX_GPIO_NR(3, 11)	// PCIE WAKE
++#define	SMARC_PCIE_WAKE		IMX_GPIO_NR(3, 10)	// PCIE WAKE
+ #define	SMARC_PCIE_RESET	IMX_GPIO_NR(4, 5)	// PCIE RESET
+ 
+ #ifdef	CONFIG_SMARC_PMIC_PFUZE
+-- 
+1.9.1
+
