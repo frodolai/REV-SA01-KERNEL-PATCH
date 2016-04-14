@@ -1,0 +1,553 @@
+From 1d37406feb45fd4a30fe5bcefa96a3b9d33a9fae Mon Sep 17 00:00:00 2001
+From: avalue-aes <Your Email>
+Date: Mon, 5 Oct 2015 16:52:31 +0800
+Subject: [PATCH 3/7] Add IMX6-DL support
+
+---
+ Makefile                                           |  18 +++
+ kernel/arch/arm/boot/dts/Makefile                  |   2 +
+ .../arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts  |  10 ++
+ kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts |  28 ++++
+ .../arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi | 111 +++++++++++++
+ kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi        |  11 --
+ .../arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts    |  10 ++
+ .../arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts |  24 +++
+ .../board/freescale/mx6smarc/mx6dl_micron_1g.cfg   | 173 +++++++++++++++++++++
+ u-boot/boards.cfg                                  |   4 +
+ u-boot/run.sh                                      |  16 ++
+ 11 files changed, 396 insertions(+), 11 deletions(-)
+ create mode 100644 kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+ create mode 100644 kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+ create mode 100644 kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+ create mode 100644 u-boot/board/freescale/mx6smarc/mx6dl_micron_1g.cfg
+
+diff --git a/Makefile b/Makefile
+index 9e75c35..238267b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -18,7 +18,9 @@ kernel.bin: cleankernel
+ 	mkdir -p out
+ 	install kernel/arch/arm/boot/zImage out/zImage
+ 	install kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dtb out/imx6q-rev-sa01-pfuze100.dtb
++	install kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dtb out/imx6q-rev-sa01-wm8326.dtb
+ 	install kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dtb out/imx6solo-rev-sa01-pfuze100.dtb
++	install kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dtb out/imx6solo-rev-sa01-wm8326.dtb
+ 
+ ##########
+ # U-Boot #
+@@ -30,9 +32,25 @@ uboot.bin: cleanuboot
+ 	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
+ 	install u-boot/u-boot.imx out/u-boot-6q-p.imx
+ 	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6qsmarc_config
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6q.imx
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
+ 	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6solosmarc-p_config
+ 	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
+ 	install u-boot/u-boot.imx out/u-boot-6solo-p.imx
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6solosmarc_config
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6solo.imx
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6dlsmarc-p_config
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6dl-p.imx
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6dlsmarc_config
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6dl.imx
+ 
+ clean:
+ 	$(MAKE) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
+diff --git a/kernel/arch/arm/boot/dts/Makefile b/kernel/arch/arm/boot/dts/Makefile
+index e012119..e525a0e 100644
+--- a/kernel/arch/arm/boot/dts/Makefile
++++ b/kernel/arch/arm/boot/dts/Makefile
+@@ -208,7 +208,9 @@ dtb-$(CONFIG_ARCH_MXC) += \
+ 	imx6sx-sdb-emmc.dtb \
+ 	imx6sx-sdb-m4.dtb \
+ 	imx6q-rev-sa01-pfuze100.dtb \
++	imx6q-rev-sa01-wm8326.dtb \
+ 	imx6solo-rev-sa01-pfuze100.dtb \
++	imx6solo-rev-sa01-wm8326.dtb \
+ 	vf610-twr.dtb
+ dtb-$(CONFIG_ARCH_MXS) += imx23-evk.dtb \
+ 	imx23-olinuxino.dtb \
+diff --git a/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
+index d60c237..8e8d27b 100644
+--- a/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
++++ b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
+@@ -27,3 +27,13 @@
+ 	status = "okay";
+ };
+ 
++&cpu0 {
++	arm-supply = <&sw1a_reg>;
++	soc-supply = <&sw1c_reg>;
++};
++
++&gpc {
++	/* use ldo-bypass, u-boot will check it and configure */
++	fsl,ldo-bypass = <1>;
++	fsl,wdog-reset = <2>;
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+new file mode 100644
+index 0000000..b1cd94b
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+@@ -0,0 +1,28 @@
++/dts-v1/;
++
++#include "imx6q.dtsi"
++#include "imx6qdl-smarc.dtsi"
++#include "imx6qdl-rev-sa01-wm8326.dtsi"
++
++/ {
++	model = "Freescale i.MX6 Quad SMARC REV-SA01 Device Board";
++	compatible = "fsl,imx6q-smarc", "fsl,imx6q";
++};
++
++&ldb {
++	lvds-channel@0 {
++		crtc = "ipu2-di0";
++	};
++
++	lvds-channel@1 {
++		crtc = "ipu2-di1";
++	};
++};
++
++&mxcfb1 {
++	status = "okay";
++};
++
++&sata {
++	status = "okay";
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+new file mode 100644
+index 0000000..03cae68
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+@@ -0,0 +1,111 @@
++/ {
++	regulators {
++		reg_audio: wm8962_supply {
++			compatible = "regulator-fixed";
++			regulator-name = "wm8962-supply";
++			gpio = <&gpio1 17 0>;
++			enable-active-high;
++		};
++	};
++
++	sound {
++		compatible =	"fsl,imx6q-sabresd-wm8962",
++				"fsl,imx-audio-wm8962";
++		model = "wm8962-audio";
++		cpu-dai = <&ssi2>;
++		audio-codec = <&codec>;
++		audio-routing =
++			"Headphone Jack", "HPOUTL",
++			"Headphone Jack", "HPOUTR",
++			"Ext Spk", "SPKOUTL",
++			"Ext Spk", "SPKOUTR",
++			"MICBIAS", "AMIC",
++			"IN3R", "MICBIAS",
++			"DMIC", "MICBIAS",
++			"DMICDAT", "DMIC";
++			mux-int-port = <2>;
++			mux-ext-port = <3>;
++			mic-det-gpios = <&gpio3 6 1>;
++	};
++};
++
++&audmux {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_audmux>;
++	status = "okay";
++};
++
++&usdhc2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc2>;
++	bus-width = <4>;
++	cd-gpios = <&gpio3 14 0>;
++	wp-gpios = <&gpio3 13 0>;
++	no-1-8-v;
++	keep-power-in-suspend;
++	enable-sdio-wakeup;
++	status = "okay";
++};
++
++&i2c1 {
++	clock-frequency = <100000>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_i2c1>;
++        status = "okay";
++
++	codec: wm8962@1a {
++		compatible = "wlf,wm8962";
++		reg = <0x1a>;
++		clocks = <&clks 201>;
++		DCVDD-supply = <&reg_audio>;
++		DBVDD-supply = <&reg_audio>;
++		AVDD-supply = <&reg_audio>;
++		CPVDD-supply = <&reg_audio>;
++		MICVDD-supply = <&reg_audio>;
++		PLLVDD-supply = <&reg_audio>;
++		SPKVDD1-supply = <&reg_audio>;
++		SPKVDD2-supply = <&reg_audio>;
++		amic-mono;
++		gpio-cfg = <
++			0x0000 /* 0:Default */
++			0x0000 /* 1:Default */
++			0x0013 /* 2:FN_DMICCLK */
++			0x0000 /* 3:Default */
++			0x8014 /* 4:FN_DMICCDAT */
++			0x0000 /* 5:Default */
++		>;
++	};
++
++	mma8451@1c {
++		compatible = "fsl,mma8451";
++		reg = <0x1c>;
++		position = <0>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <18 8>;
++		interrupt-route = <1>;
++	};
++
++	rx8010@32 {
++		compatible = "epson,rx8010";
++		reg = <0x32>;
++	};
++};
++
++&i2c2 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c2>;
++	status = "okay";
++
++	hdmi: edid@50 {
++		compatible = "fsl,imx6-hdmi-i2c";
++		reg = <0x50>;
++	};
++};
++
++&i2c3 {
++        clock-frequency = <100000>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_i2c3>;
++        status = "okay";
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+index 000935b..635e1e7 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+@@ -123,11 +123,6 @@
+ 	status = "okay";
+ };
+ 
+-&cpu0 {
+-	arm-supply = <&sw1a_reg>;
+-	soc-supply = <&sw1c_reg>;
+-};
+-
+ &fec {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_enet>;
+@@ -148,12 +143,6 @@
+ 	status = "okay";
+ };
+ 
+-&gpc {
+-	/* use ldo-bypass, u-boot will check it and configure */
+-	fsl,ldo-bypass = <1>;
+-	fsl,wdog-reset = <2>;
+-};
+-
+ &hdmi_audio {
+ 	status = "okay";
+ };
+diff --git a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+index 7aea1c5..7ad060b 100644
+--- a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
++++ b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+@@ -23,3 +23,13 @@
+ 	status = "okay";
+ };
+ 
++&cpu0 {
++	arm-supply = <&sw1a_reg>;
++	soc-supply = <&sw1c_reg>;
++};
++
++&gpc {
++	/* use ldo-bypass, u-boot will check it and configure */
++	fsl,ldo-bypass = <1>;
++	fsl,wdog-reset = <2>;
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+new file mode 100644
+index 0000000..8376554
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+@@ -0,0 +1,24 @@
++/dts-v1/;
++
++#include "imx6dl.dtsi"
++#include "imx6qdl-smarc.dtsi"
++#include "imx6qdl-rev-sa01-wm8326.dtsi"
++
++/ {
++	model = "Freescale i.MX6 SOLO SMARC REV-SA01 Device Board";
++	compatible = "fsl,imx6solo-smarc", "fsl,imx6q";
++};
++
++&ldb {
++	lvds-channel@0 {
++		crtc = "ipu2-di0";
++	};
++
++	lvds-channel@1 {
++		crtc = "ipu2-di1";
++	};
++};
++
++&mxcfb1 {
++	status = "okay";
++};
+diff --git a/u-boot/board/freescale/mx6smarc/mx6dl_micron_1g.cfg b/u-boot/board/freescale/mx6smarc/mx6dl_micron_1g.cfg
+new file mode 100644
+index 0000000..0685da7
+--- /dev/null
++++ b/u-boot/board/freescale/mx6smarc/mx6dl_micron_1g.cfg
+@@ -0,0 +1,173 @@
++/*
++ * Copyright (C) 2014 Freescale Semiconductor, Inc.
++ * Jason Liu <r64343@freescale.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ *
++ * Refer docs/README.imxmage for more details about how-to configure
++ * and create imximage boot image
++ *
++ * The syntax is taken as close as possible with the kwbimage
++ */
++
++#define __ASSEMBLY__
++#include <config.h>
++
++/* image version */
++IMAGE_VERSION 2
++
++/*
++ * Boot Device : one of spi, sd, sata
++ * the board has no nand and eimnor
++ * spinor: flash_offset: 0x0400
++ * sata:   flash_offset: 0x0400
++ * sd/mmc: flash_offset: 0x0400
++ */
++
++/* the same flash_offset as sd */
++BOOT_FROM      sd
++
++#ifdef CONFIG_USE_PLUGIN
++/*PLUGIN    plugin-binary-file    IRAM_FREE_START_ADDR*/
++PLUGIN  board/freescale/mx6qsabresd/plugin.bin 0x00907000
++#else
++
++#ifdef CONFIG_SECURE_BOOT
++SECURE_BOOT
++#endif
++
++/*
++ * Device Configuration Data (DCD)
++ *
++ * Each entry must have the format:
++ * Addr-type           Address        Value
++ *
++ * where:
++ *      Addr-type register length (1,2 or 4 bytes)
++ *      Address   absolute address of the register
++ *      value     value to be stored in the register
++ */
++
++DATA 4, 0x020e0774, 0x000C0000
++DATA 4, 0x020e0754, 0x00000000
++
++DATA 4, 0x020e04ac, 0x00000030
++DATA 4, 0x020e04b0, 0x00000030
++
++DATA 4, 0x020e0464, 0x00000030
++DATA 4, 0x020e0490, 0x00000030
++DATA 4, 0x020e074c, 0x00000030
++
++DATA 4, 0x020e0494, 0x00000030
++
++DATA 4, 0x020e04a0, 0x00000000
++
++DATA 4, 0x020e04b4, 0x00000030
++DATA 4, 0x020e04b8, 0x00000030
++DATA 4, 0x020e076c, 0x00000030
++
++DATA 4, 0x020e0750, 0x00020000
++
++DATA 4, 0x020e04bc, 0x00000030
++DATA 4, 0x020e04c0, 0x00000030
++DATA 4, 0x020e04c4, 0x00000030
++DATA 4, 0x020e04c8, 0x00000030
++DATA 4, 0x020e04cc, 0x00000030
++DATA 4, 0x020e04d0, 0x00000030
++DATA 4, 0x020e04d4, 0x00000030
++DATA 4, 0x020e04d8, 0x00000030
++
++DATA 4, 0x020e0760, 0x00020000
++
++DATA 4, 0x020e0764, 0x00000030
++DATA 4, 0x020e0770, 0x00000030
++DATA 4, 0x020e0778, 0x00000030
++DATA 4, 0x020e077c, 0x00000030
++DATA 4, 0x020e0780, 0x00000030
++DATA 4, 0x020e0784, 0x00000030
++DATA 4, 0x020e078c, 0x00000030
++DATA 4, 0x020e0748, 0x00000030
++
++DATA 4, 0x020e0470, 0x00000030
++DATA 4, 0x020e0474, 0x00000030
++DATA 4, 0x020e0478, 0x00000030
++DATA 4, 0x020e047c, 0x00000030
++DATA 4, 0x020e0480, 0x00000030
++DATA 4, 0x020e0484, 0x00000030
++DATA 4, 0x020e0488, 0x00000030
++DATA 4, 0x020e048c, 0x00000030
++
++DATA 4, 0x021b0800, 0xa1390003
++
++DATA 4, 0x021b080c, 0x001F001F
++DATA 4, 0x021b0810, 0x001F001F
++DATA 4, 0x021b480c, 0x001F001F
++DATA 4, 0x021b4810, 0x001F001F
++
++DATA 4, 0x021b083c, 0x42480248
++DATA 4, 0x021b0840, 0x0211020B
++DATA 4, 0x021b483c, 0x417F0211
++DATA 4, 0x021b4840, 0x015D0166
++
++DATA 4, 0x021b0848, 0x4B4C504D
++DATA 4, 0x021b4848, 0x494C4F48
++
++DATA 4, 0x021b0850, 0x3F3F2E31
++DATA 4, 0x021b4850, 0x2B35382B
++
++DATA 4, 0x021b081c, 0x33333333
++DATA 4, 0x021b0820, 0x33333333
++DATA 4, 0x021b0824, 0x33333333
++DATA 4, 0x021b0828, 0x33333333
++DATA 4, 0x021b481c, 0x33333333
++DATA 4, 0x021b4820, 0x33333333
++DATA 4, 0x021b4824, 0x33333333
++DATA 4, 0x021b4828, 0x33333333
++
++DATA 4, 0x021b08b8, 0x00000800
++DATA 4, 0x021b48b8, 0x00000800
++
++DATA 4, 0x021b0004, 0x0002002D
++DATA 4, 0x021b0008, 0x00333030
++DATA 4, 0x021b000c, 0x3F435313
++DATA 4, 0x021b0010, 0xB66E8B63
++DATA 4, 0x021b0014, 0x01FF00DB
++DATA 4, 0x021b0018, 0x00001740
++
++DATA 4, 0x021b001c, 0x00008000
++DATA 4, 0x021b002c, 0x000026d2
++DATA 4, 0x021b0030, 0x00431023
++DATA 4, 0x021b0040, 0x00000027
++
++DATA 4, 0x021b0000, 0x831A0000
++
++DATA 4, 0x021b001c, 0x04008032
++DATA 4, 0x021b001c, 0x00008033
++DATA 4, 0x021b001c, 0x00048031
++DATA 4, 0x021b001c, 0x05208030
++DATA 4, 0x021b001c, 0x04008040
++
++DATA 4, 0x021b0020, 0x00005800
++
++DATA 4, 0x021b0818, 0x00011117
++DATA 4, 0x021b4818, 0x00011117
++
++DATA 4, 0x021b0004, 0x0002556D
++DATA 4, 0x021b0404, 0x00011006
++DATA 4, 0x021b001c, 0x00000000
++
++/* set the default clock gate to save power */
++DATA 4, 0x020c4068, 0x00C03F3F
++DATA 4, 0x020c406c, 0x0030FC03
++DATA 4, 0x020c4070, 0x0FFFC000
++DATA 4, 0x020c4074, 0x3FF00000
++DATA 4, 0x020c4078, 0x00FFF300
++DATA 4, 0x020c407c, 0x0F0000C3
++DATA 4, 0x020c4080, 0x000003FF
++
++/* enable AXI cache for VDOA/VPU/IPU */
++DATA 4, 0x020e0010, 0xF00000CF
++/* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
++DATA 4, 0x020e0018, 0x007F007F
++DATA 4, 0x020e001c, 0x007F007F
++#endif
+diff --git a/u-boot/boards.cfg b/u-boot/boards.cfg
+index e078a26..d4cb900 100644
+--- a/u-boot/boards.cfg
++++ b/u-boot/boards.cfg
+@@ -344,8 +344,12 @@ Active  arm         armv7          mx6         freescale       mx6sabresd
+ Active  arm         armv7          mx6         freescale       mx6sabresd          mx6dlsabresdandroid                         mx6sabresd:IMX_CONFIG=board/freescale/mx6sabresd/mx6dl_4x_mt41j128.cfg,MX6DL,DEFAULT_FDT_FILE="imx6dl-sabresd.dtb",DDR_MB=1024,SYS_USE_SPINOR,ANDROID_SUPPORT                                                  Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         freescale       mx6sabresd          mx6qsabresd                          mx6sabresd:IMX_CONFIG=board/freescale/imx/ddr/mx6q_4x_mt41j128.cfg,MX6Q,DEFAULT_FDT_FILE="imx6q-sabresd.dtb",DDR_MB=1024,SYS_USE_SPINOR                                                           Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         freescale       mx6sabresd          mx6qsabresdandroid                          mx6sabresd:IMX_CONFIG=board/freescale/imx/ddr/mx6q_4x_mt41j128.cfg,MX6Q,DEFAULT_FDT_FILE="imx6q-sabresd.dtb",DDR_MB=1024,SYS_USE_SPINOR,ANDROID_SUPPORT                                                           Fabio Estevam <fabio.estevam@freescale.com>
++Active	arm         armv7          mx6         freescale       mx6smarc            mx6qsmarc                            mx6smarc:IMX_CONFIG=board/freescale/mx6smarc/mx6q_micron_1g.cfg,MX6Q,DEFAULT_FDT_FILE="imx6q-rev-sa01-wm8326.dtb",DDR_MB=1024,SYS_USE_SPINOR                                                           Ben Tsai <ben_tsai@avalue.com.tw>
+ Active  arm         armv7          mx6         freescale       mx6smarc            mx6qsmarc-p                            mx6smarc:IMX_CONFIG=board/freescale/mx6smarc/mx6q_micron_1g.cfg,MX6Q,DEFAULT_FDT_FILE="imx6q-rev-sa01-pfuze100.dtb",DDR_MB=1024,SYS_USE_SPINOR                                                           Ben Tsai <ben_tsai@avalue.com.tw>
++Active  arm         armv7          mx6         freescale       mx6smarc            mx6solosmarc                            mx6smarc:IMX_CONFIG=board/freescale/mx6smarc/mx6solo_micron_1g.cfg,MX6DL,DEFAULT_FDT_FILE="imx6solo-rev-sa01-wm8326.dtb",DDR_MB=1024,SYS_USE_SPINOR                                                           Ben Tsai <ben_tsai@avalue.com.tw>
+ Active  arm         armv7          mx6         freescale       mx6smarc            mx6solosmarc-p                            mx6smarc:IMX_CONFIG=board/freescale/mx6smarc/mx6solo_micron_1g.cfg,MX6DL,DEFAULT_FDT_FILE="imx6solo-rev-sa01-pfuze100.dtb",DDR_MB=1024,SYS_USE_SPINOR                                                           Ben Tsai <ben_tsai@avalue.com.tw>
++Active  arm         armv7          mx6         freescale       mx6smarc            mx6dlsmarc                            mx6smarc:IMX_CONFIG=board/freescale/mx6smarc/mx6dl_micron_1g.cfg,MX6DL,DEFAULT_FDT_FILE="imx6solo-rev-sa01-wm8326.dtb",DDR_MB=1024,SYS_USE_SPINOR                                                           Ben Tsai <ben_tsai@avalue.com.tw>
++Active  arm         armv7          mx6         freescale       mx6smarc            mx6dlsmarc-p                            mx6smarc:IMX_CONFIG=board/freescale/mx6smarc/mx6dl_micron_1g.cfg,MX6DL,DEFAULT_FDT_FILE="imx6solo-rev-sa01-pfuze100.dtb",DDR_MB=1024,SYS_USE_SPINOR                                                           Ben Tsai <ben_tsai@avalue.com.tw>
+ Active  arm         armv7          mx6         freescale       mx6sabresd          mx6qsabresd_sata                  mx6sabresd:IMX_CONFIG=board/freescale/imx/ddr/mx6q_4x_mt41j128.cfg,MX6Q,DEFAULT_FDT_FILE="imx6q-sabresd.dtb",DDR_MB=1024,SYS_USE_SPINOR,SYS_BOOT_SATA                                 Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         freescale       mx6sabresd          mx6solosabresd                         mx6sabresd:IMX_CONFIG=board/freescale/mx6sabresd/mx6solo_4x_mt41j128.cfg,MX6SOLO,DEFAULT_FDT_FILE="imx6dl-sabresd.dtb",DDR_MB=512,SYS_USE_SPINOR,SYS_NOSMP="nosmp"             Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         freescale       mx6sabresd          mx6solosabresdandroid                         mx6sabresd:IMX_CONFIG=board/freescale/mx6sabresd/mx6solo_4x_mt41j128.cfg,MX6SOLO,DEFAULT_FDT_FILE="imx6dl-sabresd.dtb",DDR_MB=512,SYS_USE_SPINOR,SYS_NOSMP="nosmp",ANDROID_SUPPORT             Fabio Estevam <fabio.estevam@freescale.com>
+diff --git a/u-boot/run.sh b/u-boot/run.sh
+index b93e38c..7b99f21 100755
+--- a/u-boot/run.sh
++++ b/u-boot/run.sh
+@@ -19,10 +19,26 @@ if [ $1 == "quad-p" ]; then
+ 	PLATFORM=mx6qsmarc-p_config
+ fi
+ 
++if [ $1 == "quad" ]; then
++        PLATFORM=mx6qsmarc_config
++fi
++
+ if [ $1 == "solo-p" ]; then
+ 	PLATFORM=mx6solosmarc-p_config
+ fi
+ 
++if [ $1 == "solo" ]; then
++        PLATFORM=mx6solosmarc_config
++fi
++
++if [ $1 == "dl-p" ]; then
++        PLATFORM=mx6dlsmarc-p_config
++fi
++
++if [ $1 == "dl" ]; then
++        PLATFORM=mx6dlsmarc_config
++fi
++
+ JOBS=$2
+ 
+ make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE $PLATFORM
+-- 
+1.9.1
+
