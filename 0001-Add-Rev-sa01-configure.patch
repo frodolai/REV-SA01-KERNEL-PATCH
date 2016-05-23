@@ -1,0 +1,5915 @@
+From ef9a613b4b98ecffe28211515b232364a0801937 Mon Sep 17 00:00:00 2001
+From: Nick Liu <nick_liu@avalue.com.tw>
+Date: Mon, 23 May 2016 14:15:52 +0800
+Subject: [PATCH 1/1] Add-Rev-sa01-configure
+
+new file:   Makefile
+modified:   kernel/arch/arm/boot/dts/Makefile
+new file:   kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
+new file:   kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+new file:   kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi
+new file:   kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+new file:   kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+modified:   kernel/arch/arm/boot/dts/imx6qdl.dtsi
+new file:   kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+new file:   kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+modified:   kernel/drivers/pci/host/pci-imx6.c
+modified:   kernel/drivers/rtc/Kconfig
+modified:   kernel/drivers/rtc/Makefile
+new file:   kernel/drivers/rtc/rtc-rx8010.c
+new file:   kernel/run.sh
+modified:   kernel/tools/build/Makefile.build
+modified:   kernel/tools/build/Makefile.feature
+modified:   kernel/tools/lib/api/Makefile
+modified:   kernel/tools/perf/Makefile.perf
+modified:   kernel/tools/perf/arch/arm/tests/dwarf-unwind.c
+modified:   kernel/tools/perf/arch/arm/util/unwind-libunwind.c
+modified:   kernel/tools/perf/config/Makefile
+modified:   u-boot/arch/arm/Kconfig
+new file:   u-boot/board/freescale/mx6smarc/Kconfig
+new file:   u-boot/board/freescale/mx6smarc/Makefile
+new file:   u-boot/board/freescale/mx6smarc/mx6dl_micron_1g.cfg
+new file:   u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg
+new file:   u-boot/board/freescale/mx6smarc/mx6smarc.c
+new file:   u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg
+new file:   u-boot/board/freescale/mx6smarc/plugin.S
+new file:   u-boot/configs/mx6dlsmarc_defconfig
+new file:   u-boot/configs/mx6qsmarc_defconfig
+new file:   u-boot/configs/mx6solosmarc_defconfig
+new file:   u-boot/include/configs/mx6smarc.h
+new file:   u-boot/include/configs/mx6smarc_common.h
+new file:   u-boot/run.sh
+---
+ Makefile                                           |   73 +
+ kernel/arch/arm/boot/dts/Makefile                  |    4 +
+ .../arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts  |   51 +
+ kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts |   40 +
+ .../arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi    |  231 +++
+ .../arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi |  131 ++
+ kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi        |  779 ++++++++++
+ kernel/arch/arm/boot/dts/imx6qdl.dtsi              |    2 +-
+ .../arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts    |   47 +
+ .../arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts |   36 +
+ kernel/drivers/pci/host/pci-imx6.c                 |    8 +-
+ kernel/drivers/rtc/Kconfig                         |    6 +
+ kernel/drivers/rtc/Makefile                        |    1 +
+ kernel/drivers/rtc/rtc-rx8010.c                    |  785 +++++++++++
+ kernel/run.sh                                      |   25 +
+ kernel/tools/build/Makefile.build                  |    2 +-
+ kernel/tools/build/Makefile.feature                |    4 +-
+ kernel/tools/lib/api/Makefile                      |    4 +-
+ kernel/tools/perf/Makefile.perf                    |    8 +-
+ kernel/tools/perf/arch/arm/tests/dwarf-unwind.c    |    1 +
+ kernel/tools/perf/arch/arm/util/unwind-libunwind.c |    1 +
+ kernel/tools/perf/config/Makefile                  |   10 +-
+ u-boot/arch/arm/Kconfig                            |    5 +
+ u-boot/board/freescale/mx6smarc/Kconfig            |   15 +
+ u-boot/board/freescale/mx6smarc/Makefile           |   13 +
+ .../board/freescale/mx6smarc/mx6dl_micron_1g.cfg   |  142 ++
+ u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg |  158 +++
+ u-boot/board/freescale/mx6smarc/mx6smarc.c         | 1488 ++++++++++++++++++++
+ .../board/freescale/mx6smarc/mx6solo_micron_1g.cfg |  129 ++
+ u-boot/board/freescale/mx6smarc/plugin.S           |  664 +++++++++
+ u-boot/configs/mx6dlsmarc_defconfig                |    5 +
+ u-boot/configs/mx6qsmarc_defconfig                 |    5 +
+ u-boot/configs/mx6solosmarc_defconfig              |    5 +
+ u-boot/include/configs/mx6smarc.h                  |  111 ++
+ u-boot/include/configs/mx6smarc_common.h           |  450 ++++++
+ u-boot/run.sh                                      |   46 +
+ 36 files changed, 5466 insertions(+), 19 deletions(-)
+ create mode 100644 Makefile
+ create mode 100644 kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
+ create mode 100644 kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+ create mode 100644 kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi
+ create mode 100644 kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+ create mode 100644 kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+ create mode 100644 kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+ create mode 100644 kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+ create mode 100644 kernel/drivers/rtc/rtc-rx8010.c
+ create mode 100755 kernel/run.sh
+ create mode 100644 u-boot/board/freescale/mx6smarc/Kconfig
+ create mode 100644 u-boot/board/freescale/mx6smarc/Makefile
+ create mode 100644 u-boot/board/freescale/mx6smarc/mx6dl_micron_1g.cfg
+ create mode 100644 u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg
+ create mode 100644 u-boot/board/freescale/mx6smarc/mx6smarc.c
+ create mode 100644 u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg
+ create mode 100644 u-boot/board/freescale/mx6smarc/plugin.S
+ create mode 100644 u-boot/configs/mx6dlsmarc_defconfig
+ create mode 100644 u-boot/configs/mx6qsmarc_defconfig
+ create mode 100644 u-boot/configs/mx6solosmarc_defconfig
+ create mode 100644 u-boot/include/configs/mx6smarc.h
+ create mode 100644 u-boot/include/configs/mx6smarc_common.h
+ create mode 100755 u-boot/run.sh
+
+diff --git a/Makefile b/Makefile
+new file mode 100644
+index 0000000..e7354d6
+--- /dev/null
++++ b/Makefile
+@@ -0,0 +1,73 @@
++ARCH := arm
++CROSS_COMPILE := $(shell pwd)/fsl/bin/arm-fsl-linux-gnueabi-
++
++############
++# MAINCAR  #
++############
++all: rev-sa01
++rev-sa01: uboot kernel
++uboot: uboot.bin
++kernel: kernel.bin
++
++##########
++# Kernel #
++##########
++kernel.bin: cleankernel
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/ imx_v7_defconfig
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/
++	mkdir -p out
++	install kernel/arch/arm/boot/zImage out/zImage
++	install kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dtb out/imx6q-rev-sa01-pfuze100.dtb
++	#install kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dtb out/imx6q-rev-sa01-wm8326.dtb
++	#install kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dtb out/imx6solo-rev-sa01-pfuze100.dtb
++	#install kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dtb out/imx6solo-rev-sa01-wm8326.dtb
++
++##########
++# U-Boot #
++##########
++uboot.bin: cleanuboot
++	mkdir -p out
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6qsmarc_defconfig
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6q-p.imx
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6qsmarc_defconfig
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6q.imx
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6solosmarc_defconfig
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6solo-p.imx
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6solosmarc_defconfig
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6solo.imx
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6dlsmarc_defconfig
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6dl-p.imx
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6dlsmarc_defconfig
++	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6dl.imx
++
++clean:
++	$(MAKE) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/ distclean
++	rm -rf out \
++		kernel/arch/arm/boot/compressed/lib1funcs.S \
++		kernel/arch/arm/boot/compressed/piggy.gzip \
++		kernel/arch/arm/boot/compressed/vmlinux \
++		kernel/arch/arm/boot/compressed/vmlinux.lds \
++		kernel/arch/arm/boot/dts/*.dtb \
++		kernel/arch/arm/kernel/vmlinux.lds \
++		u-boot/imxcfg.imx
++
++cleankernel:
++	rm -f out/zImage
++	rm -f out/*.dtb kernel/arch/arm/boot/dts/*.dtb
++
++cleanuboot:
++	rm -f out/*.imx
++
+diff --git a/kernel/arch/arm/boot/dts/Makefile b/kernel/arch/arm/boot/dts/Makefile
+index 3a91c95..1f05b77 100644
+--- a/kernel/arch/arm/boot/dts/Makefile
++++ b/kernel/arch/arm/boot/dts/Makefile
+@@ -404,6 +404,10 @@ dtb-$(CONFIG_SOC_VF610) += \
+ 	vf610-colibri-eval-v3.dtb \
+ 	imx6sx-sabreauto-m4.dtb \
+ 	vf610-cosmic.dtb \
++	imx6q-rev-sa01-pfuze100.dtb \
++	#imx6q-rev-sa01-wm8326.dtb \
++	imx6solo-rev-sa01-pfuze100.dtb \
++	#imx6solo-rev-sa01-wm8326.dtb \
+ 	vf610-twr.dtb
+ dtb-$(CONFIG_ARCH_MXS) += \
+ 	imx23-evk.dtb \
+diff --git a/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
+new file mode 100644
+index 0000000..dd1e6e6
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
+@@ -0,0 +1,51 @@
++/*
++ * Copyright 2012=2015 Freescale Semiconductor, Inc.
++ * Copyright 2011 Linaro Ltd.
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++/dts-v1/;
++
++#include "imx6q.dtsi"
++#include "imx6qdl-smarc.dtsi"
++
++/ {
++	model = "Freescale i.MX6 Quad SMARC REV-SA01 Device Board";
++	compatible = "fsl,imx6q-smarc", "fsl,imx6q";
++};
++
++&ldb {
++	lvds-channel@0 {
++		crtc = "ipu2-di0";
++	};
++
++	lvds-channel@1 {
++		crtc = "ipu2-di1";
++	};
++};
++
++&mxcfb1 {
++	status = "okay";
++};
++
++&mxcfb2 {
++	status = "okay";
++};
++
++&mxcfb3 {
++	status = "okay";
++};
++
++&mxcfb4 {
++	status = "okay";
++};
++
++&sata {
++	status = "okay";
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+new file mode 100644
+index 0000000..f8ce506
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+@@ -0,0 +1,40 @@
++/*
++ * Copyright 2012=2015 Freescale Semiconductor, Inc.
++ * Copyright 2011 Linaro Ltd.
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++/dts-v1/;
++
++#include "imx6q.dtsi"
++#include "imx6qdl-smarc.dtsi"
++#include "imx6qdl-rev-sa01-wm8326.dtsi"
++
++/ {
++	model = "Freescale i.MX6 Quad SMARC REV-SA01 Device Board";
++	compatible = "fsl,imx6q-smarc", "fsl,imx6q";
++};
++
++&ldb {
++	lvds-channel@0 {
++		crtc = "ipu2-di0";
++	};
++
++	lvds-channel@1 {
++		crtc = "ipu2-di1";
++	};
++};
++
++&mxcfb1 {
++	status = "okay";
++};
++
++&sata {
++	status = "okay";
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi
+new file mode 100644
+index 0000000..32fef28
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi
+@@ -0,0 +1,231 @@
++/*
++ * Copyright 2012-2015 Freescale Semiconductor, Inc.
++ * Copyright 2011 Linaro Ltd.
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	regulators {
++		reg_audio: wm8962_supply {
++			compatible = "regulator-fixed";
++			regulator-name = "wm8962-supply";
++			gpio = <&gpio1 17 0>;
++			enable-active-high;
++		};
++	};
++
++	sound {
++		compatible = "fsl,imx6q-sabresd-wm8962",
++			   "fsl,imx-audio-wm8962";
++		model = "wm8962-audio";
++		cpu-dai = <&ssi2>;
++		audio-codec = <&codec>;
++		asrc-controller = <&asrc>;
++		audio-routing =
++			"Headphone Jack", "HPOUTL",
++			"Headphone Jack", "HPOUTR",
++			"Ext Spk", "SPKOUTL",
++			"Ext Spk", "SPKOUTR",
++			"AMIC", "MICBIAS",
++			"IN3R", "AMIC",
++			"DMIC", "MICBIAS",
++			"DMICDAT", "DMIC",
++			"CPU-Playback", "ASRC-Playback",
++			"Playback", "CPU-Playback",
++			"ASRC-Capture", "CPU-Capture",
++			"CPU-Capture", "Capture";
++			mux-int-port = <2>;
++			mux-ext-port = <3>;
++			mic-det-gpios = <&gpio3 6 1>;
++	};
++};
++
++&audmux {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_audmux>;
++	status = "okay";
++};
++
++&usdhc2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc2>;
++	bus-width = <4>;
++	cd-gpios = <&gpio2 2 0>;
++	wp-gpios = <&gpio2 3 0>;
++	no-1-8-v;
++	keep-power-in-suspend;
++	enable-sdio-wakeup;
++	status = "okay";
++};
++
++&i2c1 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c1>;
++	status = "okay";
++
++	codec: wm8962@1a {
++		compatible = "wlf,wm8962";
++		reg = <0x1a>;
++		clocks = <&clks 201>;
++		DCVDD-supply = <&reg_audio>;
++		DBVDD-supply = <&reg_audio>;
++		AVDD-supply = <&reg_audio>;
++		CPVDD-supply = <&reg_audio>;
++		MICVDD-supply = <&reg_audio>;
++		PLLVDD-supply = <&reg_audio>;
++		SPKVDD1-supply = <&reg_audio>;
++		SPKVDD2-supply = <&reg_audio>;
++		gpio-cfg = <
++			0x0000 /* 0:Default */
++			0x0000 /* 1:Default */
++			0x0013 /* 2:FN_DMICCLK */
++			0x0000 /* 3:Default */
++			0x8014 /* 4:FN_DMICCDAT */
++			0x0000 /* 5:Default */
++		>;
++		amic-mono;
++	};
++
++	pmic: pfuze100@08 {
++		compatible = "fsl,pfuze100";
++		reg = <0x08>;
++
++		regulators {
++			sw1a_reg: sw1ab {
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1875000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
++			};
++
++			sw1c_reg: sw1c {
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1875000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
++			};
++
++			sw2_reg: sw2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
++			};
++
++			sw3a_reg: sw3a {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			sw3b_reg: sw3b {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			sw4_reg: sw4 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			swbst_reg: swbst {
++				regulator-min-microvolt = <5000000>;
++				regulator-max-microvolt = <5150000>;
++			};
++
++			snvs_reg: vsnvs {
++				regulator-min-microvolt = <1000000>;
++				regulator-max-microvolt = <3000000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			vref_reg: vrefddr {
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			vgen1_reg: vgen1 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
++
++			vgen2_reg: vgen2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
++
++			vgen3_reg: vgen3 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			vgen4_reg: vgen4 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++
++			vgen5_reg: vgen5 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++
++			vgen6_reg: vgen6 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	mma8451@1c {
++		compatible = "fsl,mma8451";
++		reg = <0x1c>;
++		position = <0>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <18 8>;
++		interrupt-route = <1>;
++	};
++
++	rx8010@32 {
++		compatible = "epson,rx8010";
++		reg = <0x32>;
++	};
++};
++
++&i2c2 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c2>;
++	status = "okay";
++
++	hdmi: edid@50 {
++		compatible = "fsl,imx6-hdmi-i2c";
++		reg = <0x50>;
++	};
++};
++
++&i2c3 {
++        clock-frequency = <100000>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_i2c3>;
++        status = "okay";
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+new file mode 100644
+index 0000000..5afffe2
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+@@ -0,0 +1,131 @@
++/*
++ * Copyright 2012-2015 Freescale Semiconductor, Inc.
++ * Copyright 2011 Linaro Ltd.
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	regulators {
++		reg_audio: wm8962_supply {
++			compatible = "regulator-fixed";
++			regulator-name = "wm8962-supply";
++			gpio = <&gpio1 17 0>;
++			enable-active-high;
++		};
++	};
++
++	sound {
++		compatible =	"fsl,imx6q-sabresd-wm8962",
++				"fsl,imx-audio-wm8962";
++		model = "wm8962-audio";
++		cpu-dai = <&ssi2>;
++		audio-codec = <&codec>;
++		asrc-controller = <&asrc>;
++		audio-routing =
++			"Headphone Jack", "HPOUTL",
++			"Headphone Jack", "HPOUTR",
++			"Ext Spk", "SPKOUTL",
++			"Ext Spk", "SPKOUTR",
++			"AMIC", "MICBIAS",
++			"IN3R", "AMIC",
++			"DMIC", "MICBIAS",
++			"DMICDAT", "DMIC",
++			"CPU-Playback", "ASRC-Playback",
++			"Playback", "CPU-Playback",
++			"ASRC-Capture", "CPU-Capture",
++			"CPU-Capture", "Capture";
++		mux-int-port = <2>;
++		mux-ext-port = <3>;
++		mic-det-gpios = <&gpio1 9 1>;
++	};
++};
++
++&audmux {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_audmux>;
++	status = "okay";
++};
++
++&usdhc2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc2>;
++	bus-width = <4>;
++	cd-gpios = <&gpio3 14 0>;
++	wp-gpios = <&gpio3 13 0>;
++	no-1-8-v;
++	keep-power-in-suspend;
++	enable-sdio-wakeup;
++	status = "okay";
++};
++
++&i2c1 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c1>;
++	status = "okay";
++
++	codec: wm8962@1a {
++		compatible = "wlf,wm8962";
++		reg = <0x1a>;
++		clocks = <&clks 201>;
++		DCVDD-supply = <&reg_audio>;
++		DBVDD-supply = <&reg_audio>;
++		AVDD-supply = <&reg_audio>;
++		CPVDD-supply = <&reg_audio>;
++		MICVDD-supply = <&reg_audio>;
++		PLLVDD-supply = <&reg_audio>;
++		SPKVDD1-supply = <&reg_audio>;
++		SPKVDD2-supply = <&reg_audio>;
++		gpio-cfg = <
++			0x0000 /* 0:Default */
++			0x0000 /* 1:Default */
++			0x0013 /* 2:FN_DMICCLK */
++			0x0000 /* 3:Default */
++			0x8014 /* 4:FN_DMICCDAT */
++			0x0000 /* 5:Default */
++		>;
++		amic-mono;
++       };
++
++	mma8451@1c {
++		compatible = "fsl,mma8451";
++		reg = <0x1c>;
++		position = <0>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <18 8>;
++		interrupt-route = <1>;
++	};
++
++	rx8010@32 {
++		compatible = "epson,rx8010";
++		reg = <0x32>;
++	};
++};
++
++&i2c2 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c2>;
++	status = "okay";
++
++	hdmi: edid@50 {
++		compatible = "fsl,imx6-hdmi-i2c";
++		reg = <0x50>;
++	};
++};
++
++&i2c3 {
++        clock-frequency = <100000>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_i2c3>;
++        status = "okay";
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+new file mode 100644
+index 0000000..ed72d10
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+@@ -0,0 +1,779 @@
++/*
++ * Copyright 2012-2015 Freescale Semiconductor, Inc.
++ * Copyright 2011 Linaro Ltd.
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	aliases {
++		mxcfb0 = &mxcfb1;
++		mxcfb1 = &mxcfb2;
++		mxcfb2 = &mxcfb3;
++		mxcfb3 = &mxcfb4;
++	};
++
++	hannstar_cabc {
++		compatible = "hannstar,cabc";
++		lvds0 {
++			gpios = <&gpio6 15 GPIO_ACTIVE_HIGH>;
++		};
++		lvds1 {
++			gpios = <&gpio6 16 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
++	chosen {
++		stdout-path = &uart1;
++	};
++
++	memory: memory {
++		reg = <0x10000000 0x40000000>;
++	};
++
++	regulators {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		reg_usb_otg_vbus: regulator@0 {
++			compatible = "regulator-fixed";
++			reg = <0>;
++			regulator-name = "usb_otg_vbus";
++			regulator-min-microvolt = <5000000>;
++			regulator-max-microvolt = <5000000>;
++			gpio = <&gpio3 22 0>;
++			enable-active-high;
++			vin-supply = <&swbst_reg>;
++		};
++
++		reg_usb_h1_vbus: regulator@1 {
++			compatible = "regulator-fixed";
++			reg = <1>;
++			regulator-name = "usb_h1_vbus";
++			regulator-min-microvolt = <5000000>;
++			regulator-max-microvolt = <5000000>;
++			gpio = <&gpio1 29 0>;
++			enable-active-high;
++			vin-supply = <&swbst_reg>;
++		};
++
++		reg_audio: regulator@2 {
++			compatible = "regulator-fixed";
++			reg = <2>;
++			regulator-name = "wm8962-supply";
++			gpio = <&gpio1 17 0>;
++			enable-active-high;
++		};
++
++		reg_sensor: regulator@4 {
++			compatible = "regulator-fixed";
++			reg = <4>;
++			regulator-name = "sensor-supply";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3300000>;
++			gpio = <&gpio2 31 0>;
++			startup-delay-us = <500>;
++			enable-active-high;
++		};
++
++		reg_mipi_dsi_pwr_on: mipi_dsi_pwr_on {
++			compatible = "regulator-fixed";
++			regulator-name = "mipi_dsi_pwr_on";
++			gpio = <&gpio6 14 0>;
++			enable-active-high;
++		};
++	};
++
++	sound {
++		compatible = "fsl,imx6q-sabresd-wm8962",
++			   "fsl,imx-audio-wm8962";
++		model = "wm8962-audio";
++		cpu-dai = <&ssi2>;
++		audio-codec = <&codec>;
++		asrc-controller = <&asrc>;
++		audio-routing =
++			"Headphone Jack", "HPOUTL",
++			"Headphone Jack", "HPOUTR",
++			"Ext Spk", "SPKOUTL",
++			"Ext Spk", "SPKOUTR",
++			"AMIC", "MICBIAS",
++			"IN3R", "AMIC",
++			"DMIC", "MICBIAS",
++			"DMICDAT", "DMIC",
++			"CPU-Playback", "ASRC-Playback",
++			"Playback", "CPU-Playback",
++			"ASRC-Capture", "CPU-Capture",
++			"CPU-Capture", "Capture";
++		mux-int-port = <2>;
++		mux-ext-port = <3>;
++		mic-det-gpios = <&gpio3 6 1>;
++	};
++
++	sound-hdmi {
++		compatible = "fsl,imx6q-audio-hdmi",
++			     "fsl,imx-audio-hdmi";
++		model = "imx-audio-hdmi";
++		hdmi-controller = <&hdmi_audio>;
++	};
++
++	mxcfb1: fb@0 {
++		compatible = "fsl,mxc_sdc_fb";
++		disp_dev = "hdmi";
++		interface_pix_fmt = "RGB24";
++		mode_str ="1920x1080M@60";
++		default_bpp = <24>;
++		int_clk = <0>;
++		late_init = <0>;
++		status = "disabled";
++	};
++
++	mxcfb2: fb@1 {
++		compatible = "fsl,mxc_sdc_fb";
++		disp_dev = "lcd";
++		interface_pix_fmt = "RGB565";
++		mode_str ="CLAA-WVGA";
++		default_bpp = <16>;
++		int_clk = <0>;
++		late_init = <0>;
++		status = "disabled";
++	};
++
++	mxcfb3: fb@2 {
++		compatible = "fsl,mxc_sdc_fb";
++		disp_dev = "ldb";
++		interface_pix_fmt = "RGB666";
++		default_bpp = <16>;
++		int_clk = <0>;
++		late_init = <0>;
++		status = "disabled";
++	};
++
++	mxcfb4: fb@3 {
++		compatible = "fsl,mxc_sdc_fb";
++		disp_dev = "ldb";
++		interface_pix_fmt = "RGB666";
++		default_bpp = <16>;
++		int_clk = <0>;
++		late_init = <0>;
++		status = "disabled";
++	};
++
++	lcd@0 {
++		compatible = "fsl,lcd";
++		ipu_id = <0>;
++		disp_id = <0>;
++		default_ifmt = "RGB565";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_ipu1>;
++		status = "okay";
++	};
++
++	backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm1 0 5000000>;
++		brightness-levels = <0 4 8 16 32 64 128 255>;
++		default-brightness-level = <7>;
++		status = "okay";
++	};
++
++	v4l2_out {
++		compatible = "fsl,mxc_v4l2_output";
++		status = "okay";
++	};
++
++	mipi_dsi_reset: mipi-dsi-reset {
++		compatible = "gpio-reset";
++		reset-gpios = <&gpio6 11 GPIO_ACTIVE_LOW>;
++		reset-delay-us = <50>;
++		#reset-cells = <0>;
++	};
++};
++
++&audmux {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_audmux>;
++	status = "okay";
++};
++
++&cpu0 {
++	arm-supply = <&sw1a_reg>;
++	soc-supply = <&sw1c_reg>;
++};
++
++&fec {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_enet>;
++	phy-mode = "rgmii";
++	fsl,magic-packet;
++	status = "okay";
++};
++
++&gpc {
++	fsl,ldo-bypass = <1>;
++};
++
++&dcic1 {
++	dcic_id = <0>;
++	dcic_mux = "dcic-hdmi";
++	status = "okay";
++};
++
++&dcic2 {
++	dcic_id = <1>;
++	dcic_mux = "dcic-lvds1";
++	status = "okay";
++};
++
++&hdmi_audio {
++	status = "okay";
++};
++
++&hdmi_cec {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_hdmi_cec>;
++	status = "okay";
++};
++
++&hdmi_core {
++	ipu_id = <0>;
++	disp_id = <0>;
++	status = "okay";
++};
++
++&hdmi_video {
++	fsl,phy_reg_vlev = <0x0294>;
++	fsl,phy_reg_cksymtx = <0x800d>;
++	status = "okay";
++};
++
++&i2c1 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c1>;
++	status = "okay";
++
++	codec: wm8962@1a {
++		compatible = "wlf,wm8962";
++		reg = <0x1a>;
++		clocks = <&clks IMX6QDL_CLK_CKO>;
++		DCVDD-supply = <&reg_audio>;
++		DBVDD-supply = <&reg_audio>;
++		AVDD-supply = <&reg_audio>;
++		CPVDD-supply = <&reg_audio>;
++		MICVDD-supply = <&reg_audio>;
++		PLLVDD-supply = <&reg_audio>;
++		SPKVDD1-supply = <&reg_audio>;
++		SPKVDD2-supply = <&reg_audio>;
++		gpio-cfg = <
++			0x0000 /* 0:Default */
++			0x0000 /* 1:Default */
++			0x0013 /* 2:FN_DMICCLK */
++			0x0000 /* 3:Default */
++			0x8014 /* 4:FN_DMICCDAT */
++			0x0000 /* 5:Default */
++		>;
++		amic-mono;
++       };
++
++	mma8451@1c {
++		compatible = "fsl,mma8451";
++		reg = <0x1c>;
++		position = <0>;
++		vdd-supply = <&reg_sensor>;
++		vddio-supply = <&reg_sensor>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <18 8>;
++		interrupt-route = <1>;
++	};
++
++pmic: pfuze100@08 {
++		compatible = "fsl,pfuze100";
++		reg = <0x08>;
++
++		regulators {
++			sw1a_reg: sw1ab {
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1875000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
++			};
++
++			sw1c_reg: sw1c {
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1875000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
++			};
++
++			sw2_reg: sw2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
++			};
++
++			sw3a_reg: sw3a {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			sw3b_reg: sw3b {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			sw4_reg: sw4 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			swbst_reg: swbst {
++				regulator-min-microvolt = <5000000>;
++				regulator-max-microvolt = <5150000>;
++			};
++
++			snvs_reg: vsnvs {
++				regulator-min-microvolt = <1000000>;
++				regulator-max-microvolt = <3000000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			vref_reg: vrefddr {
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			vgen1_reg: vgen1 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
++
++			vgen2_reg: vgen2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
++
++			vgen3_reg: vgen3 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			vgen4_reg: vgen4 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++
++			vgen5_reg: vgen5 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++
++			vgen6_reg: vgen6 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	rx8010@32 {
++		compatible = "epson,rx8010";
++		reg = <0x32>;
++	};
++};
++
++&i2c2 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c2>;
++	status = "okay";
++
++	hdmi: edid@50 {
++		compatible = "fsl,imx6-hdmi-i2c";
++		reg = <0x50>;
++	};
++};
++
++&i2c3 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c3>;
++	status = "okay";
++};
++
++&iomuxc {
++	imx6qdl-smarc {
++		pinctrl_flexcan1: flexcan1grp {
++			fsl,pins = <
++				MX6QDL_PAD_GPIO_7__FLEXCAN1_TX		0x80000000
++				MX6QDL_PAD_GPIO_8__FLEXCAN1_RX		0x80000000
++			>;
++		};
++
++		pinctrl_flexcan2: flexcan2grp {
++			fsl,pins = <
++				MX6QDL_PAD_KEY_COL4__FLEXCAN2_TX	0x80000000
++				MX6QDL_PAD_KEY_ROW4__FLEXCAN2_RX	0x80000000
++			>;
++		};
++
++		pinctrl_audmux: audmuxgrp {
++			fsl,pins = <
++				MX6QDL_PAD_CSI0_DAT7__AUD3_RXD		0x130b0
++				MX6QDL_PAD_CSI0_DAT4__AUD3_TXC		0x130b0
++				MX6QDL_PAD_CSI0_DAT5__AUD3_TXD		0x110b0
++				MX6QDL_PAD_CSI0_DAT6__AUD3_TXFS		0x130b0
++				MX6QDL_PAD_GPIO_0__CCM_CLKO1		0x130b0
++				MX6QDL_PAD_SD1_DAT1__GPIO1_IO17		0x80000000
++				MX6QDL_PAD_EIM_DA6__GPIO3_IO06		0x80000000
++			>;
++		};
++
++		pinctrl_enet: enetgrp {
++			fsl,pins = <
++				MX6QDL_PAD_ENET_MDIO__ENET_MDIO		0x1b0b0
++				MX6QDL_PAD_ENET_MDC__ENET_MDC		0x1b0b0
++				MX6QDL_PAD_RGMII_TXC__RGMII_TXC		0x1b0b0
++				MX6QDL_PAD_RGMII_TD0__RGMII_TD0		0x1b0b0
++				MX6QDL_PAD_RGMII_TD1__RGMII_TD1		0x1b0b0
++				MX6QDL_PAD_RGMII_TD2__RGMII_TD2		0x1b0b0
++				MX6QDL_PAD_RGMII_TD3__RGMII_TD3		0x1b0b0
++				MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL	0x1b0b0
++				MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK	0x1b0b0
++				MX6QDL_PAD_RGMII_RXC__RGMII_RXC		0x1b0b0
++				MX6QDL_PAD_RGMII_RD0__RGMII_RD0		0x1b0b0
++				MX6QDL_PAD_RGMII_RD1__RGMII_RD1		0x1b0b0
++				MX6QDL_PAD_RGMII_RD2__RGMII_RD2		0x1b0b0
++				MX6QDL_PAD_RGMII_RD3__RGMII_RD3		0x1b0b0
++				MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL	0x1b0b0
++				MX6QDL_PAD_GPIO_16__ENET_REF_CLK	0x4001b0a8
++			>;
++		};
++
++		pinctrl_hdmi_cec: hdmicecgrp {
++			fsl,pins = <
++				MX6QDL_PAD_KEY_ROW2__HDMI_TX_CEC_LINE 0x108b0
++			>;
++		};
++
++		pinctrl_hdmi_hdcp: hdmihdcpgrp {
++			fsl,pins = <
++				MX6QDL_PAD_KEY_COL3__HDMI_TX_DDC_SCL 0x4001b8b1
++				MX6QDL_PAD_KEY_ROW3__HDMI_TX_DDC_SDA 0x4001b8b1
++			>;
++		};
++
++		pinctrl_i2c1: i2c1grp {
++			fsl,pins = <
++				MX6QDL_PAD_CSI0_DAT8__I2C1_SDA		0x4001b8b1
++				MX6QDL_PAD_CSI0_DAT9__I2C1_SCL		0x4001b8b1
++			>;
++		};
++
++		pinctrl_i2c2: i2c2grp {
++			fsl,pins = <
++				MX6QDL_PAD_KEY_COL3__I2C2_SCL		0x4001b8b1
++				MX6QDL_PAD_KEY_ROW3__I2C2_SDA		0x4001b8b1
++			>;
++		};
++
++		pinctrl_i2c3: i2c3grp {
++			fsl,pins = <
++				MX6QDL_PAD_GPIO_3__I2C3_SCL		0x4001b8b1
++				MX6QDL_PAD_GPIO_6__I2C3_SDA		0x4001b8b1
++			>;
++		};
++
++		pinctrl_ipu1: ipu1grp {
++			fsl,pins = <
++				MX6QDL_PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK 0x10
++				MX6QDL_PAD_DI0_PIN15__IPU1_DI0_PIN15       0x10
++				MX6QDL_PAD_DI0_PIN2__IPU1_DI0_PIN02        0x10
++				MX6QDL_PAD_DI0_PIN3__IPU1_DI0_PIN03        0x10
++				MX6QDL_PAD_DI0_PIN4__IPU1_DI0_PIN04        0x80000000
++				MX6QDL_PAD_DISP0_DAT0__IPU1_DISP0_DATA00   0x10
++				MX6QDL_PAD_DISP0_DAT1__IPU1_DISP0_DATA01   0x10
++				MX6QDL_PAD_DISP0_DAT2__IPU1_DISP0_DATA02   0x10
++				MX6QDL_PAD_DISP0_DAT3__IPU1_DISP0_DATA03   0x10
++				MX6QDL_PAD_DISP0_DAT4__IPU1_DISP0_DATA04   0x10
++				MX6QDL_PAD_DISP0_DAT5__IPU1_DISP0_DATA05   0x10
++				MX6QDL_PAD_DISP0_DAT6__IPU1_DISP0_DATA06   0x10
++				MX6QDL_PAD_DISP0_DAT7__IPU1_DISP0_DATA07   0x10
++				MX6QDL_PAD_DISP0_DAT8__IPU1_DISP0_DATA08   0x10
++				MX6QDL_PAD_DISP0_DAT9__IPU1_DISP0_DATA09   0x10
++				MX6QDL_PAD_DISP0_DAT10__IPU1_DISP0_DATA10  0x10
++				MX6QDL_PAD_DISP0_DAT11__IPU1_DISP0_DATA11  0x10
++				MX6QDL_PAD_DISP0_DAT12__IPU1_DISP0_DATA12  0x10
++				MX6QDL_PAD_DISP0_DAT13__IPU1_DISP0_DATA13  0x10
++				MX6QDL_PAD_DISP0_DAT14__IPU1_DISP0_DATA14  0x10
++				MX6QDL_PAD_DISP0_DAT15__IPU1_DISP0_DATA15  0x10
++				MX6QDL_PAD_DISP0_DAT16__IPU1_DISP0_DATA16  0x10
++				MX6QDL_PAD_DISP0_DAT17__IPU1_DISP0_DATA17  0x10
++				MX6QDL_PAD_DISP0_DAT18__IPU1_DISP0_DATA18  0x10
++				MX6QDL_PAD_DISP0_DAT19__IPU1_DISP0_DATA19  0x10
++				MX6QDL_PAD_DISP0_DAT20__IPU1_DISP0_DATA20  0x10
++				MX6QDL_PAD_DISP0_DAT21__IPU1_DISP0_DATA21  0x10
++				MX6QDL_PAD_DISP0_DAT22__IPU1_DISP0_DATA22  0x10
++				MX6QDL_PAD_DISP0_DAT23__IPU1_DISP0_DATA23  0x10
++			>;
++		};
++
++		pinctrl_pcie_1: pcie1grp-1 {
++			fsl,pins = <
++				MX6QDL_PAD_GPIO_19__GPIO4_IO05		0x80000000
++				MX6QDL_PAD_EIM_DA10__GPIO3_IO10		0x80000000
++			>;
++		};
++
++		pinctrl_pwm1: pwm1grp {
++			fsl,pins = <
++				MX6QDL_PAD_SD1_DAT3__PWM1_OUT		0x1b0b1
++			>;
++		};
++
++		pinctrl_uart1: uart1grp {
++			fsl,pins = <
++				MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA	0x1b0b1
++				MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA	0x1b0b1
++				MX6QDL_PAD_EIM_D20__UART1_CTS_B		0x1b0b1
++			>;
++		};
++
++		pinctrl_uart2: uart2grp {
++			fsl,pins = <
++				MX6QDL_PAD_EIM_D26__UART2_TX_DATA	0x1b0b1
++				MX6QDL_PAD_EIM_D27__UART2_RX_DATA	0x1b0b1
++			>;
++		};
++
++		pinctrl_uart3: uart3grp {
++			fsl,pins = <
++				MX6QDL_PAD_EIM_D24__UART3_TX_DATA	0x1b0b1
++				MX6QDL_PAD_EIM_D25__UART3_RX_DATA	0x1b0b1
++				MX6QDL_PAD_EIM_D23__UART3_RTS_B		0x1b0b1
++				MX6QDL_PAD_EIM_D31__UART3_CTS_B		0x1b0b1
++			>;
++		};
++
++		pinctrl_uart4: uart4grp {
++			fsl,pins = <
++				MX6QDL_PAD_CSI0_DAT12__UART4_TX_DATA	0x1b0b1
++				MX6QDL_PAD_CSI0_DAT13__UART4_RX_DATA	0x1b0b1
++			>;
++		};
++
++		pinctrl_usbotg: usbotggrp {
++			fsl,pins = <
++				MX6QDL_PAD_ENET_RX_ER__USB_OTG_ID	0x1705
++			>;
++		};
++
++		pinctrl_usdhc2: usdhc2grp {
++			fsl,pins = <
++				MX6QDL_PAD_SD2_CMD__SD2_CMD		0x17059
++				MX6QDL_PAD_SD2_CLK__SD2_CLK		0x10059
++				MX6QDL_PAD_SD2_DAT0__SD2_DATA0		0x17059
++				MX6QDL_PAD_SD2_DAT1__SD2_DATA1		0x17059
++				MX6QDL_PAD_SD2_DAT2__SD2_DATA2		0x17059
++				MX6QDL_PAD_SD2_DAT3__SD2_DATA3		0x17059
++				MX6QDL_PAD_EIM_DA14__GPIO3_IO14		0x80000000
++				MX6QDL_PAD_EIM_DA13__GPIO3_IO13		0x80000000
++			>;
++		};
++
++		pinctrl_usdhc4: usdhc4grp {
++			fsl,pins = <
++				MX6QDL_PAD_SD4_CMD__SD4_CMD		0x17059
++				MX6QDL_PAD_SD4_CLK__SD4_CLK		0x10059
++				MX6QDL_PAD_SD4_DAT0__SD4_DATA0		0x17059
++				MX6QDL_PAD_SD4_DAT1__SD4_DATA1		0x17059
++				MX6QDL_PAD_SD4_DAT2__SD4_DATA2		0x17059
++				MX6QDL_PAD_SD4_DAT3__SD4_DATA3		0x17059
++				MX6QDL_PAD_SD4_DAT4__SD4_DATA4		0x17059
++				MX6QDL_PAD_SD4_DAT5__SD4_DATA5		0x17059
++				MX6QDL_PAD_SD4_DAT6__SD4_DATA6		0x17059
++				MX6QDL_PAD_SD4_DAT7__SD4_DATA7		0x17059
++			>;
++		};
++
++		pinctrl_wdog: wdoggrp {
++			fsl,pins = <
++				MX6QDL_PAD_GPIO_1__WDOG2_B 0x80000000
++			>;
++		};
++	};
++};
++
++&ldb {
++	status = "okay";
++
++	lvds-channel@0 {
++		fsl,data-mapping = "spwg";
++		fsl,data-width = <18>;
++		status = "okay";
++
++		display-timings {
++			native-mode = <&timing0>;
++			timing0: hsd100pxn1 {
++				clock-frequency = <65000000>;
++				hactive = <1024>;
++				vactive = <768>;
++				hback-porch = <220>;
++				hfront-porch = <40>;
++				vback-porch = <21>;
++				vfront-porch = <7>;
++				hsync-len = <60>;
++				vsync-len = <10>;
++			};
++		};
++	};
++
++	lvds-channel@1 {
++		fsl,data-mapping = "spwg";
++		fsl,data-width = <18>;
++		primary;
++		status = "okay";
++
++		display-timings {
++			native-mode = <&timing1>;
++			timing1: hsd100pxn1 {
++				clock-frequency = <65000000>;
++				hactive = <1024>;
++				vactive = <768>;
++				hback-porch = <220>;
++				hfront-porch = <40>;
++				vback-porch = <21>;
++				vfront-porch = <7>;
++				hsync-len = <60>;
++				vsync-len = <10>;
++			};
++		};
++	};
++};
++
++&mipi_csi {
++	status = "okay";
++	ipu_id = <0>;
++	csi_id = <1>;
++	v_channel = <0>;
++	lanes = <2>;
++};
++
++&mipi_dsi {
++	dev_id = <0>;
++	disp_id = <1>;
++	lcd_panel = "TRULY-WVGA";
++	disp-power-on-supply = <&reg_mipi_dsi_pwr_on>;
++	resets = <&mipi_dsi_reset>;
++	status = "okay";
++};
++
++&pcie {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pcie_1>;
++	wake-up-gpio = <&gpio3 10 0>;
++	reset-gpio = <&gpio4 5 0>;
++	status = "okay";
++};
++
++&pwm1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pwm1>;
++	status = "okay";
++};
++
++&ssi2 {
++	status = "okay";
++};
++
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart1>;
++	status = "okay";
++};
++
++&uart2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart2>;
++	status = "okay";
++};
++
++&uart3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart3>;
++	status = "okay";
++};
++
++&uart4 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart4>;
++	status = "okay";
++};
++
++&usbh1 {
++	vbus-supply = <&reg_usb_h1_vbus>;
++	status = "okay";
++};
++
++&usbotg {
++	vbus-supply = <&reg_usb_otg_vbus>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usbotg>;
++	disable-over-current;
++	srp-disable;
++	hnp-disable;
++	adp-disable;
++	status = "okay";
++};
++
++&usdhc2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc2>;
++	bus-width = <4>;
++	cd-gpios = <&gpio3 14 GPIO_ACTIVE_LOW>;
++	wp-gpios = <&gpio3 13 GPIO_ACTIVE_LOW>;
++	no-1-8-v;
++	keep-power-in-suspend;
++	enable-sdio-wakeup;
++	status = "okay";
++};
++
++&usdhc4 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc4>;
++	bus-width = <8>;
++	non-removable;
++	no-1-8-v;
++	keep-power-in-suspend;
++	status = "okay";
++};
++
++&wdog1 {
++	status = "disabled";
++};
++
++&wdog2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_wdog>;
++	fsl,wdog_b;
++	status = "okay";
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl.dtsi b/kernel/arch/arm/boot/dts/imx6qdl.dtsi
+index 7775047..4ef2b17 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl.dtsi
+@@ -173,7 +173,7 @@
+ 				  0x81000000 0 0          0x01f80000 0 0x00010000 /* downstream I/O */
+ 				  0x82000000 0 0x01000000 0x01000000 0 0x00f00000>; /* non-prefetchable memory */
+ 			num-lanes = <1>;
+-			interrupts = <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
++			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "msi";
+ 			#interrupt-cells = <1>;
+ 			interrupt-map-mask = <0 0 0 0x7>;
+diff --git a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+new file mode 100644
+index 0000000..80f10fe
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+@@ -0,0 +1,47 @@
++/*
++ * Copyright 2012=2015 Freescale Semiconductor, Inc.
++ * Copyright 2011 Linaro Ltd.
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++/dts-v1/;
++
++#include "imx6dl.dtsi"
++#include "imx6qdl-smarc.dtsi"
++#include "imx6qdl-rev-sa01-pfuze100.dtsi"
++
++/ {
++	model = "Freescale i.MX6 SOLO SMARC REV-SA01 Device Board";
++	compatible = "fsl,imx6solo-smarc", "fsl,imx6q";
++};
++
++&ldb {
++	lvds-channel@0 {
++		crtc = "ipu2-di0";
++	};
++
++	lvds-channel@1 {
++		crtc = "ipu2-di1";
++	};
++};
++
++&mxcfb1 {
++	status = "okay";
++};
++
++&cpu0 {
++	arm-supply = <&sw1a_reg>;
++	soc-supply = <&sw1c_reg>;
++};
++
++&gpc {
++	/* use ldo-bypass, u-boot will check it and configure */
++	fsl,ldo-bypass = <1>;
++	fsl,wdog-reset = <2>;
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+new file mode 100644
+index 0000000..16ce63f
+--- /dev/null
++++ b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+@@ -0,0 +1,36 @@
++/*
++ * Copyright 2012=2015 Freescale Semiconductor, Inc.
++ * Copyright 2011 Linaro Ltd.
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++/dts-v1/;
++
++#include "imx6dl.dtsi"
++#include "imx6qdl-smarc.dtsi"
++#include "imx6qdl-rev-sa01-wm8326.dtsi"
++
++/ {
++	model = "Freescale i.MX6 SOLO SMARC REV-SA01 Device Board";
++	compatible = "fsl,imx6solo-smarc", "fsl,imx6q";
++};
++
++&ldb {
++	lvds-channel@0 {
++		crtc = "ipu2-di0";
++	};
++
++	lvds-channel@1 {
++		crtc = "ipu2-di1";
++	};
++};
++
++&mxcfb1 {
++	status = "okay";
++};
+diff --git a/kernel/drivers/pci/host/pci-imx6.c b/kernel/drivers/pci/host/pci-imx6.c
+index 75f15ce..a9ae873 100644
+--- a/kernel/drivers/pci/host/pci-imx6.c
++++ b/kernel/drivers/pci/host/pci-imx6.c
+@@ -567,10 +567,10 @@ static int imx6_pcie_start_link(struct pcie_port *pp)
+ 		return ret;
+ 
+ 	/* Allow Gen2 mode after the link is up. */
+-	tmp = readl(pp->dbi_base + PCIE_RC_LCR);
+-	tmp &= ~PCIE_RC_LCR_MAX_LINK_SPEEDS_MASK;
+-	tmp |= PCIE_RC_LCR_MAX_LINK_SPEEDS_GEN2;
+-	writel(tmp, pp->dbi_base + PCIE_RC_LCR);
++	//tmp = readl(pp->dbi_base + PCIE_RC_LCR);
++	//tmp &= ~PCIE_RC_LCR_MAX_LINK_SPEEDS_MASK;
++	//tmp |= PCIE_RC_LCR_MAX_LINK_SPEEDS_GEN2;
++	//writel(tmp, pp->dbi_base + PCIE_RC_LCR);
+ 
+ 	/*
+ 	 * Start Directed Speed Change so the best possible speed both link
+diff --git a/kernel/drivers/rtc/Kconfig b/kernel/drivers/rtc/Kconfig
+index 0fe4ad8..1e188b2 100644
+--- a/kernel/drivers/rtc/Kconfig
++++ b/kernel/drivers/rtc/Kconfig
+@@ -568,6 +568,12 @@ config RTC_DRV_RX8025
+ 	  This driver can also be built as a module. If so, the module
+ 	  will be called rtc-rx8025.
+ 
++config RTC_DRV_RX8010
++	tristate "Epson RX-8010SJ"
++	help
++	 If you say yes here you get support for the Epson
++	 RX-8010SJ RTC chip.
++
+ config RTC_DRV_EM3027
+ 	tristate "EM Microelectronic EM3027"
+ 	help
+diff --git a/kernel/drivers/rtc/Makefile b/kernel/drivers/rtc/Makefile
+index 2b82e2b..3420aec 100644
+--- a/kernel/drivers/rtc/Makefile
++++ b/kernel/drivers/rtc/Makefile
+@@ -125,6 +125,7 @@ obj-$(CONFIG_RTC_DRV_RV3029C2)	+= rtc-rv3029c2.o
+ obj-$(CONFIG_RTC_DRV_RX4581)	+= rtc-rx4581.o
+ obj-$(CONFIG_RTC_DRV_RX8025)	+= rtc-rx8025.o
+ obj-$(CONFIG_RTC_DRV_RX8581)	+= rtc-rx8581.o
++obj-$(CONFIG_RTC_DRV_RX8010)	+= rtc-rx8010.o
+ obj-$(CONFIG_RTC_DRV_S35390A)	+= rtc-s35390a.o
+ obj-$(CONFIG_RTC_DRV_S3C)	+= rtc-s3c.o
+ obj-$(CONFIG_RTC_DRV_S5M)	+= rtc-s5m.o
+diff --git a/kernel/drivers/rtc/rtc-rx8010.c b/kernel/drivers/rtc/rtc-rx8010.c
+new file mode 100644
+index 0000000..c14e5f9
+--- /dev/null
++++ b/kernel/drivers/rtc/rtc-rx8010.c
+@@ -0,0 +1,785 @@
++//======================================================================
++// Driver for the Epson RTC module RX-8010 SJ
++//
++// Copyright(C) SEIKO EPSON CORPORATION 2013. All rights reserved.
++//
++// Derived from RX-8025 driver:
++// Copyright (C) 2009 Wolfgang Grandegger <wg@grandegger.com>
++//
++// Copyright (C) 2005 by Digi International Inc.
++// All rights reserved.
++//
++// Modified by fengjh at rising.com.cn
++// <http://lists.lm-sensors.org/mailman/listinfo/lm-sensors>
++// 2006.11
++//
++// Code cleanup by Sergei Poselenov, <sposelenov@emcraft.com>
++// Converted to new style by Wolfgang Grandegger <wg@grandegger.com>
++// Alarm and periodic interrupt added by Dmitry Rakhchev <rda@emcraft.com>
++//
++//
++// This driver software is distributed as is, without any warranty of any kind,
++// either express or implied as further specified in the GNU Public License. This
++// software may be used and distributed according to the terms of the GNU Public
++// License, version 2 as published by the Free Software Foundation.
++// See the file COPYING in the main directory of this archive for more details.
++//
++// You should have received a copy of the GNU General Public License along with
++// this program. If not, see <http://www.gnu.org/licenses/>.
++//======================================================================
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/init.h>
++#include <linux/bcd.h>
++#include <linux/i2c.h>
++#include <linux/list.h>
++#include <linux/rtc.h>
++
++// RX-8010 Register definitions
++#define RX8010_REG_SEC		0x10
++#define RX8010_REG_MIN		0x11
++#define RX8010_REG_HOUR		0x12
++#define RX8010_REG_WDAY		0x13
++#define RX8010_REG_MDAY		0x14
++#define RX8010_REG_MONTH	0x15
++#define RX8010_REG_YEAR		0x16
++// 0x17 is reserved
++#define RX8010_REG_ALMIN	0x18
++#define RX8010_REG_ALHOUR	0x19
++#define RX8010_REG_ALWDAY	0x1A
++#define RX8010_REG_TCOUNT0	0x1B
++#define RX8010_REG_TCOUNT1	0x1C
++#define RX8010_REG_EXT		0x1D
++#define RX8010_REG_FLAG		0x1E
++#define RX8010_REG_CTRL		0x1F
++#define RX8010_REG_USER0	0x20
++#define RX8010_REG_USER1	0x21
++#define RX8010_REG_USER2	0x22
++#define RX8010_REG_USER3	0x23
++#define RX8010_REG_USER4	0x24
++#define RX8010_REG_USER5	0x25
++#define RX8010_REG_USER6	0x26
++#define RX8010_REG_USER7	0x27
++#define RX8010_REG_USER8	0x28
++#define RX8010_REG_USER9	0x29
++#define RX8010_REG_USERA	0x2A
++#define RX8010_REG_USERB	0x2B
++#define RX8010_REG_USERC	0x2C
++#define RX8010_REG_USERD	0x2D
++#define RX8010_REG_USERE	0x2E
++#define RX8010_REG_USERF	0x2F
++// 0x30 is reserved
++// 0x31 is reserved
++#define RX8010_REG_IRQ		0x32
++
++// Extension Register (1Dh) bit positions
++#define RX8010_BIT_EXT_TSEL		(7 << 0)
++#define RX8010_BIT_EXT_WADA		(1 << 3)
++#define RX8010_BIT_EXT_TE		(1 << 4)
++#define RX8010_BIT_EXT_USEL		(1 << 5)
++#define RX8010_BIT_EXT_FSEL		(3 << 6)
++
++// Flag Register (1Eh) bit positions
++#define RX8010_BIT_FLAG_VLF		(1 << 1)
++#define RX8010_BIT_FLAG_AF		(1 << 3)
++#define RX8010_BIT_FLAG_TF		(1 << 4)
++#define RX8010_BIT_FLAG_UF		(1 << 5)
++
++// Control Register (1Fh) bit positions
++#define RX8010_BIT_CTRL_TSTP	(1 << 2)
++#define RX8010_BIT_CTRL_AIE		(1 << 3)
++#define RX8010_BIT_CTRL_TIE		(1 << 4)
++#define RX8010_BIT_CTRL_UIE		(1 << 5)
++#define RX8010_BIT_CTRL_STOP	(1 << 6)
++#define RX8010_BIT_CTRL_TEST	(1 << 7)
++
++
++static const struct i2c_device_id rx8010_id[] = {
++	{ "rx8010", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, rx8010_id);
++
++struct rx8010_data {
++	struct i2c_client *client;
++	struct rtc_device *rtc;
++	struct work_struct work;
++	u8 ctrlreg;
++	unsigned exiting:1;
++};
++
++
++//----------------------------------------------------------------------
++// rx8010_read_reg()
++// reads a rx8010 register (see Register defines)
++// See also rx8010_read_regs() to read multiple registers.
++//
++//----------------------------------------------------------------------
++static int rx8010_read_reg(struct i2c_client *client, int number, u8 *value)
++{
++	int ret = i2c_smbus_read_byte_data(client, number) ;
++
++	//check for error
++	if (ret < 0) {
++		dev_err(&client->dev, "Unable to read register #%d\n", number);
++		return ret;
++	}
++
++	*value = ret;
++	return 0;
++}
++
++//----------------------------------------------------------------------
++// rx8010_read_regs()
++// reads a specified number of rx8010 registers (see Register defines)
++// See also rx8010_read_reg() to read single register.
++//
++//----------------------------------------------------------------------
++static int rx8010_read_regs(struct i2c_client *client, int number, u8 length, u8 *values)
++{
++	int ret = i2c_smbus_read_i2c_block_data(client, number, length, values);
++
++	//check for length error
++	if (ret != length) {
++		dev_err(&client->dev, "Unable to read registers #%d..#%d\n", number, number + length - 1);
++		return ret < 0 ? ret : -EIO;
++	}
++
++	return 0;
++}
++
++//----------------------------------------------------------------------
++// rx8010_write_reg()
++// writes a rx8010 register (see Register defines)
++// See also rx8010_write_regs() to write multiple registers.
++//
++//----------------------------------------------------------------------
++static int rx8010_write_reg(struct i2c_client *client, int number, u8 value)
++{
++	int ret = i2c_smbus_write_byte_data(client, number, value);
++
++	//check for error
++	if (ret)
++		dev_err(&client->dev, "Unable to write register #%d\n", number);
++
++	return ret;
++}
++
++//----------------------------------------------------------------------
++// rx8010_write_regs()
++// writes a specified number of rx8010 registers (see Register defines)
++// See also rx8010_write_reg() to write a single register.
++//
++//----------------------------------------------------------------------
++static int rx8010_write_regs(struct i2c_client *client, int number, u8 length, u8 *values)
++{
++	int ret = i2c_smbus_write_i2c_block_data(client, number, length, values);
++
++	//check for error
++	if (ret)
++		dev_err(&client->dev, "Unable to write registers #%d..#%d\n", number, number + length - 1);
++
++	return ret;
++}
++
++//----------------------------------------------------------------------
++// rx8010_irq()
++// irq handler
++//
++//----------------------------------------------------------------------
++static irqreturn_t rx8010_irq(int irq, void *dev_id)
++{
++	struct i2c_client *client = dev_id;
++	struct rx8010_data *rx8010 = i2c_get_clientdata(client);
++
++	disable_irq_nosync(irq);
++	schedule_work(&rx8010->work);
++	return IRQ_HANDLED;
++}
++
++//----------------------------------------------------------------------
++// rx8010_work()
++//
++//----------------------------------------------------------------------
++static void rx8010_work(struct work_struct *work)
++{
++	struct rx8010_data *rx8010 = container_of(work, struct rx8010_data, work);
++	struct i2c_client *client = rx8010->client;
++	struct mutex *lock = &rx8010->rtc->ops_lock;
++	u8 status;
++
++	mutex_lock(lock);
++
++	if (rx8010_read_reg(client, RX8010_REG_FLAG, &status))
++		goto out;
++
++	// check VLF
++	if ((status & RX8010_BIT_FLAG_VLF))
++		dev_warn(&client->dev, "Oscillation stop was detected,"
++			 "you may have to readjust the clock\n");
++
++	// periodic "fixed-cycle" timer
++	if (status & RX8010_BIT_FLAG_TF) {
++		status &= ~RX8010_BIT_FLAG_TF;
++		local_irq_disable();
++		rtc_update_irq(rx8010->rtc, 1, RTC_PF | RTC_IRQF);
++		local_irq_enable();
++	}
++
++	// alarm function
++	if (status & RX8010_BIT_FLAG_AF) {
++		status &= ~RX8010_BIT_FLAG_AF;
++		local_irq_disable();
++		rtc_update_irq(rx8010->rtc, 1, RTC_AF | RTC_IRQF);
++		local_irq_enable();
++	}
++
++	// time update function
++	if (status & RX8010_BIT_FLAG_UF) {
++		status &= ~RX8010_BIT_FLAG_UF;
++		local_irq_disable();
++		rtc_update_irq(rx8010->rtc, 1, RTC_UF | RTC_IRQF);
++		local_irq_enable();
++	}
++
++	// acknowledge IRQ
++	rx8010_write_reg(client, RX8010_REG_FLAG, status);		//clear flags
++
++out:
++	if (!rx8010->exiting)
++		enable_irq(client->irq);
++
++	mutex_unlock(lock);
++}
++
++//----------------------------------------------------------------------
++// rx8010_get_time()
++// gets the current time from the rx8010 registers
++//
++//----------------------------------------------------------------------
++static int rx8010_get_time(struct device *dev, struct rtc_time *dt)
++{
++	struct rx8010_data *rx8010 = dev_get_drvdata(dev);
++	u8 date[7];
++	int err;
++
++	err = rx8010_read_regs(rx8010->client, RX8010_REG_SEC, 7, date);
++	if (err)
++		return err;
++
++	dev_dbg(dev, "%s: read 0x%02x 0x%02x "
++		"0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n", __func__,
++		date[0], date[1], date[2], date[3], date[4], date[5], date[6]);
++
++	//Note: need to subtract 0x10 for index as register offset starts at 0x10
++	dt->tm_sec = bcd2bin(date[RX8010_REG_SEC-0x10] & 0x7f);
++	dt->tm_min = bcd2bin(date[RX8010_REG_MIN-0x10] & 0x7f);
++	dt->tm_hour = bcd2bin(date[RX8010_REG_HOUR-0x10] & 0x3f);	//only 24-hour clock
++	dt->tm_mday = bcd2bin(date[RX8010_REG_MDAY-0x10] & 0x3f);
++	dt->tm_mon = bcd2bin(date[RX8010_REG_MONTH-0x10] & 0x1f) - 1;
++	dt->tm_year = bcd2bin(date[RX8010_REG_YEAR-0x10]);
++	dt->tm_wday = bcd2bin(date[RX8010_REG_WDAY-0x10] & 0x7f);
++
++	if (dt->tm_year < 70)
++		dt->tm_year += 100;
++
++	dev_dbg(dev, "%s: date %ds %dm %dh %dmd %dm %dy\n", __func__,
++		dt->tm_sec, dt->tm_min, dt->tm_hour,
++		dt->tm_mday, dt->tm_mon, dt->tm_year);
++
++	return rtc_valid_tm(dt);
++}
++
++//----------------------------------------------------------------------
++// rx8010_set_time()
++// Sets the current time in the rx8010 registers
++//
++// BUG: The HW assumes every year that is a multiple of 4 to be a leap
++// year. Next time this is wrong is 2100, which will not be a leap year
++//
++// Note: If STOP is not set/cleared, the clock will start when the seconds
++//       register is written
++//
++//----------------------------------------------------------------------
++static int rx8010_set_time(struct device *dev, struct rtc_time *dt)
++{
++	struct rx8010_data *rx8010 = dev_get_drvdata(dev);
++	u8 date[7];
++	u8 ctrl;
++	int ret;
++
++	//set STOP bit before changing clock/calendar
++	rx8010_read_reg(rx8010->client, RX8010_REG_CTRL, &ctrl);
++	rx8010->ctrlreg = ctrl | RX8010_BIT_CTRL_STOP;
++	rx8010_write_reg(rx8010->client, RX8010_REG_CTRL, rx8010->ctrlreg);
++
++	//Note: need to subtract 0x10 for index as register offset starts at 0x10
++	date[RX8010_REG_SEC-0x10] = bin2bcd(dt->tm_sec);
++	date[RX8010_REG_MIN-0x10] = bin2bcd(dt->tm_min);
++	date[RX8010_REG_HOUR-0x10] = bin2bcd(dt->tm_hour);		//only 24hr time
++
++	date[RX8010_REG_MDAY-0x10] = bin2bcd(dt->tm_mday);
++	date[RX8010_REG_MONTH-0x10] = bin2bcd(dt->tm_mon + 1);
++	date[RX8010_REG_YEAR-0x10] = bin2bcd(dt->tm_year % 100);
++	date[RX8010_REG_WDAY-0x10] = bin2bcd(dt->tm_wday);
++
++	dev_dbg(dev, "%s: write 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n",
++		__func__, date[0], date[1], date[2], date[3], date[4], date[5], date[6]);
++
++	ret =  rx8010_write_regs(rx8010->client, RX8010_REG_SEC, 7, date);
++
++	//clear STOP bit after changing clock/calendar
++	rx8010_read_reg(rx8010->client, RX8010_REG_CTRL, &ctrl);
++	rx8010->ctrlreg = ctrl & ~RX8010_BIT_CTRL_STOP;
++	rx8010_write_reg(rx8010->client, RX8010_REG_CTRL, rx8010->ctrlreg);
++
++	return ret;
++}
++
++//----------------------------------------------------------------------
++// rx8010_init_client()
++// initializes the rx8010
++//
++//----------------------------------------------------------------------
++static int rx8010_init_client(struct i2c_client *client, int *need_reset)
++{
++	struct rx8010_data *rx8010 = i2c_get_clientdata(client);
++	u8 ctrl[3];
++	int need_clear = 0;
++	int err;
++
++	//set reserved register 0x17 with specified value of 0xD8
++	err = rx8010_write_reg(client, 0x17, 0xD8);
++	if (err)
++		goto out;
++
++	//set reserved register 0x30 with specified value of 0x00
++	err = rx8010_write_reg(client, 0x30, 0x00);
++	if (err)
++		goto out;
++
++	//set reserved register 0x31 with specified value of 0x08
++	err = rx8010_write_reg(client, 0x30, 0x08);
++	if (err)
++		goto out;
++
++	//get current extension, flag, control register values
++	err = rx8010_read_regs(rx8010->client, RX8010_REG_EXT, 3, ctrl);
++	if (err)
++		goto out;
++
++	//set extension register, TE to 0, FSEL1-0 and TSEL2-0 for desired frequency
++	ctrl[0] &= ~RX8010_BIT_EXT_TE;			//set TE to 0
++	ctrl[0] &= ~RX8010_BIT_EXT_FSEL;		//set to 0 (off) for this case
++	ctrl[0] |= 0x02;						//set TSEL for 1Hz 
++	err = rx8010_write_reg(client, RX8010_REG_EXT, ctrl[0]);
++	if (err)
++		goto out;
++
++	//set "test bit" and reserved bits of control register zero
++	rx8010->ctrlreg = (ctrl[2] & ~RX8010_BIT_CTRL_TEST) & 0xFC;		//bits 1-0 are reseved
++
++	//check for VLF Flag (set at power-on)
++	if ((ctrl[1] & RX8010_BIT_FLAG_VLF)) {
++		dev_warn(&client->dev, "VLF Flag set,"
++			 "you may have to re-adjust the clock\n");
++		*need_reset = 1;
++	}
++
++	//check for Alarm Flag
++	if (ctrl[1] & RX8010_BIT_FLAG_AF) {
++		dev_warn(&client->dev, "Alarm was detected\n");
++		need_clear = 1;
++	}
++
++	//check for Periodic Timer Flag
++	if (ctrl[1] & RX8010_BIT_FLAG_TF) {
++		dev_warn(&client->dev, "Periodic timer was detected\n");
++		need_clear = 1;
++	}
++
++	//check for Update Timer Flag
++	if (ctrl[1] & RX8010_BIT_FLAG_UF) {
++		dev_warn(&client->dev, "Update timer was detected\n");
++		need_clear = 1;
++	}
++
++	//reset or clear needed?
++	if (*need_reset || need_clear) {
++		//clear flag register
++		err = rx8010_write_reg(client, RX8010_REG_FLAG, 0x00);
++		if (err)
++			goto out;
++
++		//clear ctrl register
++		err = rx8010_write_reg(client, RX8010_REG_CTRL, 0x00);
++		if (err)
++			goto out;
++	}
++out:
++	return err;
++}
++
++//----------------------------------------------------------------------
++// rx8010_read_alarm()
++// reads current Alarm
++//
++// Notes: - currently filters the AE bits (bit 7)
++//        - assumes WADA setting is week (week/day)
++//----------------------------------------------------------------------
++static int rx8010_read_alarm(struct device *dev, struct rtc_wkalrm *t)
++{
++	struct rx8010_data *rx8010 = dev_get_drvdata(dev);
++	struct i2c_client *client = rx8010->client;
++	u8 alarmvals[3];		//minute, hour, week/day values
++	u8 ctrl[3];				//extension, flag, control values
++	int err;
++
++	if (client->irq <= 0)
++		return -EINVAL;
++
++	//get current minute, hour, week/day alarm values
++	err = rx8010_read_regs(client, RX8010_REG_ALMIN, 3, alarmvals);
++	if (err)
++		return err;
++	dev_dbg(dev, "%s: minutes:0x%02x hours:0x%02x week/day:0x%02x\n",
++		__func__, alarmvals[0], alarmvals[1], alarmvals[2]);
++
++
++	//get current extension, flag, control register values
++	err = rx8010_read_regs(client, RX8010_REG_EXT, 3, ctrl);
++	if (err)
++		return err;
++	dev_dbg(dev, "%s: extension:0x%02x flag:0x%02x control:0x%02x \n",
++		__func__, ctrl[0], ctrl[1], ctrl[2]);
++
++	// Hardware alarm precision is 1 minute
++	t->time.tm_sec = 0;
++	t->time.tm_min = bcd2bin(alarmvals[0] & 0x7f);		//0x7f filters AE bit currently
++	t->time.tm_hour = bcd2bin(alarmvals[1] & 0x3f);		//0x3f filters AE bit currently, also 24hr only
++
++	t->time.tm_wday = -1;
++	t->time.tm_mday = -1;
++	t->time.tm_mon = -1;
++	t->time.tm_year = -1;
++
++	dev_dbg(dev, "%s: date: %ds %dm %dh %dmd %dm %dy\n",
++		__func__,
++		t->time.tm_sec, t->time.tm_min, t->time.tm_hour,
++		t->time.tm_mday, t->time.tm_mon, t->time.tm_year);
++
++	t->enabled = !!(rx8010->ctrlreg & RX8010_BIT_CTRL_AIE);		//check if interrupt is enabled
++	t->pending = (ctrl[1] & RX8010_BIT_FLAG_AF) && t->enabled;	//check if flag is triggered
++
++	return err;
++}
++
++//----------------------------------------------------------------------
++// rx8010_set_alarm()
++// sets Alarm
++//
++// Notes: - currently filters the AE bits (bit 7)
++//        - assumes WADA setting is week (week/day)
++//----------------------------------------------------------------------
++static int rx8010_set_alarm(struct device *dev, struct rtc_wkalrm *t)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct rx8010_data *rx8010 = dev_get_drvdata(dev);
++	u8 alarmvals[3];		//minute, hour, day
++	u8 extreg;				//extension register
++	u8 flagreg;				//flag register
++	int err;
++
++	if (client->irq <= 0)
++		return -EINVAL;
++
++	//get current extension register
++	err = rx8010_read_reg(client, RX8010_REG_EXT, &extreg);
++	if (err <0)
++		return err;
++
++	//get current flag register
++	err = rx8010_read_reg(client, RX8010_REG_FLAG, &flagreg);
++	if (err <0)
++		return err;
++
++	// Hardware alarm precision is 1 minute
++	alarmvals[0] = bin2bcd(t->time.tm_min);
++	alarmvals[1] = bin2bcd(t->time.tm_hour);
++	alarmvals[2] = bin2bcd(t->time.tm_mday);
++	dev_dbg(dev, "%s: write 0x%02x 0x%02x 0x%02x\n", __func__, alarmvals[0], alarmvals[1], alarmvals[2]);
++
++	//check interrupt enable and disable
++	if (rx8010->ctrlreg & RX8010_BIT_CTRL_AIE) {
++		rx8010->ctrlreg &= ~RX8010_BIT_CTRL_AIE;
++		err = rx8010_write_reg(rx8010->client, RX8010_REG_CTRL, rx8010->ctrlreg);
++		if (err)
++			return err;
++	}
++
++	//write the new minute and hour values
++	//Note:assume minute and hour values will be enabled. Bit 7 of each of the
++	//     minute, hour, week/day register can be set which will "disable" the
++	//     register from triggering an alarm. See the RX8010 spec for more information
++	err = rx8010_write_regs(rx8010->client, RX8010_REG_ALMIN, 2, alarmvals);
++	if (err)
++		return err;
++
++	//set Week/Day bit
++	// Week setting is typically not used, so we will assume "day" setting
++	extreg |= RX8010_BIT_EXT_WADA;		//set to "day of month"
++	err = rx8010_write_reg(rx8010->client, RX8010_REG_EXT, extreg);
++	if (err)
++		return err;
++
++	//set Day of Month register
++	if (alarmvals[2] == 0) {
++		alarmvals[2] |= 0x80;	//turn on AE bit to ignore day of month (no zero day)
++		err = rx8010_write_reg(rx8010->client, RX8010_REG_ALWDAY, alarmvals[2]);
++	}
++	else {
++		err = rx8010_write_reg(rx8010->client, RX8010_REG_ALWDAY, alarmvals[2]);
++	}
++	if (err)
++		return err;
++
++	//clear Alarm Flag
++	flagreg &= ~RX8010_BIT_FLAG_AF;
++	err = rx8010_write_reg(rx8010->client, RX8010_REG_FLAG, flagreg);
++	if (err)
++		return err;
++
++	//re-enable interrupt if required
++	if (t->enabled) {
++		rx8010->ctrlreg |= RX8010_BIT_CTRL_AIE;		//set alarm interrupt enable
++		err = rx8010_write_reg(rx8010->client, RX8010_REG_CTRL, rx8010->ctrlreg);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
++//----------------------------------------------------------------------
++// rx8010_alarm_irq_enable()
++// sets enables Alarm IRQ
++//
++// Todo: -
++//
++//----------------------------------------------------------------------
++static int rx8010_alarm_irq_enable(struct device *dev, unsigned int enabled)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct rx8010_data *rx8010 = dev_get_drvdata(dev);
++	u8 flagreg;
++	u8 ctrl;
++	int err;
++
++	//get the current ctrl settings
++	ctrl = rx8010->ctrlreg;
++
++	if (enabled)
++		ctrl |= RX8010_BIT_CTRL_AIE;		//set the AIE
++	else
++		ctrl &= ~RX8010_BIT_CTRL_AIE;		//clear the AIE
++
++	//clear alarm flag
++	err = rx8010_read_reg(client, RX8010_REG_FLAG, &flagreg);
++	if (err <0)
++		return err;
++	flagreg &= ~RX8010_BIT_FLAG_AF;
++	err = rx8010_write_reg(rx8010->client, RX8010_REG_FLAG, flagreg);
++	if (err)
++		return err;
++
++	//update the Control register if the setting changed
++	if (ctrl != rx8010->ctrlreg) {
++		rx8010->ctrlreg = ctrl;
++		err = rx8010_write_reg(rx8010->client, RX8010_REG_CTRL, rx8010->ctrlreg);
++		if (err)
++			return err;
++	}
++	return 0;
++}
++
++//----------------------------------------------------------------------
++// rx8010_ioctl()
++// ioctl routine for the rx8010 driver
++// example of how ioctls would be implemented
++//
++// Note: this routine is included as an example and should be removed if
++//       not implemented
++//----------------------------------------------------------------------
++static int rx8010_ioctl(struct device *dev, unsigned int cmd, unsigned long arg)
++{
++	struct rx8010_data *rx8010 = dev_get_drvdata(dev);
++
++	u8 ctrl[3];		//store Extension, Flag, Control regs
++	int err = 0;
++
++	//get current extension, flag, control register values
++	err = rx8010_read_regs(rx8010->client, RX8010_REG_EXT, 3, ctrl);
++	if (err)
++		return err;
++
++	//do some stuff to the registers based on the cmd
++	switch (cmd) {
++	case 0:
++		//i.e. change setting;
++		break;
++	case 1:
++		//i.e. clear flag
++		break;
++	default:
++		err = -ENOIOCTLCMD;
++	}
++
++	//write back the modified registers
++	err = rx8010_write_regs(rx8010->client, RX8010_REG_EXT, 3, ctrl);
++	if (err)
++		return err;
++
++	return err;
++}
++
++static struct rtc_class_ops rx8010_rtc_ops = {
++	.read_time = rx8010_get_time,
++	.set_time = rx8010_set_time,
++	.read_alarm = rx8010_read_alarm,
++	.set_alarm = rx8010_set_alarm,
++	.alarm_irq_enable = rx8010_alarm_irq_enable,
++	.ioctl			= rx8010_ioctl,					//remove if ioctls are not implemented
++};
++
++
++//----------------------------------------------------------------------
++// rx8010_probe()
++// probe routine for the rx8010 driver
++//
++// Todo: - maybe change kzalloc to use devm_kzalloc
++//       -
++//----------------------------------------------------------------------
++static int rx8010_probe(struct i2c_client *client, const struct i2c_device_id *id)
++{
++	struct i2c_adapter *adapter = to_i2c_adapter(client->dev.parent);
++	struct rx8010_data *rx8010;
++	int err, need_reset = 0;
++
++	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_SMBUS_I2C_BLOCK)) {
++		dev_err(&adapter->dev, "doesn't support required functionality\n");
++		err = -EIO;
++		goto errout;
++	}
++
++	rx8010 = kzalloc(sizeof(*rx8010), GFP_KERNEL);
++	if (!rx8010) {
++		dev_err(&adapter->dev, "failed to alloc memory\n");
++		err = -ENOMEM;
++		goto errout;
++	}
++
++	rx8010->client = client;
++	i2c_set_clientdata(client, rx8010);
++	INIT_WORK(&rx8010->work, rx8010_work);
++
++	err = rx8010_init_client(client, &need_reset);
++	if (err)
++		goto errout_free;
++
++	if (need_reset) {
++		struct rtc_time tm;
++		dev_info(&client->dev, "bad conditions detected, resetting date\n");
++		rtc_time_to_tm(0, &tm);		// set to 1970/1/1
++		rx8010_set_time(&client->dev, &tm);
++	}
++
++	rx8010->rtc = rtc_device_register(client->name, &client->dev, &rx8010_rtc_ops, THIS_MODULE);
++	if (IS_ERR(rx8010->rtc)) {
++		err = PTR_ERR(rx8010->rtc);
++		dev_err(&client->dev, "unable to register the class device\n");
++		goto errout_free;
++	}
++
++	if (client->irq > 0) {
++		dev_info(&client->dev, "IRQ %d supplied\n", client->irq);
++		err = request_irq(client->irq, rx8010_irq, 0, "rx8010", client);
++		if (err) {
++			dev_err(&client->dev, "unable to request IRQ\n");
++			goto errout_reg;
++		}
++	}
++
++	rx8010->rtc->irq_freq = 1;
++	rx8010->rtc->max_user_freq = 1;
++
++	return 0;
++
++//	if (client->irq > 0)
++//		free_irq(client->irq, client);
++
++errout_reg:
++	rtc_device_unregister(rx8010->rtc);
++
++errout_free:
++	kfree(rx8010);
++
++errout:
++	dev_err(&adapter->dev, "probing for rx8010 failed\n");
++	return err;
++}
++
++
++
++//----------------------------------------------------------------------
++// rx8010_remove()
++// remove routine for the rx8010 driver
++//
++// Todo: - maybe change kzalloc to devm_kzalloc
++//       -
++//----------------------------------------------------------------------
++static int rx8010_remove(struct i2c_client *client)
++{
++	struct rx8010_data *rx8010 = i2c_get_clientdata(client);
++	struct mutex *lock = &rx8010->rtc->ops_lock;
++
++	if (client->irq > 0) {
++		mutex_lock(lock);
++		rx8010->exiting = 1;
++		mutex_unlock(lock);
++
++		free_irq(client->irq, client);
++		cancel_work_sync(&rx8010->work);
++	}
++
++	rtc_device_unregister(rx8010->rtc);
++	kfree(rx8010);
++	return 0;
++}
++
++static struct i2c_driver rx8010_driver = {
++	.driver = {
++		.name = "rtc-rx8010",
++		.owner = THIS_MODULE,
++	},
++	.probe		= rx8010_probe,
++	.remove		= rx8010_remove,
++	.id_table	= rx8010_id,
++};
++
++static int __init rx8010_init(void)
++{
++	return i2c_add_driver(&rx8010_driver);
++}
++
++static void __exit rx8010_exit(void)
++{
++	i2c_del_driver(&rx8010_driver);
++}
++
++module_init(rx8010_init);
++module_exit(rx8010_exit);
++
++MODULE_AUTHOR("Dennis Henderson <henderson.dennis@erd.epson.com>");
++MODULE_DESCRIPTION("RX-8010 SJ RTC driver");
++MODULE_LICENSE("GPL");
+diff --git a/kernel/run.sh b/kernel/run.sh
+new file mode 100755
+index 0000000..ec78541
+--- /dev/null
++++ b/kernel/run.sh
+@@ -0,0 +1,25 @@
++#!/bin/bash
++
++LOCAL_PATH=`pwd`
++ARCH=arm
++CROSS_COMPILE=$LOCAL_PATH/../fsl/bin/arm-fsl-linux-gnueabi-
++JOBS=$1
++
++if [ $1 == "distclean" ]; then
++	make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE distclean
++	exit;
++fi
++
++if [ $1 == "clean" ]; then
++	make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE clean
++	exit;
++fi
++
++if [ $1 == "menuconfig" ]; then
++	make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE $1
++	exit;
++fi
++
++make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE imx_v7_defconfig
++make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE $1
++
+diff --git a/kernel/tools/build/Makefile.build b/kernel/tools/build/Makefile.build
+index 98cfc38..d9be50a 100644
+--- a/kernel/tools/build/Makefile.build
++++ b/kernel/tools/build/Makefile.build
+@@ -25,7 +25,7 @@ build-dir := $(srctree)/tools/build
+ include $(build-dir)/Build.include
+ 
+ # do not force detected configuration
+--include .config-detected
++-include $(OUTPUT)/config-detected
+ 
+ # Init all relevant variables used in build files so
+ # 1) they have correct type
+diff --git a/kernel/tools/build/Makefile.feature b/kernel/tools/build/Makefile.feature
+index 3a0b0ca..25eb747 100644
+--- a/kernel/tools/build/Makefile.feature
++++ b/kernel/tools/build/Makefile.feature
+@@ -7,7 +7,7 @@ endif
+ 
+ feature_check = $(eval $(feature_check_code))
+ define feature_check_code
+-  feature-$(1) := $(shell $(MAKE) OUTPUT=$(OUTPUT_FEATURES) CFLAGS="$(EXTRA_CFLAGS) $(FEATURE_CHECK_CFLAGS-$(1))" LDFLAGS="$(LDFLAGS) $(FEATURE_CHECK_LDFLAGS-$(1))" -C $(feature_dir) test-$1.bin >/dev/null 2>/dev/null && echo 1 || echo 0)
++  feature-$(1) := $(shell $(MAKE) OUTPUT=$(OUTPUT_FEATURES) CC="$(CC)" CFLAGS="$(EXTRA_CFLAGS) $(FEATURE_CHECK_CFLAGS-$(1))" LDFLAGS="$(LDFLAGS) $(FEATURE_CHECK_LDFLAGS-$(1))" -C $(feature_dir) test-$1.bin >/dev/null 2>/dev/null && echo 1 || echo 0)
+ endef
+ 
+ feature_set = $(eval $(feature_set_code))
+@@ -95,7 +95,7 @@ ifeq ($(feature-all), 1)
+   #
+   $(foreach feat,$(FEATURE_TESTS),$(call feature_set,$(feat)))
+ else
+-  $(shell $(MAKE) OUTPUT=$(OUTPUT_FEATURES) CFLAGS="$(EXTRA_CFLAGS)" LDFLAGS=$(LDFLAGS) -i -j -C $(feature_dir) $(addsuffix .bin,$(FEATURE_TESTS)) >/dev/null 2>&1)
++  $(shell $(MAKE) OUTPUT=$(OUTPUT_FEATURES) CC="$(CC)" CFLAGS="$(EXTRA_CFLAGS)" LDFLAGS=$(LDFLAGS) -i -j -C $(feature_dir) $(addsuffix .bin,$(FEATURE_TESTS)) >/dev/null 2>&1)
+   $(foreach feat,$(FEATURE_TESTS),$(call feature_check,$(feat)))
+ endif
+ 
+diff --git a/kernel/tools/lib/api/Makefile b/kernel/tools/lib/api/Makefile
+index 8bd9606..ab38137 100644
+--- a/kernel/tools/lib/api/Makefile
++++ b/kernel/tools/lib/api/Makefile
+@@ -8,8 +8,8 @@ srctree := $(patsubst %/,%,$(dir $(srctree)))
+ #$(info Determined 'srctree' to be $(srctree))
+ endif
+ 
+-CC = $(CROSS_COMPILE)gcc
+-AR = $(CROSS_COMPILE)ar
++#CC
++#AR
+ 
+ MAKEFLAGS += --no-print-directory
+ 
+diff --git a/kernel/tools/perf/Makefile.perf b/kernel/tools/perf/Makefile.perf
+index c43a205..21df8db 100644
+--- a/kernel/tools/perf/Makefile.perf
++++ b/kernel/tools/perf/Makefile.perf
+@@ -107,9 +107,9 @@ $(OUTPUT)PERF-VERSION-FILE: ../../.git/HEAD
+ 	$(Q)$(SHELL_PATH) util/PERF-VERSION-GEN $(OUTPUT)
+ 	$(Q)touch $(OUTPUT)PERF-VERSION-FILE
+ 
+-CC = $(CROSS_COMPILE)gcc
++#CC
+ LD = $(CROSS_COMPILE)ld
+-AR = $(CROSS_COMPILE)ar
++#AR
+ PKG_CONFIG = $(CROSS_COMPILE)pkg-config
+ 
+ RM      = rm -f
+@@ -509,7 +509,7 @@ endif
+ install: install-bin try-install-man install-traceevent-plugins
+ 
+ install-python_ext:
+-	$(PYTHON_WORD) util/setup.py --quiet install --root='/$(DESTDIR_SQ)'
++	$(PYTHON_WORD) util/setup.py --quiet install --prefix='$(DESTDIR_SQ)/usr' --install-lib='$(DESTDIR)$(PYTHON_SITEPACKAGES_DIR)'
+ 
+ # 'make install-doc' should call 'make -C Documentation install'
+ $(INSTALL_DOC_TARGETS):
+@@ -528,7 +528,7 @@ config-clean:
+ clean: $(LIBTRACEEVENT)-clean $(LIBAPI)-clean config-clean
+ 	$(call QUIET_CLEAN, core-objs)  $(RM) $(LIB_FILE) $(OUTPUT)perf-archive $(OUTPUT)perf-with-kcore $(LANG_BINDINGS)
+ 	$(Q)find . -name '*.o' -delete -o -name '\.*.cmd' -delete -o -name '\.*.d' -delete
+-	$(Q)$(RM) .config-detected
++	$(Q)$(RM) $(OUTPUT)/config-detected
+ 	$(call QUIET_CLEAN, core-progs) $(RM) $(ALL_PROGRAMS) perf perf-read-vdso32 perf-read-vdsox32
+ 	$(call QUIET_CLEAN, core-gen)   $(RM)  *.spec *.pyc *.pyo */*.pyc */*.pyo $(OUTPUT)common-cmds.h TAGS tags cscope* $(OUTPUT)PERF-VERSION-FILE $(OUTPUT)FEATURE-DUMP $(OUTPUT)util/*-bison* $(OUTPUT)util/*-flex*
+ 	$(QUIET_SUBDIR0)Documentation $(QUIET_SUBDIR1) clean
+diff --git a/kernel/tools/perf/arch/arm/tests/dwarf-unwind.c b/kernel/tools/perf/arch/arm/tests/dwarf-unwind.c
+index 62eff84..360abda 100644
+--- a/kernel/tools/perf/arch/arm/tests/dwarf-unwind.c
++++ b/kernel/tools/perf/arch/arm/tests/dwarf-unwind.c
+@@ -5,6 +5,7 @@
+ #include "event.h"
+ #include "debug.h"
+ #include "tests/tests.h"
++#include "util/debug.h"
+ 
+ #define STACK_SIZE 8192
+ 
+diff --git a/kernel/tools/perf/arch/arm/util/unwind-libunwind.c b/kernel/tools/perf/arch/arm/util/unwind-libunwind.c
+index 62c397e..8e48bef 100644
+--- a/kernel/tools/perf/arch/arm/util/unwind-libunwind.c
++++ b/kernel/tools/perf/arch/arm/util/unwind-libunwind.c
+@@ -2,6 +2,7 @@
+ #include <errno.h>
+ #include <libunwind.h>
+ #include "perf_regs.h"
++#include "util/debug.h"
+ #include "../../util/unwind.h"
+ #include "../../util/debug.h"
+ 
+diff --git a/kernel/tools/perf/config/Makefile b/kernel/tools/perf/config/Makefile
+index 59a98c6..2981df1 100644
+--- a/kernel/tools/perf/config/Makefile
++++ b/kernel/tools/perf/config/Makefile
+@@ -11,9 +11,9 @@ ifneq ($(obj-perf),)
+ obj-perf := $(abspath $(obj-perf))/
+ endif
+ 
+-$(shell echo -n > .config-detected)
+-detected     = $(shell echo "$(1)=y"       >> .config-detected)
+-detected_var = $(shell echo "$(1)=$($(1))" >> .config-detected)
++$(shell echo -n > $(OUTPUT)/config-detected)
++detected     = $(shell echo "$(1)=y"       >> $(OUTPUT)/config-detected)
++detected_var = $(shell echo "$(1)=$($(1))" >> $(OUTPUT)/config-detected)
+ 
+ CFLAGS := $(EXTRA_CFLAGS) $(EXTRA_WARNINGS)
+ 
+@@ -630,7 +630,7 @@ bindir_relative = bin
+ bindir = $(prefix)/$(bindir_relative)
+ mandir = share/man
+ infodir = share/info
+-perfexecdir = libexec/perf-core
++perfexecdir ?= libexec/perf-core
+ sharedir = $(prefix)/share
+ template_dir = share/perf-core/templates
+ htmldir = share/doc/perf-doc
+@@ -648,7 +648,7 @@ else
+ lib = lib
+ endif
+ endif # lib
+-libdir = $(prefix)/$(lib)
++libdir ?= $(prefix)/$(lib)
+ 
+ # Shell quote (do not use $(call) to accommodate ancient setups);
+ ETC_PERFCONFIG_SQ = $(subst ','\'',$(ETC_PERFCONFIG))
+diff --git a/u-boot/arch/arm/Kconfig b/u-boot/arch/arm/Kconfig
+index ad986f1..25ed8dd 100644
+--- a/u-boot/arch/arm/Kconfig
++++ b/u-boot/arch/arm/Kconfig
+@@ -523,6 +523,10 @@ config TARGET_MX6SABRESD
+ 	select CPU_V7
+ 	select SUPPORT_SPL
+ 
++config TARGET_MX6SMARC
++	bool "Support mx6smarc"
++	select CPU_V7
++
+ config TARGET_MX6SLEVK
+ 	bool "Support mx6slevk"
+ 	select CPU_V7
+@@ -871,6 +875,7 @@ source "board/freescale/mx53smd/Kconfig"
+ source "board/freescale/mx6qarm2/Kconfig"
+ source "board/freescale/mx6qsabreauto/Kconfig"
+ source "board/freescale/mx6sabresd/Kconfig"
++source "board/freescale/mx6smarc/Kconfig"
+ source "board/freescale/mx6slevk/Kconfig"
+ source "board/freescale/mx6sxsabresd/Kconfig"
+ source "board/freescale/mx6sxsabreauto/Kconfig"
+diff --git a/u-boot/board/freescale/mx6smarc/Kconfig b/u-boot/board/freescale/mx6smarc/Kconfig
+new file mode 100644
+index 0000000..7a3dce1
+--- /dev/null
++++ b/u-boot/board/freescale/mx6smarc/Kconfig
+@@ -0,0 +1,15 @@
++if TARGET_MX6SMARC
++
++config SYS_BOARD
++	default "mx6smarc"
++
++config SYS_VENDOR
++	default "freescale"
++
++config SYS_SOC
++	default "mx6"
++
++config SYS_CONFIG_NAME
++	default "mx6smarc"
++
++endif
+diff --git a/u-boot/board/freescale/mx6smarc/Makefile b/u-boot/board/freescale/mx6smarc/Makefile
+new file mode 100644
+index 0000000..8671037
+--- /dev/null
++++ b/u-boot/board/freescale/mx6smarc/Makefile
+@@ -0,0 +1,13 @@
++#
++# Copyright (C) 2007, Guennadi Liakhovetski <lg@denx.de>
++#
++# (C) Copyright 2011 Freescale Semiconductor, Inc.
++#
++# SPDX-License-Identifier:	GPL-2.0+
++#
++
++obj-y  := mx6smarc.o
++
++extra-$(CONFIG_USE_PLUGIN) :=  plugin.bin
++$(obj)/plugin.bin: $(obj)/plugin.o
++	$(OBJCOPY) -O binary --gap-fill 0xff $< $@
+diff --git a/u-boot/board/freescale/mx6smarc/mx6dl_micron_1g.cfg b/u-boot/board/freescale/mx6smarc/mx6dl_micron_1g.cfg
+new file mode 100644
+index 0000000..8533d70
+--- /dev/null
++++ b/u-boot/board/freescale/mx6smarc/mx6dl_micron_1g.cfg
+@@ -0,0 +1,142 @@
++/*
++ * Copyright (C) 2014-2015 Freescale Semiconductor, Inc.
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ *
++ * Refer docs/README.imxmage for more details about how-to configure
++ * and create imximage boot image
++ *
++ * The syntax is taken as close as possible with the kwbimage
++ */
++
++#define __ASSEMBLY__
++#include <config.h>
++/* image version */
++
++IMAGE_VERSION 2
++
++/*
++ * Boot Device : one of
++ * spi, sd (the board has no nand neither onenand)
++ */
++
++BOOT_FROM	sd
++#ifdef CONFIG_USE_PLUGIN
++/*PLUGIN    plugin-binary-file    IRAM_FREE_START_ADDR*/
++PLUGIN  board/freescale/mx6smarc/plugin.bin 0x00907000
++#else
++
++#ifdef CONFIG_SECURE_BOOT
++CSF CONFIG_CSF_SIZE
++#endif
++
++/*
++ * Device Configuration Data (DCD)
++ *
++ * Each entry must have the format:
++ * Addr-type           Address        Value
++ *
++ * where:
++ *	Addr-type register length (1,2 or 4 bytes)
++ *	Address	  absolute address of the register
++ *	value	  value to be stored in the register
++ */
++DATA 4	0x020e0774 0x000C0000
++DATA 4	0x020e0754 0x00000000
++DATA 4	0x020e04ac 0x00000030
++DATA 4	0x020e04b0 0x00000030
++DATA 4	0x020e0464 0x00000030
++DATA 4	0x020e0490 0x00000030
++DATA 4	0x020e074c 0x00000030
++DATA 4	0x020e0494 0x00000030
++DATA 4	0x020e04a0 0x00000000
++DATA 4	0x020e04b4 0x00000030
++DATA 4	0x020e04b8 0x00000030
++DATA 4	0x020e076c 0x00000030
++DATA 4	0x020e0750 0x00020000
++DATA 4	0x020e04bc 0x00000030
++DATA 4	0x020e04c0 0x00000030
++DATA 4	0x020e04c4 0x00000030
++DATA 4	0x020e04c8 0x00000030
++DATA 4	0x020e04cc 0x00000030
++DATA 4	0x020e04d0 0x00000030
++DATA 4	0x020e04d4 0x00000030
++DATA 4	0x020e04d8 0x00000030
++DATA 4	0x020e0760 0x00020000
++DATA 4	0x020e0764 0x00000030
++DATA 4	0x020e0770 0x00000030
++DATA 4	0x020e0778 0x00000030
++DATA 4	0x020e077c 0x00000030
++DATA 4	0x020e0780 0x00000030
++DATA 4	0x020e0784 0x00000030
++DATA 4	0x020e078c 0x00000030
++DATA 4	0x020e0748 0x00000030
++DATA 4	0x020e0470 0x00000030
++DATA 4	0x020e0474 0x00000030
++DATA 4	0x020e0478 0x00000030
++DATA 4	0x020e047c 0x00000030
++DATA 4	0x020e0480 0x00000030
++DATA 4	0x020e0484 0x00000030
++DATA 4	0x020e0488 0x00000030
++DATA 4	0x020e048c 0x00000030
++DATA 4	0x021b0800 0xa1390003
++DATA 4	0x021b080c 0x001F001F
++DATA 4	0x021b0810 0x001F001F
++DATA 4	0x021b480c 0x001F001F
++DATA 4	0x021b4810 0x001F001F
++DATA 4	0x021b083c 0x42480248
++DATA 4	0x021b0840 0x0211020B
++DATA 4	0x021b483c 0x417F0211
++DATA 4	0x021b4840 0x015D0166
++DATA 4	0x021b0848 0x4B4C504D
++DATA 4	0x021b4848 0x494C4F48
++DATA 4	0x021b0850 0x3F3F2E31
++DATA 4	0x021b4850 0x2B35382B
++DATA 4	0x021b081c 0x33333333
++DATA 4	0x021b0820 0x33333333
++DATA 4	0x021b0824 0x33333333
++DATA 4	0x021b0828 0x33333333
++DATA 4	0x021b481c 0x33333333
++DATA 4	0x021b4820 0x33333333
++DATA 4	0x021b4824 0x33333333
++DATA 4	0x021b4828 0x33333333
++DATA 4	0x021b08b8 0x00000800
++DATA 4	0x021b48b8 0x00000800
++DATA 4	0x021b0004 0x0002002D
++DATA 4	0x021b0008 0x00333030
++DATA 4	0x021b000c 0x3F435313
++DATA 4	0x021b0010 0xB66E8B63
++DATA 4	0x021b0014 0x01FF00DB
++DATA 4	0x021b0018 0x00001740
++DATA 4	0x021b001c 0x00008000
++DATA 4	0x021b002c 0x000026d2
++DATA 4	0x021b0030 0x00431023
++DATA 4	0x021b0040 0x00000027
++DATA 4	0x021b0000 0x831A0000
++DATA 4	0x021b001c 0x04008032
++DATA 4	0x021b001c 0x00008033
++DATA 4	0x021b001c 0x00048031
++DATA 4	0x021b001c 0x05208030
++DATA 4 0x021b001c 0x04008040
++DATA 4	0x021b0020 0x00005800
++DATA 4	0x021b0818 0x00011117
++DATA 4	0x021b4818 0x00011117
++DATA 4	0x021b0004 0x0002556D
++DATA 4	0x021b0404 0x00011006
++DATA 4	0x021b001c 0x00000000
++
++/* set the default clock gate to save power */
++DATA 4 0x020c4068 0x00C03F3F
++DATA 4 0x020c406c 0x0030FC03
++DATA 4 0x020c4070 0x0FFFC000
++DATA 4 0x020c4074 0x3FF00000
++DATA 4 0x020c4078 0x00FFF300
++DATA 4 0x020c407c 0x0F0000C3
++DATA 4 0x020c4080 0x000003FF
++
++/* enable AXI cache for VDOA/VPU/IPU */
++DATA 4 0x020e0010 0xF00000CF
++/* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
++DATA 4 0x020e0018 0x007F007F
++DATA 4 0x020e001c 0x007F007F
++#endif
+diff --git a/u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg b/u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg
+new file mode 100644
+index 0000000..c253d22
+--- /dev/null
++++ b/u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg
+@@ -0,0 +1,158 @@
++/*
++ * Copyright (C) 2011-2014 Freescale Semiconductor, Inc.
++ * Jason Liu <r64343@freescale.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ *
++ * Refer doc/README.imximage for more details about how-to configure
++ * and create imximage boot image
++ *
++ * The syntax is taken as close as possible with the kwbimage
++ */
++
++#define __ASSEMBLY__
++#include <config.h>
++/* image version */
++IMAGE_VERSION 2
++
++/*
++ * Boot Device : one of spi, sd, sata
++ * the board has no nand and eimnor
++ * spinor: flash_offset: 0x0400
++ * sata:   flash_offset: 0x0400
++ * sd/mmc: flash_offset: 0x0400
++ */
++
++/* the same flash_offset as sd */
++BOOT_FROM      sd
++
++#ifdef CONFIG_USE_PLUGIN
++/*PLUGIN    plugin-binary-file    IRAM_FREE_START_ADDR*/
++PLUGIN	board/freescale/mx6smarc/plugin.bin 0x00907000
++#else
++
++#ifdef CONFIG_SECURE_BOOT
++CSF CONFIG_CSF_SIZE
++#endif
++
++/*
++ * Device Configuration Data (DCD)
++ *
++ * Each entry must have the format:
++ * Addr-type           Address        Value
++ *
++ * where:
++ *      Addr-type register length (1,2 or 4 bytes)
++ *      Address   absolute address of the register
++ *      value     value to be stored in the register
++ */
++DATA 4, 0x020e0798, 0x000C0000
++DATA 4, 0x020e0758, 0x00000000
++DATA 4, 0x020e0588, 0x00000030
++DATA 4, 0x020e0594, 0x00000030
++DATA 4, 0x020e056c, 0x00000030
++DATA 4, 0x020e0578, 0x00000030
++DATA 4, 0x020e074c, 0x00000030
++DATA 4, 0x020e057c, 0x00000030
++DATA 4, 0x020e058c, 0x00000000
++DATA 4, 0x020e059c, 0x00000030
++DATA 4, 0x020e05a0, 0x00000030
++DATA 4, 0x020e078c, 0x00000030
++DATA 4, 0x020e0750, 0x00020000
++DATA 4, 0x020e05a8, 0x00000030
++DATA 4, 0x020e05b0, 0x00000030
++DATA 4, 0x020e0524, 0x00000030
++DATA 4, 0x020e051c, 0x00000030
++DATA 4, 0x020e0518, 0x00000030
++DATA 4, 0x020e050c, 0x00000030
++DATA 4, 0x020e05b8, 0x00000030
++DATA 4, 0x020e05c0, 0x00000030
++DATA 4, 0x020e0774, 0x00020000
++DATA 4, 0x020e0784, 0x00000030
++DATA 4, 0x020e0788, 0x00000030
++DATA 4, 0x020e0794, 0x00000030
++DATA 4, 0x020e079c, 0x00000030
++DATA 4, 0x020e07a0, 0x00000030
++DATA 4, 0x020e07a4, 0x00000030
++DATA 4, 0x020e07a8, 0x00000030
++DATA 4, 0x020e0748, 0x00000030
++DATA 4, 0x020e05ac, 0x00000030
++DATA 4, 0x020e05b4, 0x00000030
++DATA 4, 0x020e0528, 0x00000030
++DATA 4, 0x020e0520, 0x00000030
++DATA 4, 0x020e0514, 0x00000030
++DATA 4, 0x020e0510, 0x00000030
++DATA 4, 0x020e05bc, 0x00000030
++DATA 4, 0x020e05c4, 0x00000030
++DATA 4, 0x021b0800, 0xa1390003
++DATA 4, 0x021b080c, 0x001F001F
++DATA 4, 0x021b0810, 0x001F001F
++DATA 4, 0x021b480c, 0x001F001F
++DATA 4, 0x021b4810, 0x001F001F
++DATA 4, 0x021b083c, 0x43270338
++DATA 4, 0x021b0840, 0x03200314
++DATA 4, 0x021b483c, 0x431A032F
++DATA 4, 0x021b4840, 0x03200263
++DATA 4, 0x021b0848, 0x4B434748
++DATA 4, 0x021b4848, 0x4445404C
++DATA 4, 0x021b0850, 0x38444542
++DATA 4, 0x021b4850, 0x4935493A
++DATA 4, 0x021b081c, 0x33333333
++DATA 4, 0x021b0820, 0x33333333
++DATA 4, 0x021b0824, 0x33333333
++DATA 4, 0x021b0828, 0x33333333
++DATA 4, 0x021b481c, 0x33333333
++DATA 4, 0x021b4820, 0x33333333
++DATA 4, 0x021b4824, 0x33333333
++DATA 4, 0x021b4828, 0x33333333
++DATA 4, 0x021b08b8, 0x00000800
++DATA 4, 0x021b48b8, 0x00000800
++DATA 4, 0x021b0004, 0x00020036
++DATA 4, 0x021b0008, 0x09444040
++DATA 4, 0x021b000c, 0x555A7975
++DATA 4, 0x021b0010, 0xFF538F64
++DATA 4, 0x021b0014, 0x01FF00DB
++DATA 4, 0x021b0018, 0x00001740
++DATA 4, 0x021b001c, 0x00008000
++DATA 4, 0x021b002c, 0x000026d2
++DATA 4, 0x021b0030, 0x005A1023
++DATA 4, 0x021b0040, 0x00000027
++DATA 4, 0x021b0000, 0x831A0000
++DATA 4, 0x021b001c, 0x04088032
++DATA 4, 0x021b001c, 0x00008033
++DATA 4, 0x021b001c, 0x00048031
++DATA 4, 0x021b001c, 0x09408030
++DATA 4, 0x021b001c, 0x04008040
++DATA 4, 0x021b0020, 0x00005800
++DATA 4, 0x021b0818, 0x00011117
++DATA 4, 0x021b4818, 0x00011117
++DATA 4, 0x021b0004, 0x00025576
++DATA 4, 0x021b0404, 0x00011006
++DATA 4, 0x021b001c, 0x00000000
++
++/* set the default clock gate to save power */
++DATA 4, 0x020c4068, 0x00C03F3F
++DATA 4, 0x020c406c, 0x0030FC03
++DATA 4, 0x020c4070, 0x0FFFC000
++DATA 4, 0x020c4074, 0x3FF00000
++DATA 4, 0x020c4078, 0x00FFF300
++DATA 4, 0x020c407c, 0x0F0000F3
++DATA 4, 0x020c4080, 0x000003FF
++
++/* enable AXI cache for VDOA/VPU/IPU */
++DATA 4, 0x020e0010, 0xF00000CF
++/* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
++DATA 4, 0x020e0018, 0x007F007F
++DATA 4, 0x020e001c, 0x007F007F
++
++/*
++ * Setup CCM_CCOSR register as follows:
++ *
++ * cko1_en  = 1	   --> CKO1 enabled
++ * cko1_div = 111  --> divide by 8
++ * cko1_sel = 1011 --> ahb_clk_root
++ *
++ * This sets CKO1 at ahb_clk_root/8 = 132/8 = 16.5 MHz
++ */
++DATA 4, 0x020c4060, 0x000000fb
++#endif
+diff --git a/u-boot/board/freescale/mx6smarc/mx6smarc.c b/u-boot/board/freescale/mx6smarc/mx6smarc.c
+new file mode 100644
+index 0000000..7ce6e74
+--- /dev/null
++++ b/u-boot/board/freescale/mx6smarc/mx6smarc.c
+@@ -0,0 +1,1488 @@
++/*
++ * Copyright (C) 2012-2015 Freescale Semiconductor, Inc.
++ *
++ * Author: Fabio Estevam <fabio.estevam@freescale.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#include <asm/arch/clock.h>
++#include <asm/arch/imx-regs.h>
++#include <asm/arch/iomux.h>
++#include <asm/arch/mx6-pins.h>
++#include <asm/errno.h>
++#include <asm/gpio.h>
++#include <asm/imx-common/mxc_i2c.h>
++#include <asm/imx-common/iomux-v3.h>
++#include <asm/imx-common/boot_mode.h>
++#include <asm/imx-common/video.h>
++#include <mmc.h>
++#include <fsl_esdhc.h>
++#include <miiphy.h>
++#include <netdev.h>
++
++#if defined(CONFIG_MX6DL) && defined(CONFIG_MXC_EPDC)
++#include <lcd.h>
++#include <mxc_epdc_fb.h>
++#endif
++#include <asm/arch/mxc_hdmi.h>
++#include <asm/arch/crm_regs.h>
++#include <asm/io.h>
++#include <asm/arch/sys_proto.h>
++#include <i2c.h>
++#include <ipu_pixfmt.h>
++#include <linux/fb.h>
++#include <power/pmic.h>
++#include <power/pfuze100_pmic.h>
++#include "../common/pfuze.h"
++#include <asm/arch/mx6-ddr.h>
++#include <usb.h>
++
++#if defined(CONFIG_MX6DL) && defined(CONFIG_MXC_EPDC)
++#include <lcd.h>
++#include <mxc_epdc_fb.h>
++#endif
++#ifdef CONFIG_CMD_SATA
++#include <asm/imx-common/sata.h>
++#endif
++#ifdef CONFIG_FSL_FASTBOOT
++#include <fsl_fastboot.h>
++#ifdef CONFIG_ANDROID_RECOVERY
++#include <recovery.h>
++#endif
++#endif /*CONFIG_FSL_FASTBOOT*/
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#define UART_PAD_CTRL  (PAD_CTL_PUS_100K_UP |			\
++    PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm |			\
++    PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
++
++#define USDHC_PAD_CTRL (PAD_CTL_PUS_47K_UP |			\
++    PAD_CTL_SPEED_LOW | PAD_CTL_DSE_80ohm |			\
++    PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
++
++#define ENET_PAD_CTRL  (PAD_CTL_PUS_100K_UP |			\
++    PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS)
++
++#define SPI_PAD_CTRL (PAD_CTL_HYS | PAD_CTL_SPEED_MED | \
++              PAD_CTL_DSE_40ohm | PAD_CTL_SRE_FAST)
++
++#define I2C_PAD_CTRL  (PAD_CTL_PUS_100K_UP |			\
++    PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS |	\
++    PAD_CTL_ODE | PAD_CTL_SRE_FAST)
++
++#define EPDC_PAD_CTRL    (PAD_CTL_PKE | PAD_CTL_SPEED_MED |	\
++    PAD_CTL_DSE_40ohm | PAD_CTL_HYS)
++
++#define OTG_ID_PAD_CTRL (PAD_CTL_PKE | PAD_CTL_PUE |		\
++    PAD_CTL_PUS_47K_UP  | PAD_CTL_SPEED_LOW |		\
++    PAD_CTL_DSE_80ohm   | PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
++
++
++#define I2C_PMIC_0	0
++#define I2C_PMIC	1
++
++#define I2C_PAD MUX_PAD_CTRL(I2C_PAD_CTRL)
++
++#define DISP0_PWR_EN	IMX_GPIO_NR(1, 21)
++#define EPDC_PAD_CTRL    (PAD_CTL_PKE | PAD_CTL_SPEED_MED |	\
++    PAD_CTL_DSE_40ohm | PAD_CTL_HYS)
++
++int dram_init(void)
++{
++    gd->ram_size = imx_ddr_size();
++    return 0;
++}
++
++static iomux_v3_cfg_t const uart1_pads[] = {
++    MX6_PAD_CSI0_DAT10__UART1_TX_DATA | MUX_PAD_CTRL(UART_PAD_CTRL),
++    MX6_PAD_CSI0_DAT11__UART1_RX_DATA | MUX_PAD_CTRL(UART_PAD_CTRL),
++};
++
++static iomux_v3_cfg_t const enet_pads[] = {
++    MX6_PAD_ENET_MDIO__ENET_MDIO		| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_ENET_MDC__ENET_MDC		| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_TXC__RGMII_TXC	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_TD0__RGMII_TD0	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_TD1__RGMII_TD1	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_TD2__RGMII_TD2	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_TD3__RGMII_TD3	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_TX_CTL__RGMII_TX_CTL	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_ENET_REF_CLK__ENET_TX_CLK	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_RXC__RGMII_RXC	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_RD0__RGMII_RD0	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_RD1__RGMII_RD1	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_RD2__RGMII_RD2	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_RD3__RGMII_RD3	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    MX6_PAD_RGMII_RX_CTL__RGMII_RX_CTL	| MUX_PAD_CTRL(ENET_PAD_CTRL),
++    /* AR8031 PHY Reset */
++    MX6_PAD_ENET_CRS_DV__GPIO1_IO25		| MUX_PAD_CTRL(NO_PAD_CTRL),
++};
++
++static void setup_iomux_enet(void)
++{
++    imx_iomux_v3_setup_multiple_pads(enet_pads, ARRAY_SIZE(enet_pads));
++
++    /* Reset AR8031 PHY */
++    gpio_direction_output(IMX_GPIO_NR(1, 25) , 0);
++    udelay(500);
++    gpio_set_value(IMX_GPIO_NR(1, 25), 1);
++}
++
++static iomux_v3_cfg_t const usdhc2_pads[] = {
++    MX6_PAD_SD2_CLK__SD2_CLK	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD2_CMD__SD2_CMD	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD2_DAT0__SD2_DATA0	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD2_DAT1__SD2_DATA1	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD2_DAT2__SD2_DATA2	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD2_DAT3__SD2_DATA3	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
++
++    MX6_PAD_EIM_DA14__GPIO3_IO14	| MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
++    MX6_PAD_EIM_DA13__GPIO3_IO13	| MUX_PAD_CTRL(NO_PAD_CTRL), /* WP */
++};
++
++static iomux_v3_cfg_t const usdhc3_pads[] = {
++    MX6_PAD_SD3_CLK__SD3_CLK   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD3_CMD__SD3_CMD   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD3_DAT0__SD3_DATA0 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD3_DAT1__SD3_DATA1 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD3_DAT2__SD3_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD3_DAT3__SD3_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD3_DAT4__SD3_DATA4 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD3_DAT5__SD3_DATA5 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD3_DAT6__SD3_DATA6 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD3_DAT7__SD3_DATA7 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_NANDF_D0__GPIO2_IO00    | MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
++};
++
++static iomux_v3_cfg_t const usdhc4_pads[] = {
++    MX6_PAD_SD4_CLK__SD4_CLK   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD4_CMD__SD4_CMD   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD4_DAT0__SD4_DATA0 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD4_DAT1__SD4_DATA1 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD4_DAT2__SD4_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD4_DAT3__SD4_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD4_DAT4__SD4_DATA4 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD4_DAT5__SD4_DATA5 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD4_DAT6__SD4_DATA6 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++    MX6_PAD_SD4_DAT7__SD4_DATA7 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++};
++
++#ifdef CONFIG_MXC_SPI
++static iomux_v3_cfg_t const ecspi1_pads[] = {
++    MX6_PAD_KEY_COL0__ECSPI1_SCLK | MUX_PAD_CTRL(SPI_PAD_CTRL),
++    MX6_PAD_KEY_COL1__ECSPI1_MISO | MUX_PAD_CTRL(SPI_PAD_CTRL),
++    MX6_PAD_KEY_ROW0__ECSPI1_MOSI | MUX_PAD_CTRL(SPI_PAD_CTRL),
++    MX6_PAD_KEY_ROW1__GPIO4_IO09 | MUX_PAD_CTRL(NO_PAD_CTRL),
++};
++
++static void setup_spi(void)
++{
++    imx_iomux_v3_setup_multiple_pads(ecspi1_pads, ARRAY_SIZE(ecspi1_pads));
++}
++
++int board_spi_cs_gpio(unsigned bus, unsigned cs)
++{
++    return (bus == 0 && cs == 0) ? (IMX_GPIO_NR(4, 9)) : -1;
++}
++#endif
++
++static iomux_v3_cfg_t const rgb_pads[] = {
++    MX6_PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DI0_PIN15__IPU1_DI0_PIN15 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DI0_PIN2__IPU1_DI0_PIN02 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DI0_PIN3__IPU1_DI0_PIN03 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DI0_PIN4__IPU1_DI0_PIN04 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT0__IPU1_DISP0_DATA00 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT1__IPU1_DISP0_DATA01 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT2__IPU1_DISP0_DATA02 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT3__IPU1_DISP0_DATA03 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT4__IPU1_DISP0_DATA04 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT5__IPU1_DISP0_DATA05 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT6__IPU1_DISP0_DATA06 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT7__IPU1_DISP0_DATA07 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT8__IPU1_DISP0_DATA08 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT9__IPU1_DISP0_DATA09 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT10__IPU1_DISP0_DATA10 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT11__IPU1_DISP0_DATA11 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT12__IPU1_DISP0_DATA12 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT13__IPU1_DISP0_DATA13 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT14__IPU1_DISP0_DATA14 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT15__IPU1_DISP0_DATA15 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT16__IPU1_DISP0_DATA16 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT17__IPU1_DISP0_DATA17 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT18__IPU1_DISP0_DATA18 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT19__IPU1_DISP0_DATA19 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT20__IPU1_DISP0_DATA20 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT21__IPU1_DISP0_DATA21 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT22__IPU1_DISP0_DATA22 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_DISP0_DAT23__IPU1_DISP0_DATA23 | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_SD1_DAT3__GPIO1_IO21 | MUX_PAD_CTRL(NO_PAD_CTRL),
++};
++
++static void enable_rgb(struct display_info_t const *dev)
++{
++    imx_iomux_v3_setup_multiple_pads(rgb_pads, ARRAY_SIZE(rgb_pads));
++    gpio_direction_output(DISP0_PWR_EN, 1);
++}
++
++static struct i2c_pads_info i2c_pad_info0 = {
++    .scl = {
++        .i2c_mode = MX6_PAD_CSI0_DAT9__I2C1_SCL | I2C_PAD,
++        .gpio_mode = MX6_PAD_CSI0_DAT9__GPIO5_IO27 | I2C_PAD,
++        .gp = IMX_GPIO_NR(5, 27)
++    },
++    .sda = {
++        .i2c_mode = MX6_PAD_CSI0_DAT8__I2C1_SDA | I2C_PAD,
++        .gpio_mode = MX6_PAD_CSI0_DAT8__GPIO5_IO26 | I2C_PAD,
++        .gp = IMX_GPIO_NR(5, 26)
++    }
++};
++
++static struct i2c_pads_info i2c_pad_info1 = {
++    .scl = {
++        .i2c_mode = MX6_PAD_KEY_COL3__I2C2_SCL | I2C_PAD,
++        .gpio_mode = MX6_PAD_KEY_COL3__GPIO4_IO12 | I2C_PAD,
++        .gp = IMX_GPIO_NR(4, 12)
++    },
++    .sda = {
++        .i2c_mode = MX6_PAD_KEY_ROW3__I2C2_SDA | I2C_PAD,
++        .gpio_mode = MX6_PAD_KEY_ROW3__GPIO4_IO13 | I2C_PAD,
++        .gp = IMX_GPIO_NR(4, 13)
++    }
++};
++
++iomux_v3_cfg_t const pcie_pads[] = {
++    MX6_PAD_EIM_D19__GPIO3_IO19 | MUX_PAD_CTRL(NO_PAD_CTRL),	/* POWER */
++    MX6_PAD_GPIO_17__GPIO7_IO12 | MUX_PAD_CTRL(NO_PAD_CTRL),	/* RESET */
++};
++
++static void setup_pcie(void)
++{
++    imx_iomux_v3_setup_multiple_pads(pcie_pads, ARRAY_SIZE(pcie_pads));
++}
++
++iomux_v3_cfg_t const di0_pads[] = {
++    MX6_PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK,	/* DISP0_CLK */
++    MX6_PAD_DI0_PIN2__IPU1_DI0_PIN02,		/* DISP0_HSYNC */
++    MX6_PAD_DI0_PIN3__IPU1_DI0_PIN03,		/* DISP0_VSYNC */
++};
++
++#if defined(CONFIG_MX6DL) && defined(CONFIG_MXC_EPDC)
++static iomux_v3_cfg_t const epdc_enable_pads[] = {
++    MX6_PAD_EIM_A16__EPDC_DATA00	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_DA10__EPDC_DATA01	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_DA12__EPDC_DATA02	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_DA11__EPDC_DATA03	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_LBA__EPDC_DATA04	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_EB2__EPDC_DATA05	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_CS0__EPDC_DATA06	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_RW__EPDC_DATA07	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_A21__EPDC_GDCLK	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_A22__EPDC_GDSP	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_A23__EPDC_GDOE	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_A24__EPDC_GDRL	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_D31__EPDC_SDCLK_P	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_D27__EPDC_SDOE	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_DA1__EPDC_SDLE	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_EB1__EPDC_SDSHR	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_DA2__EPDC_BDR0	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_DA4__EPDC_SDCE0	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_DA5__EPDC_SDCE1	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++    MX6_PAD_EIM_DA6__EPDC_SDCE2	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
++};
++
++static iomux_v3_cfg_t const epdc_disable_pads[] = {
++    MX6_PAD_EIM_A16__GPIO2_IO22,
++    MX6_PAD_EIM_DA10__GPIO3_IO10,
++    MX6_PAD_EIM_DA12__GPIO3_IO12,
++    MX6_PAD_EIM_DA11__GPIO3_IO11,
++    MX6_PAD_EIM_LBA__GPIO2_IO27,
++    MX6_PAD_EIM_EB2__GPIO2_IO30,
++    MX6_PAD_EIM_CS0__GPIO2_IO23,
++    MX6_PAD_EIM_RW__GPIO2_IO26,
++    MX6_PAD_EIM_A21__GPIO2_IO17,
++    MX6_PAD_EIM_A22__GPIO2_IO16,
++    MX6_PAD_EIM_A23__GPIO6_IO06,
++    MX6_PAD_EIM_A24__GPIO5_IO04,
++    MX6_PAD_EIM_D31__GPIO3_IO31,
++    MX6_PAD_EIM_D27__GPIO3_IO27,
++    MX6_PAD_EIM_DA1__GPIO3_IO01,
++    MX6_PAD_EIM_EB1__GPIO2_IO29,
++    MX6_PAD_EIM_DA2__GPIO3_IO02,
++    MX6_PAD_EIM_DA4__GPIO3_IO04,
++    MX6_PAD_EIM_DA5__GPIO3_IO05,
++    MX6_PAD_EIM_DA6__GPIO3_IO06,
++};
++#endif
++
++static void setup_iomux_uart(void)
++{
++    imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
++}
++
++#ifdef CONFIG_FSL_ESDHC
++struct fsl_esdhc_cfg usdhc_cfg[3] = {
++    {USDHC2_BASE_ADDR},
++    {USDHC3_BASE_ADDR},
++    {USDHC4_BASE_ADDR},
++};
++
++int mmc_get_env_devno(void)
++{
++    u32 soc_sbmr = readl(SRC_BASE_ADDR + 0x4);
++    u32 dev_no;
++    u32 bootsel;
++
++    bootsel = (soc_sbmr & 0x000000FF) >> 6 ;
++
++    /* If not boot from sd/mmc, use default value */
++    if (bootsel != 1)
++        return CONFIG_SYS_MMC_ENV_DEV;
++
++    /* BOOT_CFG2[3] and BOOT_CFG2[4] */
++    dev_no = (soc_sbmr & 0x00001800) >> 11;
++
++    /* need ubstract 1 to map to the mmc device id
++     * see the comments in board_mmc_init function
++     */
++
++    dev_no--;
++
++    return dev_no;
++}
++
++int mmc_map_to_kernel_blk(int dev_no)
++{
++    return dev_no + 1;
++}
++
++#define USDHC2_CD_GPIO	IMX_GPIO_NR(3, 14)
++#define	USDHC3_CD_GPIO	IMX_GPIO_NR(2, 0)
++
++int board_mmc_getcd(struct mmc *mmc)
++{
++    struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
++    int ret = 0;
++
++    switch (cfg->esdhc_base) {
++    case USDHC2_BASE_ADDR:
++        ret = !gpio_get_value(USDHC2_CD_GPIO);
++        break;
++    case USDHC3_BASE_ADDR:
++        ret = !gpio_get_value(USDHC3_CD_GPIO);
++        break;
++    case USDHC4_BASE_ADDR:
++        ret = 1; /* eMMC/uSDHC4 is always present */
++        break;
++    }
++
++    return ret;
++}
++
++int board_mmc_init(bd_t *bis)
++{
++#ifndef CONFIG_SPL_BUILD
++    int ret;
++    int i;
++
++    /*
++     * According to the board_mmc_init() the following map is done:
++     * (U-boot device node)    (Physical Port)
++     * mmc0                    SD2
++     * mmc1                    SD3
++     * mmc2                    eMMC
++     */
++    for (i = 0; i < CONFIG_SYS_FSL_USDHC_NUM; i++) {
++        switch (i) {
++        case 0:
++            imx_iomux_v3_setup_multiple_pads(
++                usdhc2_pads, ARRAY_SIZE(usdhc2_pads));
++            gpio_direction_input(USDHC2_CD_GPIO);
++            usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC2_CLK);
++            break;
++        case 1:
++            imx_iomux_v3_setup_multiple_pads(
++                usdhc3_pads, ARRAY_SIZE(usdhc3_pads));
++            gpio_direction_input(USDHC3_CD_GPIO);
++            usdhc_cfg[1].sdhc_clk = mxc_get_clock(MXC_ESDHC3_CLK);
++            break;
++        case 2:
++            imx_iomux_v3_setup_multiple_pads(
++                usdhc4_pads, ARRAY_SIZE(usdhc4_pads));
++            usdhc_cfg[2].sdhc_clk = mxc_get_clock(MXC_ESDHC4_CLK);
++            break;
++        default:
++            printf("Warning: you configured more USDHC controllers"
++                   "(%d) then supported by the board (%d)\n",
++                   i + 1, CONFIG_SYS_FSL_USDHC_NUM);
++            return -EINVAL;
++        }
++
++        ret = fsl_esdhc_initialize(bis, &usdhc_cfg[i]);
++        if (ret)
++            return ret;
++    }
++
++    return 0;
++#else
++    struct src *psrc = (struct src *)SRC_BASE_ADDR;
++    unsigned reg = readl(&psrc->sbmr1) >> 11;
++    /*
++     * Upon reading BOOT_CFG register the following map is done:
++     * Bit 11 and 12 of BOOT_CFG register can determine the current
++     * mmc port
++     * 0x1                  SD1
++     * 0x2                  SD2
++     * 0x3                  SD4
++     */
++
++    switch (reg & 0x3) {
++    case 0x1:
++        imx_iomux_v3_setup_multiple_pads(
++            usdhc2_pads, ARRAY_SIZE(usdhc2_pads));
++        usdhc_cfg[0].esdhc_base = USDHC2_BASE_ADDR;
++        usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC2_CLK);
++        gd->arch.sdhc_clk = usdhc_cfg[0].sdhc_clk;
++        break;
++    case 0x2:
++        imx_iomux_v3_setup_multiple_pads(
++            usdhc3_pads, ARRAY_SIZE(usdhc3_pads));
++        usdhc_cfg[0].esdhc_base = USDHC3_BASE_ADDR;
++        usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC3_CLK);
++        gd->arch.sdhc_clk = usdhc_cfg[0].sdhc_clk;
++        break;
++    case 0x3:
++        imx_iomux_v3_setup_multiple_pads(
++            usdhc4_pads, ARRAY_SIZE(usdhc4_pads));
++        usdhc_cfg[0].esdhc_base = USDHC4_BASE_ADDR;
++        usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC4_CLK);
++        gd->arch.sdhc_clk = usdhc_cfg[0].sdhc_clk;
++        break;
++    }
++
++    return fsl_esdhc_initialize(bis, &usdhc_cfg[0]);
++#endif
++}
++#endif
++
++int check_mmc_autodetect(void)
++{
++    char *autodetect_str = getenv("mmcautodetect");
++
++    if ((autodetect_str != NULL) &&
++        (strcmp(autodetect_str, "yes") == 0)) {
++        return 1;
++    }
++
++    return 0;
++}
++
++void board_late_mmc_env_init(void)
++{
++    char cmd[32];
++    char mmcblk[32];
++    u32 dev_no = mmc_get_env_devno();
++
++    if (!check_mmc_autodetect())
++        return;
++
++    setenv_ulong("mmcdev", dev_no);
++
++    /* Set mmcblk env */
++    sprintf(mmcblk, "/dev/mmcblk%dp2 rootwait rw",
++        mmc_map_to_kernel_blk(dev_no));
++    setenv("mmcroot", mmcblk);
++
++    sprintf(cmd, "mmc dev %d", dev_no);
++    run_command(cmd, 0);
++}
++
++#if defined(CONFIG_MX6DL) && defined(CONFIG_MXC_EPDC)
++vidinfo_t panel_info = {
++    .vl_refresh = 85,
++    .vl_col = 800,
++    .vl_row = 600,
++    .vl_pixclock = 26666667,
++    .vl_left_margin = 8,
++    .vl_right_margin = 100,
++    .vl_upper_margin = 4,
++    .vl_lower_margin = 8,
++    .vl_hsync = 4,
++    .vl_vsync = 1,
++    .vl_sync = 0,
++    .vl_mode = 0,
++    .vl_flag = 0,
++    .vl_bpix = 3,
++    .cmap = 0,
++};
++
++struct epdc_timing_params panel_timings = {
++    .vscan_holdoff = 4,
++    .sdoed_width = 10,
++    .sdoed_delay = 20,
++    .sdoez_width = 10,
++    .sdoez_delay = 20,
++    .gdclk_hp_offs = 419,
++    .gdsp_offs = 20,
++    .gdoe_offs = 0,
++    .gdclk_offs = 5,
++    .num_ce = 1,
++};
++
++static void setup_epdc_power(void)
++{
++    /* Setup epdc voltage */
++
++    /* EIM_A17 - GPIO2[21] for PWR_GOOD status */
++    imx_iomux_v3_setup_pad(MX6_PAD_EIM_A17__GPIO2_IO21 |
++                MUX_PAD_CTRL(EPDC_PAD_CTRL));
++    /* Set as input */
++    gpio_direction_input(IMX_GPIO_NR(2, 21));
++
++    /* EIM_D17 - GPIO3[17] for VCOM control */
++    imx_iomux_v3_setup_pad(MX6_PAD_EIM_D17__GPIO3_IO17 |
++                MUX_PAD_CTRL(EPDC_PAD_CTRL));
++
++    /* Set as output */
++    gpio_direction_output(IMX_GPIO_NR(3, 17), 1);
++
++    /* EIM_D20 - GPIO3[20] for EPD PMIC WAKEUP */
++    imx_iomux_v3_setup_pad(MX6_PAD_EIM_D20__GPIO3_IO20 |
++                MUX_PAD_CTRL(EPDC_PAD_CTRL));
++    /* Set as output */
++    gpio_direction_output(IMX_GPIO_NR(3, 20), 1);
++
++    /* EIM_A18 - GPIO2[20] for EPD PWR CTL0 */
++    imx_iomux_v3_setup_pad(MX6_PAD_EIM_A18__GPIO2_IO20 |
++                MUX_PAD_CTRL(EPDC_PAD_CTRL));
++    /* Set as output */
++    gpio_direction_output(IMX_GPIO_NR(2, 20), 1);
++}
++
++static void epdc_enable_pins(void)
++{
++    /* epdc iomux settings */
++    imx_iomux_v3_setup_multiple_pads(epdc_enable_pads,
++                ARRAY_SIZE(epdc_enable_pads));
++}
++
++static void epdc_disable_pins(void)
++{
++    /* Configure MUX settings for EPDC pins to GPIO */
++    imx_iomux_v3_setup_multiple_pads(epdc_disable_pads,
++                ARRAY_SIZE(epdc_disable_pads));
++}
++
++static void setup_epdc(void)
++{
++    unsigned int reg;
++    struct mxc_ccm_reg *ccm_regs = (struct mxc_ccm_reg *)CCM_BASE_ADDR;
++
++    /*** epdc Maxim PMIC settings ***/
++
++    /* EPDC PWRSTAT - GPIO2[21] for PWR_GOOD status */
++    imx_iomux_v3_setup_pad(MX6_PAD_EIM_A17__GPIO2_IO21 |
++                MUX_PAD_CTRL(EPDC_PAD_CTRL));
++
++    /* EPDC VCOM0 - GPIO3[17] for VCOM control */
++    imx_iomux_v3_setup_pad(MX6_PAD_EIM_D17__GPIO3_IO17 |
++                MUX_PAD_CTRL(EPDC_PAD_CTRL));
++
++    /* UART4 TXD - GPIO3[20] for EPD PMIC WAKEUP */
++    imx_iomux_v3_setup_pad(MX6_PAD_EIM_D20__GPIO3_IO20 |
++                MUX_PAD_CTRL(EPDC_PAD_CTRL));
++
++    /* EIM_A18 - GPIO2[20] for EPD PWR CTL0 */
++    imx_iomux_v3_setup_pad(MX6_PAD_EIM_A18__GPIO2_IO20 |
++                MUX_PAD_CTRL(EPDC_PAD_CTRL));
++
++    /*** Set pixel clock rates for EPDC ***/
++
++    /* EPDC AXI clk (IPU2_CLK) from PFD_400M, set to 396/2 = 198MHz */
++    reg = readl(&ccm_regs->cscdr3);
++    reg &= ~0x7C000;
++    reg |= (1 << 16) | (1 << 14);
++    writel(reg, &ccm_regs->cscdr3);
++
++    /* EPDC AXI clk enable */
++    reg = readl(&ccm_regs->CCGR3);
++    reg |= 0x00C0;
++    writel(reg, &ccm_regs->CCGR3);
++
++    /* EPDC PIX clk (IPU2_DI1_CLK) from PLL5, set to 650/4/6 = ~27MHz */
++    reg = readl(&ccm_regs->cscdr2);
++    reg &= ~0x3FE00;
++    reg |= (2 << 15) | (5 << 12);
++    writel(reg, &ccm_regs->cscdr2);
++
++    /* PLL5 enable (defaults to 650) */
++    reg = readl(&ccm_regs->analog_pll_video);
++    reg &= ~((1 << 16) | (1 << 12));
++    reg |= (1 << 13);
++    writel(reg, &ccm_regs->analog_pll_video);
++
++    /* EPDC PIX clk enable */
++    reg = readl(&ccm_regs->CCGR3);
++    reg |= 0x0C00;
++    writel(reg, &ccm_regs->CCGR3);
++
++    panel_info.epdc_data.wv_modes.mode_init = 0;
++    panel_info.epdc_data.wv_modes.mode_du = 1;
++    panel_info.epdc_data.wv_modes.mode_gc4 = 3;
++    panel_info.epdc_data.wv_modes.mode_gc8 = 2;
++    panel_info.epdc_data.wv_modes.mode_gc16 = 2;
++    panel_info.epdc_data.wv_modes.mode_gc32 = 2;
++
++    panel_info.epdc_data.epdc_timings = panel_timings;
++
++    setup_epdc_power();
++}
++
++void epdc_power_on(void)
++{
++    unsigned int reg;
++    struct gpio_regs *gpio_regs = (struct gpio_regs *)GPIO2_BASE_ADDR;
++
++    /* Set EPD_PWR_CTL0 to high - enable EINK_VDD (3.15) */
++    gpio_set_value(IMX_GPIO_NR(2, 20), 1);
++    udelay(1000);
++
++    /* Enable epdc signal pin */
++    epdc_enable_pins();
++
++    /* Set PMIC Wakeup to high - enable Display power */
++    gpio_set_value(IMX_GPIO_NR(3, 20), 1);
++
++    /* Wait for PWRGOOD == 1 */
++    while (1) {
++        reg = readl(&gpio_regs->gpio_psr);
++        if (!(reg & (1 << 21)))
++            break;
++
++        udelay(100);
++    }
++
++    /* Enable VCOM */
++    gpio_set_value(IMX_GPIO_NR(3, 17), 1);
++
++    udelay(500);
++}
++
++void epdc_power_off(void)
++{
++    /* Set PMIC Wakeup to low - disable Display power */
++    gpio_set_value(IMX_GPIO_NR(3, 20), 0);
++
++    /* Disable VCOM */
++    gpio_set_value(IMX_GPIO_NR(3, 17), 0);
++
++    epdc_disable_pins();
++
++    /* Set EPD_PWR_CTL0 to low - disable EINK_VDD (3.15) */
++    gpio_set_value(IMX_GPIO_NR(2, 20), 0);
++}
++#endif
++
++int mx6_rgmii_rework(struct phy_device *phydev)
++{
++    unsigned short val;
++
++    /* To enable AR8031 ouput a 125MHz clk from CLK_25M */
++    phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0x7);
++    phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x8016);
++    phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0x4007);
++
++    val = phy_read(phydev, MDIO_DEVAD_NONE, 0xe);
++    val &= 0xffe3;
++    val |= 0x18;
++    phy_write(phydev, MDIO_DEVAD_NONE, 0xe, val);
++
++    /* introduce tx clock delay */
++    phy_write(phydev, MDIO_DEVAD_NONE, 0x1d, 0x5);
++    val = phy_read(phydev, MDIO_DEVAD_NONE, 0x1e);
++    val |= 0x0100;
++    phy_write(phydev, MDIO_DEVAD_NONE, 0x1e, val);
++
++    return 0;
++}
++
++int board_phy_config(struct phy_device *phydev)
++{
++    mx6_rgmii_rework(phydev);
++
++    if (phydev->drv->config)
++        phydev->drv->config(phydev);
++
++    return 0;
++}
++
++#if defined(CONFIG_VIDEO_IPUV3)
++static void disable_lvds(struct display_info_t const *dev)
++{
++    struct iomuxc *iomux = (struct iomuxc *)IOMUXC_BASE_ADDR;
++
++    int reg = readl(&iomux->gpr[2]);
++
++    reg &= ~(IOMUXC_GPR2_LVDS_CH0_MODE_MASK |
++         IOMUXC_GPR2_LVDS_CH1_MODE_MASK);
++
++    writel(reg, &iomux->gpr[2]);
++}
++
++static void do_enable_hdmi(struct display_info_t const *dev)
++{
++    disable_lvds(dev);
++    imx_enable_hdmi_phy();
++}
++
++static void enable_lvds(struct display_info_t const *dev)
++{
++    struct iomuxc *iomux = (struct iomuxc *)
++                IOMUXC_BASE_ADDR;
++    u32 reg = readl(&iomux->gpr[2]);
++    reg |= IOMUXC_GPR2_DATA_WIDTH_CH0_18BIT |
++           IOMUXC_GPR2_DATA_WIDTH_CH1_18BIT;
++    writel(reg, &iomux->gpr[2]);
++}
++
++struct display_info_t const displays[] = {{
++    .bus	= -1,
++    .addr	= 0,
++    .pixfmt	= IPU_PIX_FMT_RGB666,
++    .detect	= NULL,
++    .enable	= enable_lvds,
++    .mode	= {
++        .name           = "Hannstar-XGA",
++        .refresh        = 60,
++        .xres           = 1024,
++        .yres           = 768,
++        .pixclock       = 15385,
++        .left_margin    = 220,
++        .right_margin   = 40,
++        .upper_margin   = 21,
++        .lower_margin   = 7,
++        .hsync_len      = 60,
++        .vsync_len      = 10,
++        .sync           = FB_SYNC_EXT,
++        .vmode          = FB_VMODE_NONINTERLACED
++} }, {
++    .bus	= -1,
++    .addr	= 0,
++    .pixfmt	= IPU_PIX_FMT_RGB24,
++    .detect	= NULL,
++    .enable	= do_enable_hdmi,
++    .mode	= {
++        .name           = "HDMI",
++        .refresh        = 60,
++        .xres           = 640,
++        .yres           = 480,
++        .pixclock       = 39721,
++        .left_margin    = 48,
++        .right_margin   = 16,
++        .upper_margin   = 33,
++        .lower_margin   = 10,
++        .hsync_len      = 96,
++        .vsync_len      = 2,
++        .sync           = 0,
++        .vmode          = FB_VMODE_NONINTERLACED
++} }, {
++    .bus	= 0,
++    .addr	= 0,
++    .pixfmt	= IPU_PIX_FMT_RGB24,
++    .detect	= NULL,
++    .enable	= enable_rgb,
++    .mode	= {
++        .name           = "SEIKO-WVGA",
++        .refresh        = 60,
++        .xres           = 800,
++        .yres           = 480,
++        .pixclock       = 29850,
++        .left_margin    = 89,
++        .right_margin   = 164,
++        .upper_margin   = 23,
++        .lower_margin   = 10,
++        .hsync_len      = 10,
++        .vsync_len      = 10,
++        .sync           = 0,
++        .vmode          = FB_VMODE_NONINTERLACED
++} } };
++size_t display_count = ARRAY_SIZE(displays);
++
++static void setup_display(void)
++{
++    struct mxc_ccm_reg *mxc_ccm = (struct mxc_ccm_reg *)CCM_BASE_ADDR;
++    struct iomuxc *iomux = (struct iomuxc *)IOMUXC_BASE_ADDR;
++    int reg;
++
++    /* Setup HSYNC, VSYNC, DISP_CLK for debugging purposes */
++    imx_iomux_v3_setup_multiple_pads(di0_pads, ARRAY_SIZE(di0_pads));
++
++    enable_ipu_clock();
++    imx_setup_hdmi();
++
++    /* Turn on LDB0, LDB1, IPU,IPU DI0 clocks */
++    reg = readl(&mxc_ccm->CCGR3);
++    reg |=  MXC_CCM_CCGR3_LDB_DI0_MASK | MXC_CCM_CCGR3_LDB_DI1_MASK;
++    writel(reg, &mxc_ccm->CCGR3);
++
++    /* set LDB0, LDB1 clk select to 011/011 */
++    reg = readl(&mxc_ccm->cs2cdr);
++    reg &= ~(MXC_CCM_CS2CDR_LDB_DI0_CLK_SEL_MASK
++         | MXC_CCM_CS2CDR_LDB_DI1_CLK_SEL_MASK);
++    reg |= (3 << MXC_CCM_CS2CDR_LDB_DI0_CLK_SEL_OFFSET)
++          | (3 << MXC_CCM_CS2CDR_LDB_DI1_CLK_SEL_OFFSET);
++    writel(reg, &mxc_ccm->cs2cdr);
++
++    reg = readl(&mxc_ccm->cscmr2);
++    reg |= MXC_CCM_CSCMR2_LDB_DI0_IPU_DIV | MXC_CCM_CSCMR2_LDB_DI1_IPU_DIV;
++    writel(reg, &mxc_ccm->cscmr2);
++
++    reg = readl(&mxc_ccm->chsccdr);
++    reg |= (CHSCCDR_CLK_SEL_LDB_DI0
++        << MXC_CCM_CHSCCDR_IPU1_DI0_CLK_SEL_OFFSET);
++    reg |= (CHSCCDR_CLK_SEL_LDB_DI0
++        << MXC_CCM_CHSCCDR_IPU1_DI1_CLK_SEL_OFFSET);
++    writel(reg, &mxc_ccm->chsccdr);
++
++    reg = IOMUXC_GPR2_BGREF_RRMODE_EXTERNAL_RES
++         | IOMUXC_GPR2_DI1_VS_POLARITY_ACTIVE_LOW
++         | IOMUXC_GPR2_DI0_VS_POLARITY_ACTIVE_LOW
++         | IOMUXC_GPR2_BIT_MAPPING_CH1_SPWG
++         | IOMUXC_GPR2_DATA_WIDTH_CH1_18BIT
++         | IOMUXC_GPR2_BIT_MAPPING_CH0_SPWG
++         | IOMUXC_GPR2_DATA_WIDTH_CH0_18BIT
++         | IOMUXC_GPR2_LVDS_CH0_MODE_DISABLED
++         | IOMUXC_GPR2_LVDS_CH1_MODE_ENABLED_DI0;
++    writel(reg, &iomux->gpr[2]);
++
++    reg = readl(&iomux->gpr[3]);
++    reg = (reg & ~(IOMUXC_GPR3_LVDS1_MUX_CTL_MASK
++            | IOMUXC_GPR3_HDMI_MUX_CTL_MASK))
++        | (IOMUXC_GPR3_MUX_SRC_IPU1_DI0
++           << IOMUXC_GPR3_LVDS1_MUX_CTL_OFFSET);
++    writel(reg, &iomux->gpr[3]);
++}
++#endif /* CONFIG_VIDEO_IPUV3 */
++
++/*
++ * Do not overwrite the console
++ * Use always serial for U-Boot console
++ */
++int overwrite_console(void)
++{
++    return 1;
++}
++
++int board_eth_init(bd_t *bis)
++{
++    setup_iomux_enet();
++    setup_pcie();
++
++    return cpu_eth_init(bis);
++}
++
++#ifdef CONFIG_USB_EHCI_MX6
++#define USB_OTHERREGS_OFFSET	0x800
++#define UCTRL_PWR_POL		(1 << 9)
++
++static iomux_v3_cfg_t const usb_otg_pads[] = {
++    MX6_PAD_EIM_D22__USB_OTG_PWR | MUX_PAD_CTRL(NO_PAD_CTRL),
++    MX6_PAD_ENET_RX_ER__USB_OTG_ID | MUX_PAD_CTRL(OTG_ID_PAD_CTRL),
++};
++
++static iomux_v3_cfg_t const usb_hc1_pads[] = {
++    MX6_PAD_ENET_TXD1__GPIO1_IO29 | MUX_PAD_CTRL(NO_PAD_CTRL),
++};
++
++static void setup_usb(void)
++{
++    imx_iomux_v3_setup_multiple_pads(usb_otg_pads,
++                     ARRAY_SIZE(usb_otg_pads));
++
++    /*
++     * set daisy chain for otg_pin_id on 6q.
++     * for 6dl, this bit is reserved
++     */
++    imx_iomux_set_gpr_register(1, 13, 1, 0);
++
++    imx_iomux_v3_setup_multiple_pads(usb_hc1_pads,
++                     ARRAY_SIZE(usb_hc1_pads));
++}
++
++int board_ehci_hcd_init(int port)
++{
++    u32 *usbnc_usb_ctrl;
++
++    if (port > 1)
++        return -EINVAL;
++
++    usbnc_usb_ctrl = (u32 *)(USB_BASE_ADDR + USB_OTHERREGS_OFFSET +
++                 port * 4);
++
++    setbits_le32(usbnc_usb_ctrl, UCTRL_PWR_POL);
++
++    return 0;
++}
++
++int board_ehci_power(int port, int on)
++{
++    switch (port) {
++    case 0:
++        break;
++    case 1:
++        if (on)
++            gpio_direction_output(IMX_GPIO_NR(1, 29), 1);
++        else
++            gpio_direction_output(IMX_GPIO_NR(1, 29), 0);
++        break;
++    default:
++        printf("MXC USB port %d not yet supported\n", port);
++        return -EINVAL;
++    }
++
++    return 0;
++}
++#endif
++
++int board_early_init_f(void)
++{
++    setup_iomux_uart();
++#if defined(CONFIG_VIDEO_IPUV3)
++    setup_display();
++#endif
++
++    return 0;
++}
++
++int board_init(void)
++{
++    /* address of boot parameters */
++    gd->bd->bi_boot_params = PHYS_SDRAM + 0x100;
++
++#ifdef CONFIG_MXC_SPI
++    setup_spi();
++#endif
++    setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info0);
++
++#ifdef CONFIG_USB_EHCI_MX6
++    setup_usb();
++#endif
++
++#if defined(CONFIG_MX6DL) && defined(CONFIG_MXC_EPDC)
++    setup_epdc();
++#endif
++
++#ifdef CONFIG_CMD_SATA
++    setup_sata();
++#endif
++
++    return 0;
++}
++
++static struct pmic *pfuze;
++int power_init_board(void)
++{
++    unsigned int reg;
++    int ret;
++
++    pfuze = pfuze_common_init(I2C_PMIC_0);
++    if (!pfuze)
++        return -ENODEV;
++
++    if (is_mx6dqp())
++        ret = pfuze_mode_init(pfuze, APS_APS);
++    else
++        ret = pfuze_mode_init(pfuze, APS_PFM);
++
++    if (ret < 0)
++        return ret;
++
++    /* Increase VGEN3 from 2.5 to 2.8V */
++    pmic_reg_read(pfuze, PFUZE100_VGEN3VOL, &reg);
++    reg &= ~LDO_VOL_MASK;
++    reg |= LDOB_2_80V;
++    pmic_reg_write(pfuze, PFUZE100_VGEN3VOL, reg);
++
++    /* Increase VGEN5 from 2.8 to 3V */
++    pmic_reg_read(pfuze, PFUZE100_VGEN5VOL, &reg);
++    reg &= ~LDO_VOL_MASK;
++    reg |= LDOB_3_00V;
++    pmic_reg_write(pfuze, PFUZE100_VGEN5VOL, reg);
++
++    if (is_mx6dqp()) {
++        /* set SW1C staby volatage 1.075V*/
++        pmic_reg_read(pfuze, PFUZE100_SW1CSTBY, &reg);
++        reg &= ~0x3f;
++        reg |= 0x1f;
++        pmic_reg_write(pfuze, PFUZE100_SW1CSTBY, reg);
++
++        /* set SW1C/VDDSOC step ramp up time to from 16us to 4us/25mV */
++        pmic_reg_read(pfuze, PFUZE100_SW1CCONF, &reg);
++        reg &= ~0xc0;
++        reg |= 0x40;
++        pmic_reg_write(pfuze, PFUZE100_SW1CCONF, reg);
++
++        /* set SW2/VDDARM staby volatage 0.975V*/
++        pmic_reg_read(pfuze, PFUZE100_SW2STBY, &reg);
++        reg &= ~0x3f;
++        reg |= 0x17;
++        pmic_reg_write(pfuze, PFUZE100_SW2STBY, reg);
++
++        /* set SW2/VDDARM step ramp up time to from 16us to 4us/25mV */
++        pmic_reg_read(pfuze, PFUZE100_SW2CONF, &reg);
++        reg &= ~0xc0;
++        reg |= 0x40;
++        pmic_reg_write(pfuze, PFUZE100_SW2CONF, reg);
++    } else {
++        /* set SW1AB staby volatage 0.975V*/
++        pmic_reg_read(pfuze, PFUZE100_SW1ABSTBY, &reg);
++        reg &= ~0x3f;
++        reg |= 0x1b;
++        pmic_reg_write(pfuze, PFUZE100_SW1ABSTBY, reg);
++
++        /* set SW1AB/VDDARM step ramp up time from 16us to 4us/25mV */
++        pmic_reg_read(pfuze, PFUZE100_SW1ABCONF, &reg);
++        reg &= ~0xc0;
++        reg |= 0x40;
++        pmic_reg_write(pfuze, PFUZE100_SW1ABCONF, reg);
++
++        /* set SW1C staby volatage 0.975V*/
++        pmic_reg_read(pfuze, PFUZE100_SW1CSTBY, &reg);
++        reg &= ~0x3f;
++        reg |= 0x1b;
++        pmic_reg_write(pfuze, PFUZE100_SW1CSTBY, reg);
++
++        /* set SW1C/VDDSOC step ramp up time to from 16us to 4us/25mV */
++        pmic_reg_read(pfuze, PFUZE100_SW1CCONF, &reg);
++        reg &= ~0xc0;
++        reg |= 0x40;
++        pmic_reg_write(pfuze, PFUZE100_SW1CCONF, reg);
++    }
++
++    return 0;
++}
++
++#ifdef CONFIG_LDO_BYPASS_CHECK
++void ldo_mode_set(int ldo_bypass)
++{
++    unsigned int value;
++    int is_400M;
++    unsigned char vddarm;
++    struct pmic *p = pfuze;
++
++    if (!p) {
++        printf("No PMIC found!\n");
++        return;
++    }
++
++    /* increase VDDARM/VDDSOC to support 1.2G chip */
++    if (check_1_2G()) {
++        ldo_bypass = 0;	/* ldo_enable on 1.2G chip */
++        printf("1.2G chip, increase VDDARM_IN/VDDSOC_IN\n");
++        if (is_mx6dqp()) {
++            /* increase VDDARM to 1.425V */
++            pmic_reg_read(p, PFUZE100_SW2VOL, &value);
++            value &= ~0x3f;
++            value |= 0x29;
++            pmic_reg_write(p, PFUZE100_SW2VOL, value);
++        } else {
++            /* increase VDDARM to 1.425V */
++            pmic_reg_read(p, PFUZE100_SW1ABVOL, &value);
++            value &= ~0x3f;
++            value |= 0x2d;
++            pmic_reg_write(p, PFUZE100_SW1ABVOL, value);
++        }
++        /* increase VDDSOC to 1.425V */
++        pmic_reg_read(p, PFUZE100_SW1CVOL, &value);
++        value &= ~0x3f;
++        value |= 0x2d;
++        pmic_reg_write(p, PFUZE100_SW1CVOL, value);
++    }
++    /* switch to ldo_bypass mode , boot on 800Mhz */
++    if (ldo_bypass) {
++        prep_anatop_bypass();
++        if (is_mx6dqp()) {
++            /* decrease VDDARM for 400Mhz DQP:1.1V*/
++            pmic_reg_read(p, PFUZE100_SW2VOL, &value);
++            value &= ~0x3f;
++            value |= 0x1c;
++            pmic_reg_write(p, PFUZE100_SW2VOL, value);
++        } else {
++            /* decrease VDDARM for 400Mhz DQ:1.1V, DL:1.275V */
++            pmic_reg_read(p, PFUZE100_SW1ABVOL, &value);
++            value &= ~0x3f;
++#if defined(CONFIG_MX6DL)
++            value |= 0x27;
++#else
++            value |= 0x20;
++#endif
++
++            pmic_reg_write(p, PFUZE100_SW1ABVOL, value);
++        }
++        /* increase VDDSOC to 1.3V */
++        pmic_reg_read(p, PFUZE100_SW1CVOL, &value);
++        value &= ~0x3f;
++        value |= 0x28;
++        pmic_reg_write(p, PFUZE100_SW1CVOL, value);
++
++        /*
++         * MX6Q/DQP:
++         * VDDARM:1.15V@800M; VDDSOC:1.175V@800M
++         * VDDARM:0.975V@400M; VDDSOC:1.175V@400M
++         * MX6DL:
++         * VDDARM:1.175V@800M; VDDSOC:1.175V@800M
++         * VDDARM:1.075V@400M; VDDSOC:1.175V@400M
++         */
++        is_400M = set_anatop_bypass(2);
++        if (is_mx6dqp()) {
++            pmic_reg_read(p, PFUZE100_SW2VOL, &value);
++            value &= ~0x3f;
++            if (is_400M)
++                value |= 0x17;
++            else
++                value |= 0x1e;
++            pmic_reg_write(p, PFUZE100_SW2VOL, value);
++        }
++
++        if (is_400M)
++#if defined(CONFIG_MX6DL)
++            vddarm = 0x1f;
++#else
++            vddarm = 0x1b;
++#endif
++        else
++#if defined(CONFIG_MX6DL)
++            vddarm = 0x23;
++#else
++            vddarm = 0x22;
++#endif
++        pmic_reg_read(p, PFUZE100_SW1ABVOL, &value);
++        value &= ~0x3f;
++        value |= vddarm;
++        pmic_reg_write(p, PFUZE100_SW1ABVOL, value);
++
++        /* decrease VDDSOC to 1.175V */
++        pmic_reg_read(p, PFUZE100_SW1CVOL, &value);
++        value &= ~0x3f;
++        value |= 0x23;
++        pmic_reg_write(p, PFUZE100_SW1CVOL, value);
++
++        finish_anatop_bypass();
++        printf("switch to ldo_bypass mode!\n");
++    }
++}
++#endif
++
++#ifdef CONFIG_CMD_BMODE
++static const struct boot_mode board_boot_modes[] = {
++    /* 4 bit bus width */
++    {"sd2",	 MAKE_CFGVAL(0x40, 0x28, 0x00, 0x00)},
++    //{"sd3",  MAKE_CFGVAL(0x40, 0x30, 0x00, 0x00)},
++    /* 8 bit bus width */
++    {"emmc", MAKE_CFGVAL(0x60, 0x58, 0x00, 0x00)},
++    {NULL,	 0},
++};
++#endif
++
++int board_late_init(void)
++{
++#ifdef CONFIG_CMD_BMODE
++    add_board_boot_modes(board_boot_modes);
++#endif
++
++    setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info0);
++
++#ifdef CONFIG_ENV_IS_IN_MMC
++    board_late_mmc_env_init();
++#endif
++    return 0;
++}
++
++int checkboard(void)
++{
++    puts("Board: MX6-SMARC\n");
++    return 0;
++}
++
++#ifdef CONFIG_FSL_FASTBOOT
++
++void board_fastboot_setup(void)
++{
++    switch (get_boot_device()) {
++#if defined(CONFIG_FASTBOOT_STORAGE_SATA)
++    case SATA_BOOT:
++        if (!getenv("fastboot_dev"))
++            setenv("fastboot_dev", "sata");
++        if (!getenv("bootcmd"))
++            setenv("bootcmd", "boota sata");
++        break;
++#endif /*CONFIG_FASTBOOT_STORAGE_SATA*/
++#if defined(CONFIG_FASTBOOT_STORAGE_MMC)
++    case SD2_BOOT:
++    case MMC2_BOOT:
++        if (!getenv("fastboot_dev"))
++            setenv("fastboot_dev", "mmc0");
++        if (!getenv("bootcmd"))
++            setenv("bootcmd", "boota mmc0");
++        break;
++    case SD3_BOOT:
++    case MMC3_BOOT:
++        if (!getenv("fastboot_dev"))
++            setenv("fastboot_dev", "mmc1");
++        if (!getenv("bootcmd"))
++            setenv("bootcmd", "boota mmc1");
++        break;
++    case MMC4_BOOT:
++        if (!getenv("fastboot_dev"))
++            setenv("fastboot_dev", "mmc2");
++        if (!getenv("bootcmd"))
++            setenv("bootcmd", "boota mmc2");
++        break;
++#endif /*CONFIG_FASTBOOT_STORAGE_MMC*/
++    default:
++        printf("unsupported boot devices\n");
++        break;
++    }
++
++}
++
++#ifdef CONFIG_ANDROID_RECOVERY
++
++#define GPIO_VOL_DN_KEY IMX_GPIO_NR(1, 5)
++iomux_v3_cfg_t const recovery_key_pads[] = {
++    (MX6_PAD_GPIO_5__GPIO1_IO05 | MUX_PAD_CTRL(NO_PAD_CTRL)),
++};
++
++int check_recovery_cmd_file(void)
++{
++    int button_pressed = 0;
++    int recovery_mode = 0;
++
++    recovery_mode = recovery_check_and_clean_flag();
++
++    /* Check Recovery Combo Button press or not. */
++    imx_iomux_v3_setup_multiple_pads(recovery_key_pads,
++            ARRAY_SIZE(recovery_key_pads));
++
++    gpio_direction_input(GPIO_VOL_DN_KEY);
++
++    if (gpio_get_value(GPIO_VOL_DN_KEY) == 0) { /* VOL_DN key is low assert */
++        button_pressed = 1;
++        printf("Recovery key pressed\n");
++    }
++
++    return recovery_mode || button_pressed;
++}
++
++void board_recovery_setup(void)
++{
++    int bootdev = get_boot_device();
++
++    switch (bootdev) {
++#if defined(CONFIG_FASTBOOT_STORAGE_SATA)
++    case SATA_BOOT:
++        if (!getenv("bootcmd_android_recovery"))
++            setenv("bootcmd_android_recovery",
++                "boota sata recovery");
++        break;
++#endif /*CONFIG_FASTBOOT_STORAGE_SATA*/
++#if defined(CONFIG_FASTBOOT_STORAGE_MMC)
++    case SD2_BOOT:
++    case MMC2_BOOT:
++        if (!getenv("bootcmd_android_recovery"))
++            setenv("bootcmd_android_recovery",
++                "boota mmc0 recovery");
++        break;
++    case SD3_BOOT:
++    case MMC3_BOOT:
++        if (!getenv("bootcmd_android_recovery"))
++            setenv("bootcmd_android_recovery",
++                "boota mmc1 recovery");
++        break;
++    case MMC4_BOOT:
++        if (!getenv("bootcmd_android_recovery"))
++            setenv("bootcmd_android_recovery",
++                "boota mmc2 recovery");
++        break;
++#endif /*CONFIG_FASTBOOT_STORAGE_MMC*/
++    default:
++        printf("Unsupported bootup device for recovery: dev: %d\n",
++            bootdev);
++        return;
++    }
++
++    printf("setup env for recovery..\n");
++    setenv("bootcmd", "run bootcmd_android_recovery");
++}
++
++#endif /*CONFIG_ANDROID_RECOVERY*/
++
++#endif /*CONFIG_FSL_FASTBOOT*/
++
++#ifdef CONFIG_SPL_BUILD
++#include <spl.h>
++#include <libfdt.h>
++
++const struct mx6dq_iomux_ddr_regs mx6_ddr_ioregs = {
++    .dram_sdclk_0 =  0x00020030,
++    .dram_sdclk_1 =  0x00020030,
++    .dram_cas =  0x00020030,
++    .dram_ras =  0x00020030,
++    .dram_reset =  0x00020030,
++    .dram_sdcke0 =  0x00003000,
++    .dram_sdcke1 =  0x00003000,
++    .dram_sdba2 =  0x00000000,
++    .dram_sdodt0 =  0x00003030,
++    .dram_sdodt1 =  0x00003030,
++    .dram_sdqs0 =  0x00000030,
++    .dram_sdqs1 =  0x00000030,
++    .dram_sdqs2 =  0x00000030,
++    .dram_sdqs3 =  0x00000030,
++    .dram_sdqs4 =  0x00000030,
++    .dram_sdqs5 =  0x00000030,
++    .dram_sdqs6 =  0x00000030,
++    .dram_sdqs7 =  0x00000030,
++    .dram_dqm0 =  0x00020030,
++    .dram_dqm1 =  0x00020030,
++    .dram_dqm2 =  0x00020030,
++    .dram_dqm3 =  0x00020030,
++    .dram_dqm4 =  0x00020030,
++    .dram_dqm5 =  0x00020030,
++    .dram_dqm6 =  0x00020030,
++    .dram_dqm7 =  0x00020030,
++};
++
++const struct mx6dq_iomux_grp_regs mx6_grp_ioregs = {
++    .grp_ddr_type =  0x000C0000,
++    .grp_ddrmode_ctl =  0x00020000,
++    .grp_ddrpke =  0x00000000,
++    .grp_addds =  0x00000030,
++    .grp_ctlds =  0x00000030,
++    .grp_ddrmode =  0x00020000,
++    .grp_b0ds =  0x00000030,
++    .grp_b1ds =  0x00000030,
++    .grp_b2ds =  0x00000030,
++    .grp_b3ds =  0x00000030,
++    .grp_b4ds =  0x00000030,
++    .grp_b5ds =  0x00000030,
++    .grp_b6ds =  0x00000030,
++    .grp_b7ds =  0x00000030,
++};
++
++const struct mx6_mmdc_calibration mx6_mmcd_calib = {
++    .p0_mpwldectrl0 =  0x001F001F,
++    .p0_mpwldectrl1 =  0x001F001F,
++    .p1_mpwldectrl0 =  0x00440044,
++    .p1_mpwldectrl1 =  0x00440044,
++    .p0_mpdgctrl0 =  0x434B0350,
++    .p0_mpdgctrl1 =  0x034C0359,
++    .p1_mpdgctrl0 =  0x434B0350,
++    .p1_mpdgctrl1 =  0x03650348,
++    .p0_mprddlctl =  0x4436383B,
++    .p1_mprddlctl =  0x39393341,
++    .p0_mpwrdlctl =  0x35373933,
++    .p1_mpwrdlctl =  0x48254A36,
++};
++
++static struct mx6_ddr3_cfg mem_ddr = {
++    .mem_speed = 1600,
++    .density = 4,
++    .width = 64,
++    .banks = 8,
++    .rowaddr = 14,
++    .coladdr = 10,
++    .pagesz = 2,
++    .trcd = 1375,
++    .trcmin = 4875,
++    .trasmin = 3500,
++};
++
++static void ccgr_init(void)
++{
++    struct mxc_ccm_reg *ccm = (struct mxc_ccm_reg *)CCM_BASE_ADDR;
++
++    writel(0x00C03F3F, &ccm->CCGR0);
++    writel(0x0030FC03, &ccm->CCGR1);
++    writel(0x0FFFC000, &ccm->CCGR2);
++    writel(0x3FF00000, &ccm->CCGR3);
++    writel(0x00FFF300, &ccm->CCGR4);
++    writel(0x0F0000C3, &ccm->CCGR5);
++    writel(0x000003FF, &ccm->CCGR6);
++}
++
++static void gpr_init(void)
++{
++    struct iomuxc *iomux = (struct iomuxc *)IOMUXC_BASE_ADDR;
++
++    /* enable AXI cache for VDOA/VPU/IPU */
++    writel(0xF00000CF, &iomux->gpr[4]);
++    /* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
++    writel(0x007F007F, &iomux->gpr[6]);
++    writel(0x007F007F, &iomux->gpr[7]);
++}
++
++/*
++ * This section requires the differentiation between iMX6 Sabre boards, but
++ * for now, it will configure only for the mx6q variant.
++ */
++static void spl_dram_init(void)
++{
++    struct mx6_ddr_sysinfo sysinfo = {
++        /* width of data bus:0=16,1=32,2=64 */
++        .dsize = mem_ddr.width/32,
++        /* config for full 4GB range so that get_mem_size() works */
++        .cs_density = 32, /* 32Gb per CS */
++        /* single chip select */
++        .ncs = 1,
++        .cs1_mirror = 0,
++        .rtt_wr = 1 /*DDR3_RTT_60_OHM*/,	/* RTT_Wr = RZQ/4 */
++#ifdef RTT_NOM_120OHM
++        .rtt_nom = 2 /*DDR3_RTT_120_OHM*/,	/* RTT_Nom = RZQ/2 */
++#else
++        .rtt_nom = 1 /*DDR3_RTT_60_OHM*/,	/* RTT_Nom = RZQ/4 */
++#endif
++        .walat = 1,	/* Write additional latency */
++        .ralat = 5,	/* Read additional latency */
++        .mif3_mode = 3,	/* Command prediction working mode */
++        .bi_on = 1,	/* Bank interleaving enabled */
++        .sde_to_rst = 0x10,	/* 14 cycles, 200us (JEDEC default) */
++        .rst_to_cke = 0x23,	/* 33 cycles, 500us (JEDEC default) */
++    };
++
++    mx6dq_dram_iocfg(mem_ddr.width, &mx6_ddr_ioregs, &mx6_grp_ioregs);
++    mx6_dram_cfg(&sysinfo, &mx6_mmcd_calib, &mem_ddr);
++}
++
++void board_init_f(ulong dummy)
++{
++    /* setup AIPS and disable watchdog */
++    arch_cpu_init();
++
++    ccgr_init();
++    gpr_init();
++
++    /* iomux and setup of i2c */
++    board_early_init_f();
++
++    /* setup GP timer */
++    timer_init();
++
++    /* UART clocks enabled and gd valid - init serial console */
++    preloader_console_init();
++
++    /* DDR initialization */
++    spl_dram_init();
++
++    /* Clear the BSS. */
++    memset(__bss_start, 0, __bss_end - __bss_start);
++
++    /* load/boot image from boot device */
++    board_init_r(NULL, 0);
++}
++
++void reset_cpu(ulong addr)
++{
++}
++#endif
+diff --git a/u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg b/u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg
+new file mode 100644
+index 0000000..b2d4a2c
+--- /dev/null
++++ b/u-boot/board/freescale/mx6smarc/mx6solo_micron_1g.cfg
+@@ -0,0 +1,129 @@
++/*
++ * Copyright (C) 2014 Freescale Semiconductor, Inc.
++ * Jason Liu <r64343@freescale.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ *
++ * Refer docs/README.imxmage for more details about how-to configure
++ * and create imximage boot image
++ *
++ * The syntax is taken as close as possible with the kwbimage
++ */
++
++#define __ASSEMBLY__
++#include <config.h>
++
++/* image version */
++IMAGE_VERSION 2
++
++/*
++ * Boot Device : one of spi, sd, sata
++ * the board has no nand and eimnor
++ * spinor: flash_offset: 0x0400
++ * sata:   flash_offset: 0x0400
++ * sd/mmc: flash_offset: 0x0400
++ */
++
++/* the same flash_offset as sd */
++BOOT_FROM      sd
++
++#ifdef CONFIG_USE_PLUGIN
++/*PLUGIN    plugin-binary-file    IRAM_FREE_START_ADDR*/
++PLUGIN	board/freescale/mx6smarc/plugin.bin 0x00907000
++#else
++
++#ifdef CONFIG_SECURE_BOOT
++CSF CONFIG_CSF_SIZE
++#endif
++
++/*
++ * Device Configuration Data (DCD)
++ *
++ * Each entry must have the format:
++ * Addr-type           Address        Value
++ *
++ * where:
++ *      Addr-type register length (1,2 or 4 bytes)
++ *      Address   absolute address of the register
++ *      value     value to be stored in the register
++ */
++DATA 4, 0x020e0774, 0x000C0000
++DATA 4, 0x020e0754, 0x00000000
++DATA 4, 0x020e04ac, 0x00000030
++DATA 4, 0x020e04b0, 0x00000030
++DATA 4, 0x020e0464, 0x00000030
++DATA 4, 0x020e0490, 0x00000030
++DATA 4, 0x020e074c, 0x00000030
++DATA 4, 0x020e0494, 0x00000030
++DATA 4, 0x020e04a0, 0x00000000
++DATA 4, 0x020e04b4, 0x00000030
++DATA 4, 0x020e04b8, 0x00000030
++DATA 4, 0x020e076c, 0x00000030
++DATA 4, 0x020e0750, 0x00020000
++DATA 4, 0x020e04bc, 0x00000030
++DATA 4, 0x020e04c0, 0x00000030
++DATA 4, 0x020e04c4, 0x00000030
++DATA 4, 0x020e04c8, 0x00000030
++DATA 4, 0x020e0760, 0x00020000
++DATA 4, 0x020e0764, 0x00000030
++DATA 4, 0x020e0770, 0x00000030
++DATA 4, 0x020e0778, 0x00000030
++DATA 4, 0x020e077c, 0x00000030
++DATA 4, 0x020e0470, 0x00000030
++DATA 4, 0x020e0474, 0x00000030
++DATA 4, 0x020e0478, 0x00000030
++DATA 4, 0x020e047c, 0x00000030
++DATA 4, 0x021b0800, 0xa1390003
++DATA 4, 0x021b080c, 0x001F001F
++DATA 4, 0x021b0810, 0x001F001F
++DATA 4, 0x021b083c, 0x4234022C
++DATA 4, 0x021b0840, 0x02100218
++/*DATA 4, 0x021b483c, 0x4201020C*/
++DATA 4, 0x021b0848, 0x42444846
++DATA 4, 0x021b0850, 0x38342C36
++DATA 4, 0x021b081c, 0x33333333
++DATA 4, 0x021b0820, 0x33333333
++DATA 4, 0x021b0824, 0x33333333
++DATA 4, 0x021b0828, 0x33333333
++/*DATA 4, 0x021b481c, 0x33333333
++DATA 4, 0x021b4820, 0x33333333
++DATA 4, 0x021b4824, 0x33333333
++DATA 4, 0x021b4828, 0x33333333*/
++DATA 4, 0x021b08b8, 0x00000800
++DATA 4, 0x021b0004, 0x0002002D
++DATA 4, 0x021b0008, 0x00333030
++DATA 4, 0x021b000c, 0x676B5333
++DATA 4, 0x021b0010, 0xB66E8B63
++DATA 4, 0x021b0014, 0x01FF00DB
++DATA 4, 0x021b0018, 0x00001740
++DATA 4, 0x021b001c, 0x00008000
++DATA 4, 0x021b002c, 0x000026d2
++DATA 4, 0x021b0030, 0x006B1023
++DATA 4, 0x021b0040, 0x00000027
++DATA 4, 0x021b0000, 0x84190000
++DATA 4, 0x021b001c, 0x04008032
++DATA 4, 0x021b001c, 0x00008033
++DATA 4, 0x021b001c, 0x00048031
++DATA 4, 0x021b001c, 0x05208030
++DATA 4, 0x021b001c, 0x04008040
++DATA 4, 0x021b0020, 0x00005800
++DATA 4, 0x021b0818, 0x00011117
++DATA 4, 0x021b0004, 0x0002556D
++DATA 4, 0x021b0404, 0x00011006
++DATA 4, 0x021b001c, 0x00000000
++
++/* set the default clock gate to save power */
++DATA 4, 0x020c4068, 0x00C03F3F
++DATA 4, 0x020c406c, 0x0030FC03
++DATA 4, 0x020c4070, 0x0FFFC000
++DATA 4, 0x020c4074, 0x3FF00000
++DATA 4, 0x020c4078, 0x00FFF300
++DATA 4, 0x020c407c, 0x0F0000C3
++DATA 4, 0x020c4080, 0x000003FF
++
++/* enable AXI cache for VDOA/VPU/IPU */
++DATA 4, 0x020e0010, 0xF00000CF
++/* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
++DATA 4, 0x020e0018, 0x007F007F
++DATA 4, 0x020e001c, 0x007F007F
++#endif
+diff --git a/u-boot/board/freescale/mx6smarc/plugin.S b/u-boot/board/freescale/mx6smarc/plugin.S
+new file mode 100644
+index 0000000..0e593e0
+--- /dev/null
++++ b/u-boot/board/freescale/mx6smarc/plugin.S
+@@ -0,0 +1,664 @@
++/*
++ * Copyright (C) 2012-2015 Freescale Semiconductor, Inc.
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#include <config.h>
++
++/* DDR script */
++.macro imx6dqpsabresd_ddr_setting
++	ldr r0, =IOMUXC_BASE_ADDR
++	ldr r1, =0x000c0000
++	str r1, [r0, #0x798]
++	ldr r1, =0x00000000
++	str r1, [r0, #0x758]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x588]
++	str r1, [r0, #0x594]
++	str r1, [r0, #0x56c]
++	str r1, [r0, #0x578]
++	str r1, [r0, #0x74c]
++	str r1, [r0, #0x57c]
++
++	ldr r1, =0x00000000
++	str r1, [r0, #0x58c]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x59c]
++	str r1, [r0, #0x5a0]
++	str r1, [r0, #0x78c]
++
++	ldr r1, =0x00020000
++	str r1, [r0, #0x750]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x5a8]
++	str r1, [r0, #0x5b0]
++	str r1, [r0, #0x524]
++	str r1, [r0, #0x51c]
++	str r1, [r0, #0x518]
++	str r1, [r0, #0x50c]
++	str r1, [r0, #0x5b8]
++	str r1, [r0, #0x5c0]
++
++	ldr r1, =0x00020000
++	str r1, [r0, #0x774]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x784]
++	str r1, [r0, #0x788]
++	str r1, [r0, #0x794]
++	str r1, [r0, #0x79c]
++	str r1, [r0, #0x7a0]
++	str r1, [r0, #0x7a4]
++	str r1, [r0, #0x7a8]
++	str r1, [r0, #0x748]
++	str r1, [r0, #0x5ac]
++	str r1, [r0, #0x5b4]
++	str r1, [r0, #0x528]
++	str r1, [r0, #0x520]
++	str r1, [r0, #0x514]
++	str r1, [r0, #0x510]
++	str r1, [r0, #0x5bc]
++	str r1, [r0, #0x5c4]
++
++	ldr r0, =MMDC_P0_BASE_ADDR
++	ldr r2, =0xa1390003
++	str r2, [r0, #0x800]
++
++	ldr r2, =0x001b001e
++	str r2, [r0, #0x80c]
++	ldr r2, =0x002e0029
++	str r2, [r0, #0x810]
++
++	ldr r1, =MMDC_P1_BASE_ADDR
++	ldr r2, =0x001b002a
++	str r2, [r1, #0x80c]
++	ldr r2, =0x0019002c
++	str r2, [r1, #0x810]
++
++	ldr r2, =0x43240334
++	str r2, [r0, #0x83c]
++	ldr r2, =0x0324031a
++	str r2, [r0, #0x840]
++
++	ldr r2, =0x43340344
++	str r2, [r1, #0x83c]
++	ldr r2, =0x03280276
++	str r2, [r1, #0x840]
++
++	ldr r2, =0x44383A3E
++	str r2, [r0, #0x848]
++	ldr r2, =0x3C3C3846
++	str r2, [r1, #0x848]
++
++	ldr r2, =0x2e303230
++	str r2, [r0, #0x850]
++	ldr r2, =0x38283E34
++	str r2, [r1, #0x850]
++
++	ldr r2, =0x33333333
++	str r2, [r0, #0x81c]
++	str r2, [r0, #0x820]
++	str r2, [r0, #0x824]
++	str r2, [r0, #0x828]
++	str r2, [r1, #0x81c]
++	str r2, [r1, #0x820]
++	str r2, [r1, #0x824]
++	str r2, [r1, #0x828]
++
++	ldr r2, =0x24912249
++	str r2, [r0, #0x8c0]
++	ldr r2, =0x24914289
++	str r2, [r1, #0x8c0]
++
++	ldr r2, =0x00000800
++	str r2, [r0, #0x8b8]
++	str r2, [r1, #0x8b8]
++
++	ldr r2, =0x00020036
++	str r2, [r0, #0x004]
++	ldr r2, =0x24444040
++	str r2, [r0, #0x008]
++
++	ldr r2, =0x555A7955
++	str r2, [r0, #0x00c]
++	ldr r2, =0xFF320F64
++	str r2, [r0, #0x010]
++
++	ldr r2, =0x01FF00DB
++	str r2, [r0, #0x014]
++	ldr r2, =0x00001740
++	str r2, [r0, #0x018]
++
++	ldr r2, =0x00008000
++	str r2, [r0, #0x01c]
++	ldr r2, =0x000026d2
++	str r2, [r0, #0x02c]
++	ldr r2, =0x005A1023
++	str r2, [r0, #0x030]
++	ldr r2, =0x00000027
++	str r2, [r0, #0x040]
++
++	ldr r2, =0x14420000
++	str r2, [r0, #0x400]
++
++	ldr r2, =0x831A0000
++	str r2, [r0, #0x000]
++
++	ldr r2, =0x00400C58
++	str r2, [r0, #0x890]
++
++	ldr r3, =0x00bb0000
++	ldr r2, =0x00000000
++	str r2, [r3, #0x008]
++	ldr r2, =0x2891E41A
++	str r2, [r3, #0x00C]
++	ldr r2, =0x00000564
++	str r2, [r3, #0x038]
++	ldr r2, =0x00000040
++	str r2, [r3, #0x014]
++	ldr r2, =0x00000020
++	str r2, [r3, #0x028]
++	ldr r2, =0x00000020
++	str r2, [r3, #0x02c]
++
++	ldr r2, =0x04088032
++	str r2, [r0, #0x01c]
++	ldr r2, =0x00008033
++	str r2, [r0, #0x01c]
++	ldr r2, =0x00048031
++	str r2, [r0, #0x01c]
++	ldr r2, =0x09408030
++	str r2, [r0, #0x01c]
++	ldr r2, =0x04008040
++	str r2, [r0, #0x01c]
++
++	ldr r2, =0x00005800
++	str r2, [r0, #0x020]
++	ldr r2, =0x00011117
++	str r2, [r0, #0x818]
++	str r2, [r1, #0x818]
++	ldr r2, =0x00025576
++	str r2, [r0, #0x004]
++	ldr r2, =0x00011006
++	str r2, [r0, #0x404]
++	ldr r2, =0x00000000
++	str r2, [r0, #0x01c]
++.endm
++
++.macro imx6dqsabresd_ddr_setting
++	ldr r0, =IOMUXC_BASE_ADDR
++	ldr r1, =0x000c0000
++	str r1, [r0, #0x798]
++	ldr r1, =0x00000000
++	str r1, [r0, #0x758]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x588]
++	str r1, [r0, #0x594]
++	str r1, [r0, #0x56c]
++	str r1, [r0, #0x578]
++	str r1, [r0, #0x74c]
++	str r1, [r0, #0x57c]
++
++	ldr r1, =0x00000000
++	str r1, [r0, #0x58c]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x59c]
++	str r1, [r0, #0x5a0]
++	str r1, [r0, #0x78c]
++
++	ldr r1, =0x00020000
++	str r1, [r0, #0x750]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x5a8]
++	str r1, [r0, #0x5b0]
++	str r1, [r0, #0x524]
++	str r1, [r0, #0x51c]
++	str r1, [r0, #0x518]
++	str r1, [r0, #0x50c]
++	str r1, [r0, #0x5b8]
++	str r1, [r0, #0x5c0]
++
++	ldr r1, =0x00020000
++	str r1, [r0, #0x774]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x784]
++	str r1, [r0, #0x788]
++	str r1, [r0, #0x794]
++	str r1, [r0, #0x79c]
++	str r1, [r0, #0x7a0]
++	str r1, [r0, #0x7a4]
++	str r1, [r0, #0x7a8]
++	str r1, [r0, #0x748]
++	str r1, [r0, #0x5ac]
++	str r1, [r0, #0x5b4]
++	str r1, [r0, #0x528]
++	str r1, [r0, #0x520]
++	str r1, [r0, #0x514]
++	str r1, [r0, #0x510]
++	str r1, [r0, #0x5bc]
++	str r1, [r0, #0x5c4]
++
++	ldr r0, =MMDC_P0_BASE_ADDR
++	ldr r2, =0xa1390003
++	str r2, [r0, #0x800]
++
++	ldr r2, =0x001F001F
++	str r2, [r0, #0x80c]
++	str r2, [r0, #0x810]
++	ldr r1, =MMDC_P1_BASE_ADDR
++	str r2, [r1, #0x80c]
++	str r2, [r1, #0x810]
++
++	ldr r2, =0x43270338
++	str r2, [r0, #0x83c]
++	ldr r2, =0x03200314
++	str r2, [r0, #0x840]
++
++	ldr r2, =0x431A032F
++	str r2, [r1, #0x83c]
++	ldr r2, =0x03200263
++	str r2, [r1, #0x840]
++
++	ldr r2, =0x4B434748
++	str r2, [r0, #0x848]
++	ldr r2, =0x4445404C
++	str r2, [r1, #0x848]
++
++	ldr r2, =0x38444542
++	str r2, [r0, #0x850]
++	ldr r2, =0x4935493A
++	str r2, [r1, #0x850]
++
++	ldr r2, =0x33333333
++	str r2, [r0, #0x81c]
++	str r2, [r0, #0x820]
++	str r2, [r0, #0x824]
++	str r2, [r0, #0x828]
++	str r2, [r1, #0x81c]
++	str r2, [r1, #0x820]
++	str r2, [r1, #0x824]
++	str r2, [r1, #0x828]
++
++	ldr r2, =0x00000800
++	str r2, [r0, #0x8b8]
++	str r2, [r1, #0x8b8]
++
++	ldr r2, =0x00020036
++	str r2, [r0, #0x004]
++	ldr r2, =0x09444040
++	str r2, [r0, #0x008]
++
++	ldr r2, =0x555A7975
++	str r2, [r0, #0x00c]
++	ldr r2, =0xFF538F64
++	str r2, [r0, #0x010]
++
++	ldr r2, =0x01FF00DB
++	str r2, [r0, #0x014]
++	ldr r2, =0x00001740
++	str r2, [r0, #0x018]
++
++	ldr r2, =0x00008000
++	str r2, [r0, #0x01c]
++	ldr r2, =0x000026d2
++	str r2, [r0, #0x02c]
++	ldr r2, =0x005A1023
++	str r2, [r0, #0x030]
++	ldr r2, =0x00000027
++	str r2, [r0, #0x040]
++
++	ldr r2, =0x831A0000
++	str r2, [r0, #0x000]
++
++	ldr r2, =0x04088032
++	str r2, [r0, #0x01c]
++	ldr r2, =0x00008033
++	str r2, [r0, #0x01c]
++	ldr r2, =0x00048031
++	str r2, [r0, #0x01c]
++	ldr r2, =0x09408030
++	str r2, [r0, #0x01c]
++	ldr r2, =0x04008040
++	str r2, [r0, #0x01c]
++
++	ldr r2, =0x00005800
++	str r2, [r0, #0x020]
++	ldr r2, =0x00011117
++	str r2, [r0, #0x818]
++	str r2, [r1, #0x818]
++	ldr r2, =0x00025576
++	str r2, [r0, #0x004]
++	ldr r2, =0x00011006
++	str r2, [r0, #0x404]
++	ldr r2, =0x00000000
++	str r2, [r0, #0x01c]
++.endm
++
++.macro imx6dlsabresd_ddr_setting
++	ldr r0, =IOMUXC_BASE_ADDR
++	ldr r1, =0x000c0000
++	str r1, [r0, #0x774]
++	ldr r1, =0x00000000
++	str r1, [r0, #0x754]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x4ac]
++	str r1, [r0, #0x4b0]
++	str r1, [r0, #0x464]
++	str r1, [r0, #0x490]
++	str r1, [r0, #0x74c]
++	str r1, [r0, #0x494]
++
++	ldr r1, =0x00000000
++	str r1, [r0, #0x4a0]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x4b4]
++	str r1, [r0, #0x4b8]
++	str r1, [r0, #0x76c]
++
++	ldr r1, =0x00020000
++	str r1, [r0, #0x750]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x4bc]
++	str r1, [r0, #0x4c0]
++	str r1, [r0, #0x4c4]
++	str r1, [r0, #0x4c8]
++	str r1, [r0, #0x4cc]
++	str r1, [r0, #0x4d0]
++	str r1, [r0, #0x4d4]
++	str r1, [r0, #0x4d8]
++
++	ldr r1, =0x00020000
++	str r1, [r0, #0x760]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x764]
++	str r1, [r0, #0x770]
++	str r1, [r0, #0x778]
++	str r1, [r0, #0x77c]
++	str r1, [r0, #0x780]
++	str r1, [r0, #0x784]
++	str r1, [r0, #0x78c]
++	str r1, [r0, #0x748]
++	str r1, [r0, #0x470]
++	str r1, [r0, #0x474]
++	str r1, [r0, #0x478]
++	str r1, [r0, #0x47c]
++	str r1, [r0, #0x480]
++	str r1, [r0, #0x484]
++	str r1, [r0, #0x488]
++	str r1, [r0, #0x48c]
++
++	ldr r0, =MMDC_P0_BASE_ADDR
++	ldr r2, =0xa1390003
++	str r2, [r0, #0x800]
++
++	ldr r2, =0x001f001f
++	str r2, [r0, #0x80c]
++	str r2, [r0, #0x810]
++	ldr r1, =MMDC_P1_BASE_ADDR
++	str r2, [r1, #0x80c]
++	str r2, [r1, #0x810]
++
++	ldr r2, =0x4220021F
++	str r2, [r0, #0x83c]
++	ldr r2, =0x0207017E
++	str r2, [r0, #0x840]
++
++	ldr r2, =0x4201020C
++	str r2, [r1, #0x83c]
++	ldr r2, =0x01660172
++	str r2, [r1, #0x840]
++
++	ldr r2, =0x4A4D4E4D
++	str r2, [r0, #0x848]
++	ldr r2, =0x4A4F5049
++	str r2, [r1, #0x848]
++
++	ldr r2, =0x3F3C3D31
++	str r2, [r0, #0x850]
++	ldr r2, =0x3238372B
++	str r2, [r1, #0x850]
++
++	ldr r2, =0x33333333
++	str r2, [r0, #0x81c]
++	str r2, [r0, #0x820]
++	str r2, [r0, #0x824]
++	str r2, [r0, #0x828]
++	str r2, [r1, #0x81c]
++	str r2, [r1, #0x820]
++	str r2, [r1, #0x824]
++	str r2, [r1, #0x828]
++
++	ldr r2, =0x00000800
++	str r2, [r0, #0x8b8]
++	str r2, [r1, #0x8b8]
++
++	ldr r2, =0x0002002D
++	str r2, [r0, #0x004]
++	ldr r2, =0x00333030
++	str r2, [r0, #0x008]
++
++	ldr r2, =0x3F435313
++	str r2, [r0, #0x00c]
++	ldr r2, =0xB66E8B63
++	str r2, [r0, #0x010]
++
++	ldr r2, =0x01FF00DB
++	str r2, [r0, #0x014]
++	ldr r2, =0x00001740
++	str r2, [r0, #0x018]
++
++	ldr r2, =0x00008000
++	str r2, [r0, #0x01c]
++	ldr r2, =0x000026d2
++	str r2, [r0, #0x02c]
++	ldr r2, =0x00431023
++	str r2, [r0, #0x030]
++	ldr r2, =0x00000027
++	str r2, [r0, #0x040]
++
++	ldr r2, =0x831A0000
++	str r2, [r0, #0x000]
++
++	ldr r2, =0x04008032
++	str r2, [r0, #0x01c]
++	ldr r2, =0x00008033
++	str r2, [r0, #0x01c]
++	ldr r2, =0x00048031
++	str r2, [r0, #0x01c]
++	ldr r2, =0x05208030
++	str r2, [r0, #0x01c]
++	ldr r2, =0x04008040
++	str r2, [r0, #0x01c]
++
++	ldr r2, =0x00005800
++	str r2, [r0, #0x020]
++	ldr r2, =0x00011117
++	str r2, [r0, #0x818]
++	str r2, [r1, #0x818]
++	ldr r2, =0x0002556D
++	str r2, [r0, #0x004]
++	ldr r2, =0x00011006
++	str r2, [r0, #0x404]
++	ldr r2, =0x00000000
++	str r2, [r0, #0x01c]
++.endm
++
++.macro imx6solosabresd_ddr_setting
++	ldr r0, =IOMUXC_BASE_ADDR
++	ldr r1, =0x000c0000
++	str r1, [r0, #0x774]
++	ldr r1, =0x00000000
++	str r1, [r0, #0x754]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x4ac]
++	str r1, [r0, #0x4b0]
++	str r1, [r0, #0x464]
++	str r1, [r0, #0x490]
++	str r1, [r0, #0x74c]
++	str r1, [r0, #0x494]
++
++	ldr r1, =0x00000000
++	str r1, [r0, #0x4a0]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x4b4]
++	str r1, [r0, #0x4b8]
++	str r1, [r0, #0x76c]
++
++	ldr r1, =0x00020000
++	str r1, [r0, #0x750]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x4bc]
++	str r1, [r0, #0x4c0]
++	str r1, [r0, #0x4c4]
++	str r1, [r0, #0x4c8]
++
++	ldr r1, =0x00020000
++	str r1, [r0, #0x760]
++
++	ldr r1, =0x00000030
++	str r1, [r0, #0x764]
++	str r1, [r0, #0x770]
++	str r1, [r0, #0x778]
++	str r1, [r0, #0x77c]
++	str r1, [r0, #0x470]
++	str r1, [r0, #0x474]
++	str r1, [r0, #0x478]
++	str r1, [r0, #0x47c]
++
++	ldr r0, =MMDC_P0_BASE_ADDR
++	ldr r2, =0xa1390003
++	str r2, [r0, #0x800]
++
++	ldr r2, =0x001F001F
++	str r2, [r0, #0x80c]
++	str r2, [r0, #0x810]
++
++	ldr r2, =0x42190219
++	str r2, [r0, #0x83c]
++	ldr r2, =0x017B0177
++	str r2, [r0, #0x840]
++
++	ldr r2, =0x4B4D4E4D
++	str r2, [r0, #0x848]
++
++	ldr r2, =0x3F3E2D36
++	str r2, [r0, #0x850]
++
++	ldr r2, =0x33333333
++	str r2, [r0, #0x81c]
++	str r2, [r0, #0x820]
++	str r2, [r0, #0x824]
++	str r2, [r0, #0x828]
++
++	ldr r2, =0x00000800
++	str r2, [r0, #0x8b8]
++
++	ldr r2, =0x0002002D
++	str r2, [r0, #0x004]
++	ldr r2, =0x00333030
++	str r2, [r0, #0x008]
++
++	ldr r2, =0x3F435313
++	str r2, [r0, #0x00c]
++	ldr r2, =0xB66E8B63
++	str r2, [r0, #0x010]
++
++	ldr r2, =0x01FF00DB
++	str r2, [r0, #0x014]
++	ldr r2, =0x00001740
++	str r2, [r0, #0x018]
++
++	ldr r2, =0x00008000
++	str r2, [r0, #0x01c]
++	ldr r2, =0x000026d2
++	str r2, [r0, #0x02c]
++	ldr r2, =0x00431023
++	str r2, [r0, #0x030]
++	ldr r2, =0x00000017
++	str r2, [r0, #0x040]
++
++	ldr r2, =0x83190000
++	str r2, [r0, #0x000]
++
++	ldr r2, =0x04008032
++	str r2, [r0, #0x01c]
++	ldr r2, =0x00008033
++	str r2, [r0, #0x01c]
++	ldr r2, =0x00048031
++	str r2, [r0, #0x01c]
++	ldr r2, =0x05208030
++	str r2, [r0, #0x01c]
++	ldr r2, =0x04008040
++	str r2, [r0, #0x01c]
++
++	ldr r2, =0x00005800
++	str r2, [r0, #0x020]
++	ldr r2, =0x00011117
++	str r2, [r0, #0x818]
++	ldr r2, =0x0002556D
++	str r2, [r0, #0x004]
++	ldr r2, =0x00011006
++	str r2, [r0, #0x404]
++	ldr r2, =0x00000000
++	str r2, [r0, #0x01c]
++.endm
++.macro imx6_clock_gating
++	ldr r0, =CCM_BASE_ADDR
++	ldr r1, =0x00C03F3F
++	str r1, [r0, #0x068]
++	ldr r1, =0x0030FC03
++	str r1, [r0, #0x06c]
++	ldr r1, =0x0FFFC000
++	str r1, [r0, #0x070]
++	ldr r1, =0x3FF00000
++	str r1, [r0, #0x074]
++	ldr r1, =0x00FFF300
++	str r1, [r0, #0x078]
++	ldr r1, =0x0F0000C3
++	str r1, [r0, #0x07c]
++	ldr r1, =0x000003FF
++	str r1, [r0, #0x080]
++.endm
++
++.macro imx6_qos_setting
++	ldr r0, =IOMUXC_BASE_ADDR
++	ldr r1, =0xF00000CF
++	str r1, [r0, #0x10]
++
++	ldr r1, =0x007F007F
++	str r1, [r0, #0x18]
++	str r1, [r0, #0x1c]
++.endm
++
++.macro imx6_ddr_setting
++#if defined (CONFIG_MX6SOLO)
++	imx6solosabresd_ddr_setting
++#elif defined (CONFIG_MX6DL)
++	imx6dlsabresd_ddr_setting
++#elif defined (CONFIG_MX6QP)
++	imx6dqpsabresd_ddr_setting
++#elif defined (CONFIG_MX6Q)
++	imx6dqsabresd_ddr_setting
++#else
++	#error "SOC not configured"
++#endif
++
++.endm
++
++/* include the common plugin code here */
++#include <asm/arch/mx6_plugin.S>
+diff --git a/u-boot/configs/mx6dlsmarc_defconfig b/u-boot/configs/mx6dlsmarc_defconfig
+new file mode 100644
+index 0000000..a386958
+--- /dev/null
++++ b/u-boot/configs/mx6dlsmarc_defconfig
+@@ -0,0 +1,5 @@
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6smarc/mx6dl_micron_1g.cfg,MX6DL,SYS_USE_SPINOR"
++CONFIG_ARM=y
++CONFIG_TARGET_MX6SMARC=y
++CONFIG_DM=y
++CONFIG_DM_THERMAL=y
+diff --git a/u-boot/configs/mx6qsmarc_defconfig b/u-boot/configs/mx6qsmarc_defconfig
+new file mode 100644
+index 0000000..462579c
+--- /dev/null
++++ b/u-boot/configs/mx6qsmarc_defconfig
+@@ -0,0 +1,5 @@
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6smarc/mx6q_micron_1g.cfg,MX6Q,SYS_USE_SPINOR"
++CONFIG_ARM=y
++CONFIG_TARGET_MX6SMARC=y
++CONFIG_DM=y
++CONFIG_DM_THERMAL=y
+diff --git a/u-boot/configs/mx6solosmarc_defconfig b/u-boot/configs/mx6solosmarc_defconfig
+new file mode 100644
+index 0000000..f47f6cf
+--- /dev/null
++++ b/u-boot/configs/mx6solosmarc_defconfig
+@@ -0,0 +1,5 @@
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6smarc/mx6solo_micron_1g.cfg,MX6DL,SYS_USE_SPINOR"
++CONFIG_ARM=y
++CONFIG_TARGET_MX6SMARC=y
++CONFIG_DM=y
++CONFIG_DM_THERMAL=y
+diff --git a/u-boot/include/configs/mx6smarc.h b/u-boot/include/configs/mx6smarc.h
+new file mode 100644
+index 0000000..de779c5
+--- /dev/null
++++ b/u-boot/include/configs/mx6smarc.h
+@@ -0,0 +1,111 @@
++/*
++ * Copyright (C) 2012-2015 Freescale Semiconductor, Inc.
++ *
++ * Configuration settings for the Freescale i.MX6Q SabreSD board.
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#ifndef __MX6QSMARC_CONFIG_H
++#define __MX6QSMARC_CONFIG_H
++
++#include <asm/arch/imx-regs.h>
++#include <asm/imx-common/gpio.h>
++
++#ifdef CONFIG_SPL
++#define CONFIG_SPL_LIBCOMMON_SUPPORT
++#define CONFIG_SPL_MMC_SUPPORT
++#include "imx6_spl.h"
++#endif
++
++#define CONFIG_MACH_TYPE	3980
++#define CONFIG_MXC_UART_BASE	UART1_BASE
++#define CONFIG_CONSOLE_DEV		"ttymxc0"
++#define CONFIG_MMCROOT			"/dev/mmcblk2p2"  /* SDHC3 */
++#if defined(CONFIG_MX6QP)
++#define CONFIG_DEFAULT_FDT_FILE	"imx6qp-sabresd.dtb"
++#define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
++#elif defined(CONFIG_MX6Q)
++#define CONFIG_DEFAULT_FDT_FILE	"imx6q-rev-sa01-pfuze100.dtb"
++#define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
++#elif defined(CONFIG_MX6DL)
++#define CONFIG_DEFAULT_FDT_FILE	"imx6solo-rev-sa01-pfuze100.dtb"
++#define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
++#elif defined(CONFIG_MX6SOLO)
++#define CONFIG_DEFAULT_FDT_FILE	"imx6solo-rev-sa01-pfuze100.dtb"
++#define PHYS_SDRAM_SIZE		(512u * 1024 * 1024)
++#endif
++
++#include "mx6smarc_common.h"
++
++#define CONFIG_SYS_FSL_USDHC_NUM	3
++#define CONFIG_SYS_MMC_ENV_DEV		1	/* SDHC3 */
++#define CONFIG_SYS_MMC_ENV_PART                0       /* user partition */
++
++#ifdef CONFIG_SYS_USE_SPINOR
++#define CONFIG_SF_DEFAULT_CS   0
++#endif
++
++/*
++ * imx6 q/dl/solo pcie would be failed to work properly in kernel, if
++ * the pcie module is iniialized/enumerated both in uboot and linux
++ * kernel.
++ * rootcause:imx6 q/dl/solo pcie don't have the reset mechanism.
++ * it is only be RESET by the POR. So, the pcie module only be
++ * initialized/enumerated once in one POR.
++ * Set to use pcie in kernel defaultly, mask the pcie config here.
++ * Remove the mask freely, if the uboot pcie functions, rather than
++ * the kernel's, are required.
++ */
++/* #define CONFIG_CMD_PCI */
++#ifdef CONFIG_CMD_PCI
++#define CONFIG_PCI
++#define CONFIG_PCI_PNP
++#define CONFIG_PCI_SCAN_SHOW
++#define CONFIG_PCIE_IMX
++#define CONFIG_PCIE_IMX_PERST_GPIO	IMX_GPIO_NR(7, 12)
++#define CONFIG_PCIE_IMX_POWER_GPIO	IMX_GPIO_NR(3, 19)
++#endif
++
++/* PMIC */
++#define CONFIG_POWER
++#define CONFIG_POWER_I2C
++#define CONFIG_POWER_PFUZE100
++#define CONFIG_POWER_PFUZE100_I2C_ADDR	0x08
++
++/* USB Configs */
++#define CONFIG_CMD_USB
++#ifdef CONFIG_CMD_USB
++#define CONFIG_USB_EHCI
++#define CONFIG_USB_EHCI_MX6
++#define CONFIG_USB_STORAGE
++#define CONFIG_EHCI_HCD_INIT_AFTER_RESET
++#define CONFIG_USB_HOST_ETHER
++#define CONFIG_USB_ETHER_ASIX
++#define CONFIG_MXC_USB_PORTSC		(PORT_PTS_UTMI | PORT_PTS_PTW)
++#define CONFIG_MXC_USB_FLAGS		0
++#define CONFIG_USB_MAX_CONTROLLER_COUNT	1 /* Enabled USB controller number */
++#endif
++
++/*#define CONFIG_SPLASH_SCREEN*/
++/*#define CONFIG_MXC_EPDC*/
++
++/*
++ * SPLASH SCREEN Configs
++ */
++#if defined(CONFIG_SPLASH_SCREEN) && defined(CONFIG_MXC_EPDC)
++	/*
++	 * Framebuffer and LCD
++	 */
++	#define CONFIG_CMD_BMP
++	#define CONFIG_LCD
++	#define CONFIG_SYS_CONSOLE_IS_IN_ENV
++	#undef LCD_TEST_PATTERN
++	/* #define CONFIG_SPLASH_IS_IN_MMC			1 */
++	#define LCD_BPP					LCD_MONOCHROME
++	/* #define CONFIG_SPLASH_SCREEN_ALIGN		1 */
++
++	#define CONFIG_WAVEFORM_BUF_SIZE		0x200000
++#endif /* CONFIG_SPLASH_SCREEN && CONFIG_MXC_EPDC */
++
++#endif                         /* __MX6QSMARC_CONFIG_H */
+diff --git a/u-boot/include/configs/mx6smarc_common.h b/u-boot/include/configs/mx6smarc_common.h
+new file mode 100644
+index 0000000..7ec5d58
+--- /dev/null
++++ b/u-boot/include/configs/mx6smarc_common.h
+@@ -0,0 +1,450 @@
++/*
++ * Copyright (C) 2012-2015 Freescale Semiconductor, Inc.
++ *
++ * Configuration settings for the Freescale i.MX6Q SabreSD board.
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#ifndef __MX6QSMARC_COMMON_CONFIG_H
++#define __MX6QSMARC_COMMON_CONFIG_H
++
++#define CONFIG_MX6
++
++#ifdef CONFIG_MX6SOLO
++#define CONFIG_MX6DL
++#endif
++
++/* uncomment for PLUGIN mode support */
++/* #define CONFIG_USE_PLUGIN */
++
++/* uncomment for SECURE mode support */
++/* #define CONFIG_SECURE_BOOT */
++
++#ifdef CONFIG_SECURE_BOOT
++#ifndef CONFIG_CSF_SIZE
++#define CONFIG_CSF_SIZE 0x4000
++#endif
++#endif
++
++#include "mx6_common.h"
++#include <linux/sizes.h>
++
++#define CONFIG_DISPLAY_CPUINFO
++#define CONFIG_DISPLAY_BOARDINFO
++
++#include <asm/arch/imx-regs.h>
++#include <asm/imx-common/gpio.h>
++
++#define CONFIG_CMDLINE_TAG
++#define CONFIG_SETUP_MEMORY_TAGS
++#define CONFIG_INITRD_TAG
++#define CONFIG_REVISION_TAG
++
++#define CONFIG_SYS_GENERIC_BOARD
++
++/* Size of malloc() pool */
++#define CONFIG_SYS_MALLOC_LEN		(16 * SZ_1M)
++
++#define CONFIG_BOARD_EARLY_INIT_F
++#define CONFIG_BOARD_LATE_INIT
++#define CONFIG_MXC_GPIO
++
++#define CONFIG_MXC_UART
++
++#define CONFIG_CMD_FUSE
++#ifdef CONFIG_CMD_FUSE
++#define CONFIG_MXC_OCOTP
++#endif
++
++/* MMC Configs */
++#define CONFIG_FSL_ESDHC
++#define CONFIG_FSL_USDHC
++#define CONFIG_SYS_FSL_ESDHC_ADDR      0
++
++#define CONFIG_MMC
++#define CONFIG_CMD_MMC
++#define CONFIG_GENERIC_MMC
++#define CONFIG_BOUNCE_BUFFER
++#define CONFIG_CMD_EXT2
++#define CONFIG_CMD_EXT4
++#define CONFIG_CMD_EXT4_WRITE
++#define CONFIG_CMD_FAT
++#define CONFIG_DOS_PARTITION
++
++#define CONFIG_SUPPORT_EMMC_BOOT /* eMMC specific */
++
++#define CONFIG_CMD_PING
++#define CONFIG_CMD_DHCP
++#define CONFIG_CMD_MII
++#define CONFIG_CMD_NET
++#define CONFIG_FEC_MXC
++#define CONFIG_MII
++#define IMX_FEC_BASE			ENET_BASE_ADDR
++#define CONFIG_FEC_XCV_TYPE		RGMII
++#define CONFIG_ETHPRIME			"FEC"
++#define CONFIG_FEC_MXC_PHYADDR		1
++
++#define CONFIG_PHYLIB
++#define CONFIG_PHY_ATHEROS
++
++/* allow to overwrite serial and ethaddr */
++#define CONFIG_ENV_OVERWRITE
++#define CONFIG_CONS_INDEX              1
++#define CONFIG_BAUDRATE                        115200
++
++/* Command definition */
++#include <config_cmd_default.h>
++
++#define CONFIG_CMD_BMODE
++#define CONFIG_CMD_BOOTZ
++#define CONFIG_CMD_SETEXPR
++#undef CONFIG_CMD_IMLS
++
++#define CONFIG_BOOTDELAY               1
++
++#define CONFIG_LOADADDR                        0x12000000
++#define CONFIG_SYS_TEXT_BASE           0x17800000
++#define CONFIG_SYS_MMC_IMG_LOAD_PART	1
++
++#ifdef CONFIG_SYS_BOOT_NAND
++#define CONFIG_MFG_NAND_PARTITION "mtdparts=gpmi-nand:64m(boot),16m(kernel),16m(dtb),-(rootfs) "
++#else
++#define CONFIG_MFG_NAND_PARTITION ""
++#endif
++
++#define CONFIG_MFG_ENV_SETTINGS \
++	"mfgtool_args=setenv bootargs console=" CONFIG_CONSOLE_DEV ",115200 " \
++		"rdinit=/linuxrc " \
++		"g_mass_storage.stall=0 g_mass_storage.removable=1 " \
++		"g_mass_storage.file=/fat g_mass_storage.ro=1 " \
++		"g_mass_storage.idVendor=0x066F g_mass_storage.idProduct=0x37FF "\
++		"g_mass_storage.iSerialNumber=\"\" "\
++		"enable_wait_mode=off "\
++		CONFIG_MFG_NAND_PARTITION \
++		"\0" \
++		"initrd_addr=0x12C00000\0" \
++		"initrd_high=0xffffffff\0" \
++		"bootcmd_mfg=run mfgtool_args;bootz ${loadaddr} ${initrd_addr} ${fdt_addr};\0" \
++
++#ifdef CONFIG_SUPPORT_EMMC_BOOT
++#define EMMC_ENV \
++	"emmcdev=2\0" \
++	"update_emmc_firmware=" \
++		"if test ${ip_dyn} = yes; then " \
++			"setenv get_cmd dhcp; " \
++		"else " \
++			"setenv get_cmd tftp; " \
++		"fi; " \
++		"if ${get_cmd} ${update_sd_firmware_filename}; then " \
++			"if mmc dev ${emmcdev} 1; then "	\
++				"setexpr fw_sz ${filesize} / 0x200; " \
++				"setexpr fw_sz ${fw_sz} + 1; "	\
++				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
++			"fi; "	\
++		"fi\0"
++#else
++#define EMMC_ENV ""
++#endif
++
++#if defined(CONFIG_SYS_BOOT_NAND)
++	/*
++	 * The dts also enables the WEIN NOR which is mtd0.
++	 * So the partions' layout for NAND is:
++	 *     mtd1: 16M      (uboot)
++	 *     mtd2: 16M      (kernel)
++	 *     mtd3: 16M      (dtb)
++	 *     mtd4: left     (rootfs)
++	 */
++#define CONFIG_EXTRA_ENV_SETTINGS \
++	CONFIG_MFG_ENV_SETTINGS \
++	"fdt_addr=0x18000000\0" \
++	"fdt_high=0xffffffff\0"	  \
++	"bootargs=console=" CONFIG_CONSOLE_DEV ",115200 ubi.mtd=4 "  \
++		"root=ubi0:rootfs rootfstype=ubifs "		     \
++		"mtdparts=gpmi-nand:64m(boot),16m(kernel),16m(dtb),-(rootfs)\0"\
++	"bootcmd=nand read ${loadaddr} 0x4000000 0x800000;"\
++		"nand read ${fdt_addr} 0x5000000 0x100000;"\
++		"bootz ${loadaddr} - ${fdt_addr}\0"
++
++#elif defined(CONFIG_SYS_BOOT_SATA)
++
++#define CONFIG_EXTRA_ENV_SETTINGS \
++		CONFIG_MFG_ENV_SETTINGS \
++		"fdt_addr=0x18000000\0" \
++		"fdt_high=0xffffffff\0"   \
++		"bootargs=console=" CONFIG_CONSOLE_DEV ",115200 \0"\
++		"bootargs_sata=setenv bootargs ${bootargs} " \
++			"root=/dev/sda1 rootwait rw \0" \
++		"bootcmd_sata=run bootargs_sata; sata init; " \
++			"sata read ${loadaddr} 0x800  0x4000; " \
++			"sata read ${fdt_addr} 0x8000 0x800; " \
++			"bootz ${loadaddr} - ${fdt_addr} \0" \
++		"bootcmd=run bootcmd_sata \0"
++
++#else
++#define CONFIG_EXTRA_ENV_SETTINGS \
++	CONFIG_MFG_ENV_SETTINGS \
++	"epdc_waveform=epdc_splash.bin\0" \
++	"script=boot.scr\0" \
++	"image=zImage\0" \
++	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
++	"fdt_addr=0x18000000\0" \
++	"boot_fdt=try\0" \
++	"ip_dyn=yes\0" \
++	"console=" CONFIG_CONSOLE_DEV "\0" \
++	"fdt_high=0xffffffff\0"	  \
++	"initrd_high=0xffffffff\0" \
++	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
++	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
++	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
++	"mmcautodetect=yes\0" \
++	"update_sd_firmware=" \
++		"if test ${ip_dyn} = yes; then " \
++			"setenv get_cmd dhcp; " \
++		"else " \
++			"setenv get_cmd tftp; " \
++		"fi; " \
++		"if mmc dev ${mmcdev}; then "	\
++			"if ${get_cmd} ${update_sd_firmware_filename}; then " \
++				"setexpr fw_sz ${filesize} / 0x200; " \
++				"setexpr fw_sz ${fw_sz} + 1; "	\
++				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
++			"fi; "	\
++		"fi\0" \
++	EMMC_ENV	  \
++	"smp=" CONFIG_SYS_NOSMP "\0"\
++	"mmcargs=setenv bootargs console=${console},${baudrate} ${smp} " \
++		"root=${mmcroot}\0" \
++	"loadbootscript=" \
++		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++	"bootscript=echo Running bootscript from mmc ...; " \
++		"source\0" \
++	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
++	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
++	"mmcboot=echo Booting from mmc ...; " \
++		"run mmcargs; " \
++		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
++			"if run loadfdt; then " \
++				"bootz ${loadaddr} - ${fdt_addr}; " \
++			"else " \
++				"if test ${boot_fdt} = try; then " \
++					"bootz; " \
++				"else " \
++					"echo WARN: Cannot load the DT; " \
++				"fi; " \
++			"fi; " \
++		"else " \
++			"bootz; " \
++		"fi;\0" \
++	"netargs=setenv bootargs console=${console},${baudrate} ${smp} " \
++		"root=/dev/nfs " \
++		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
++	"netboot=echo Booting from net ...; " \
++		"run netargs; " \
++		"if test ${ip_dyn} = yes; then " \
++			"setenv get_cmd dhcp; " \
++		"else " \
++			"setenv get_cmd tftp; " \
++		"fi; " \
++		"${get_cmd} ${image}; " \
++		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
++			"if ${get_cmd} ${fdt_addr} ${fdt_file}; then " \
++				"bootz ${loadaddr} - ${fdt_addr}; " \
++			"else " \
++				"if test ${boot_fdt} = try; then " \
++					"bootz; " \
++				"else " \
++					"echo WARN: Cannot load the DT; " \
++				"fi; " \
++			"fi; " \
++		"else " \
++			"bootz; " \
++		"fi;\0"
++
++#define CONFIG_BOOTCOMMAND \
++	"mmc dev ${mmcdev};" \
++	"if mmc rescan; then " \
++		"if run loadbootscript; then " \
++		"run bootscript; " \
++		"else " \
++			"if run loadimage; then " \
++				"run mmcboot; " \
++			"else run netboot; " \
++			"fi; " \
++		"fi; " \
++	"else run netboot; fi"
++#endif
++
++#define CONFIG_ARP_TIMEOUT     200UL
++
++/* Miscellaneous configurable options */
++#define CONFIG_SYS_LONGHELP
++#define CONFIG_SYS_HUSH_PARSER
++#define CONFIG_SYS_PROMPT_HUSH_PS2     "> "
++#define CONFIG_AUTO_COMPLETE
++#define CONFIG_SYS_CBSIZE              1024
++
++/* Print Buffer Size */
++#define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
++#define CONFIG_SYS_MAXARGS             256
++#define CONFIG_SYS_BARGSIZE CONFIG_SYS_CBSIZE
++
++#define CONFIG_CMD_MEMTEST
++#define CONFIG_SYS_MEMTEST_START       0x10000000
++#define CONFIG_SYS_MEMTEST_END         0x10010000
++#define CONFIG_SYS_MEMTEST_SCRATCH     0x10800000
++
++#define CONFIG_SYS_LOAD_ADDR           CONFIG_LOADADDR
++
++#define CONFIG_CMDLINE_EDITING
++#define CONFIG_STACKSIZE               (128 * 1024)
++
++/* Physical Memory Map */
++#define CONFIG_NR_DRAM_BANKS           1
++#define PHYS_SDRAM                     MMDC0_ARB_BASE_ADDR
++
++#define CONFIG_SYS_SDRAM_BASE          PHYS_SDRAM
++#define CONFIG_SYS_INIT_RAM_ADDR       IRAM_BASE_ADDR
++#define CONFIG_SYS_INIT_RAM_SIZE       IRAM_SIZE
++
++#define CONFIG_SYS_INIT_SP_OFFSET \
++	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
++#define CONFIG_SYS_INIT_SP_ADDR \
++	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
++
++/* FLASH and environment organization */
++#define CONFIG_SYS_NO_FLASH
++
++#define CONFIG_ENV_SIZE			(8 * 1024)
++
++#ifndef CONFIG_SYS_NOSMP
++#define CONFIG_SYS_NOSMP
++#endif
++
++#if defined CONFIG_SYS_BOOT_SPINOR
++#define CONFIG_SYS_USE_SPINOR
++#define CONFIG_ENV_IS_IN_SPI_FLASH
++#elif defined CONFIG_SYS_BOOT_EIMNOR
++#define CONFIG_SYS_USE_EIMNOR
++#define CONFIG_ENV_IS_IN_FLASH
++#elif defined CONFIG_SYS_BOOT_NAND
++#define CONFIG_SYS_USE_NAND
++#define CONFIG_ENV_IS_IN_NAND
++#elif defined CONFIG_SYS_BOOT_SATA
++#define CONFIG_ENV_IS_IN_SATA
++#define CONFIG_CMD_SATA
++#else
++#define CONFIG_ENV_IS_IN_MMC
++#endif
++
++#ifdef CONFIG_CMD_SATA
++#define CONFIG_DWC_AHSATA
++#define CONFIG_SYS_SATA_MAX_DEVICE	1
++#define CONFIG_DWC_AHSATA_PORT_ID	0
++#define CONFIG_DWC_AHSATA_BASE_ADDR	SATA_ARB_BASE_ADDR
++#define CONFIG_LBA48
++#define CONFIG_LIBATA
++#endif
++
++#ifdef CONFIG_SYS_USE_SPINOR
++#define CONFIG_CMD_SF
++#define CONFIG_SPI_FLASH
++#define CONFIG_SPI_FLASH_STMICRO
++#define CONFIG_MXC_SPI
++#define CONFIG_SF_DEFAULT_BUS  0
++#define CONFIG_SF_DEFAULT_SPEED 20000000
++#define CONFIG_SF_DEFAULT_MODE (SPI_MODE_0)
++#endif
++
++#ifdef CONFIG_SYS_USE_EIMNOR
++#undef CONFIG_SYS_NO_FLASH
++#define CONFIG_SYS_FLASH_BASE           WEIM_ARB_BASE_ADDR
++#define CONFIG_SYS_FLASH_SECT_SIZE     (128 * 1024)
++#define CONFIG_SYS_MAX_FLASH_BANKS 1    /* max number of memory banks */
++#define CONFIG_SYS_MAX_FLASH_SECT 256   /* max number of sectors on one chip */
++#define CONFIG_SYS_FLASH_CFI            /* Flash memory is CFI compliant */
++#define CONFIG_FLASH_CFI_DRIVER         /* Use drivers/cfi_flash.c */
++#define CONFIG_SYS_FLASH_USE_BUFFER_WRITE /* Use buffered writes*/
++#define CONFIG_SYS_FLASH_EMPTY_INFO
++#endif
++
++#ifdef CONFIG_SYS_USE_NAND
++#define CONFIG_CMD_NAND
++#define CONFIG_CMD_NAND_TRIMFFS
++
++/* NAND stuff */
++#define CONFIG_NAND_MXS
++#define CONFIG_SYS_MAX_NAND_DEVICE     1
++#define CONFIG_SYS_NAND_BASE           0x40000000
++#define CONFIG_SYS_NAND_5_ADDR_CYCLE
++#define CONFIG_SYS_NAND_ONFI_DETECTION
++
++/* DMA stuff, needed for GPMI/MXS NAND support */
++#define CONFIG_APBH_DMA
++#define CONFIG_APBH_DMA_BURST
++#define CONFIG_APBH_DMA_BURST8
++#endif
++
++#if defined(CONFIG_ENV_IS_IN_MMC)
++#define CONFIG_ENV_OFFSET		(8 * 64 * 1024)
++#elif defined(CONFIG_ENV_IS_IN_SPI_FLASH)
++#define CONFIG_ENV_OFFSET              (768 * 1024)
++#define CONFIG_ENV_SECT_SIZE           (64 * 1024)
++#define CONFIG_ENV_SPI_BUS             CONFIG_SF_DEFAULT_BUS
++#define CONFIG_ENV_SPI_CS              CONFIG_SF_DEFAULT_CS
++#define CONFIG_ENV_SPI_MODE            CONFIG_SF_DEFAULT_MODE
++#define CONFIG_ENV_SPI_MAX_HZ          CONFIG_SF_DEFAULT_SPEED
++#elif defined(CONFIG_ENV_IS_IN_FLASH)
++#undef CONFIG_ENV_SIZE
++#define CONFIG_ENV_SIZE                        CONFIG_SYS_FLASH_SECT_SIZE
++#define CONFIG_ENV_SECT_SIZE           CONFIG_SYS_FLASH_SECT_SIZE
++#define CONFIG_ENV_OFFSET              (4 * CONFIG_SYS_FLASH_SECT_SIZE)
++#elif defined(CONFIG_ENV_IS_IN_NAND)
++#undef CONFIG_ENV_SIZE
++#define CONFIG_ENV_OFFSET              (37 << 20)
++#define CONFIG_ENV_SECT_SIZE           (128 << 10)
++#define CONFIG_ENV_SIZE                        CONFIG_ENV_SECT_SIZE
++#elif defined(CONFIG_ENV_IS_IN_SATA)
++#define CONFIG_ENV_OFFSET		(768 * 1024)
++#define CONFIG_SATA_ENV_DEV		0
++#define CONFIG_SYS_DCACHE_OFF /* remove when sata driver support cache */
++#endif
++
++#define CONFIG_OF_LIBFDT
++
++#ifndef CONFIG_SYS_DCACHE_OFF
++#define CONFIG_CMD_CACHE
++#endif
++
++/* I2C Configs */
++#define CONFIG_CMD_I2C
++#define CONFIG_SYS_I2C
++#define CONFIG_SYS_I2C_MXC
++#define CONFIG_SYS_I2C_SPEED		  100000
++
++/* Framebuffer */
++#define CONFIG_VIDEO
++#define CONFIG_VIDEO_IPUV3
++#define CONFIG_CFB_CONSOLE
++#define CONFIG_VGA_AS_SINGLE_DEVICE
++#define CONFIG_SYS_CONSOLE_IS_IN_ENV
++#define CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE
++#define CONFIG_VIDEO_BMP_RLE8
++#define CONFIG_SPLASH_SCREEN
++#define CONFIG_SPLASH_SCREEN_ALIGN
++#define CONFIG_BMP_16BPP
++#define CONFIG_VIDEO_LOGO
++#define CONFIG_VIDEO_BMP_LOGO
++#ifdef CONFIG_MX6DL                                                             
++#define CONFIG_IPUV3_CLK 198000000
++#else
++#define CONFIG_IPUV3_CLK 264000000
++#endif
++#define CONFIG_IMX_HDMI
++#define CONFIG_IMX_VIDEO_SKIP
++
++#if defined(CONFIG_ANDROID_SUPPORT)
++#include "mx6sabreandroid_common.h"
++#endif
++#endif                         /* __MX6QSMARC_COMMON_CONFIG_H */
+diff --git a/u-boot/run.sh b/u-boot/run.sh
+new file mode 100755
+index 0000000..2b56676
+--- /dev/null
++++ b/u-boot/run.sh
+@@ -0,0 +1,46 @@
++#!/bin/bash
++
++LOCAL_PATH=`pwd`
++ARCH=arm
++CROSS_COMPILE=$LOCAL_PATH/../fsl/bin/arm-fsl-linux-gnueabi-
++
++if [ $1 == "distclean" ]; then
++	make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE distclean
++	#rm -f imxcfg.imx
++	#rm -f u-boot-6*
++	exit;
++fi
++
++if [ $1 == "sabresd" ]; then
++	PLATFORM=mx6qsabresd_defconfig
++fi
++
++if [ $1 == "quad-p" ]; then
++	PLATFORM=mx6qsmarc_defconfig
++fi
++
++if [ $1 == "quad" ]; then
++    PLATFORM=mx6qsmarc_defconfig
++fi
++
++if [ $1 == "solo-p" ]; then
++	PLATFORM=mx6solosmarc_defconfig
++fi
++
++if [ $1 == "solo" ]; then
++    PLATFORM=mx6solosmarc_defconfig
++fi
++
++if [ $1 == "dl-p" ]; then
++    PLATFORM=mx6dlsmarc_defconfig
++fi
++
++if [ $1 == "dl" ]; then
++    PLATFORM=mx6dlsmarc_defconfig
++fi
++
++JOBS=$2
++
++make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE $PLATFORM
++make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE $JOBS
++
+-- 
+1.9.1
+
