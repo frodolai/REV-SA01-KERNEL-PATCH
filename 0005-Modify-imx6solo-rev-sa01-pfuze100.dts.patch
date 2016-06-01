@@ -1,0 +1,599 @@
+From cd4c2478e372f9023a1b46363a350ccd26f21b6f Mon Sep 17 00:00:00 2001
+From: Nick Liu <nick_liu@avalue.com.tw>
+Date: Wed, 1 Jun 2016 14:58:22 +0800
+Subject: [PATCH 1/1] Modify imx6solo-rev-sa01-pfuze100.dts
+
+modified:   kernel/arch/arm/boot/dts/Makefile
+modified:   kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
+deleted:    kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+deleted:    kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi
+deleted:    kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+modified:   kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+modified:   kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+deleted:    kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+---
+ kernel/arch/arm/boot/dts/Makefile                  |   8 +-
+ .../arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts  |  12 --
+ kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts |  40 ----
+ .../arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi    | 231 ---------------------
+ .../arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi | 131 ------------
+ kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi        |  12 ++
+ .../arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts    |  16 +-
+ .../arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts |  36 ----
+ 8 files changed, 17 insertions(+), 469 deletions(-)
+ delete mode 100644 kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+ delete mode 100644 kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi
+ delete mode 100644 kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+ delete mode 100644 kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+
+diff --git a/kernel/arch/arm/boot/dts/Makefile b/kernel/arch/arm/boot/dts/Makefile
+index 1f05b77..d89fae1 100644
+--- a/kernel/arch/arm/boot/dts/Makefile
++++ b/kernel/arch/arm/boot/dts/Makefile
+@@ -330,7 +330,9 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
+ 	imx6q-tx6q-1110.dtb \
+ 	imx6q-udoo.dtb \
+ 	imx6q-wandboard.dtb \
+-	imx6q-wandboard-revb1.dtb
++        imx6q-wandboard-revb1.dtb \
++        imx6q-rev-sa01-pfuze100.dtb \
++        imx6solo-rev-sa01-pfuze100.dtb
+ dtb-$(CONFIG_SOC_IMX6SL) += \
+ 	imx6sl-evk.dtb \
+ 	imx6sl-evk-btwifi.dtb \
+@@ -404,10 +406,6 @@ dtb-$(CONFIG_SOC_VF610) += \
+ 	vf610-colibri-eval-v3.dtb \
+ 	imx6sx-sabreauto-m4.dtb \
+ 	vf610-cosmic.dtb \
+-	imx6q-rev-sa01-pfuze100.dtb \
+-	#imx6q-rev-sa01-wm8326.dtb \
+-	imx6solo-rev-sa01-pfuze100.dtb \
+-	#imx6solo-rev-sa01-wm8326.dtb \
+ 	vf610-twr.dtb
+ dtb-$(CONFIG_ARCH_MXS) += \
+ 	imx23-evk.dtb \
+diff --git a/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
+index 4c80d8c..355e3c8 100644
+--- a/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
++++ b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts
+@@ -49,15 +49,3 @@
+ &sata {
+ 	status = "okay";
+ };
+-
+-&can1 {
+-    pinctrl-names = "default";
+-    pinctrl-0 = <&pinctrl_flexcan1>;
+-    status = "okay";
+-};
+-
+-&can2 {
+-    pinctrl-names = "default";
+-    pinctrl-0 = <&pinctrl_flexcan2>;
+-    status = "okay";
+-};
+diff --git a/kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts b/kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
+deleted file mode 100644
+index f8ce506..0000000
+--- a/kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
++++ /dev/null
+@@ -1,40 +0,0 @@
+-/*
+- * Copyright 2012=2015 Freescale Semiconductor, Inc.
+- * Copyright 2011 Linaro Ltd.
+- *
+- * The code contained herein is licensed under the GNU General Public
+- * License. You may obtain a copy of the GNU General Public License
+- * Version 2 or later at the following locations:
+- *
+- * http://www.opensource.org/licenses/gpl-license.html
+- * http://www.gnu.org/copyleft/gpl.html
+- */
+-
+-/dts-v1/;
+-
+-#include "imx6q.dtsi"
+-#include "imx6qdl-smarc.dtsi"
+-#include "imx6qdl-rev-sa01-wm8326.dtsi"
+-
+-/ {
+-	model = "Freescale i.MX6 Quad SMARC REV-SA01 Device Board";
+-	compatible = "fsl,imx6q-smarc", "fsl,imx6q";
+-};
+-
+-&ldb {
+-	lvds-channel@0 {
+-		crtc = "ipu2-di0";
+-	};
+-
+-	lvds-channel@1 {
+-		crtc = "ipu2-di1";
+-	};
+-};
+-
+-&mxcfb1 {
+-	status = "okay";
+-};
+-
+-&sata {
+-	status = "okay";
+-};
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi
+deleted file mode 100644
+index 32fef28..0000000
+--- a/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-pfuze100.dtsi
++++ /dev/null
+@@ -1,231 +0,0 @@
+-/*
+- * Copyright 2012-2015 Freescale Semiconductor, Inc.
+- * Copyright 2011 Linaro Ltd.
+- *
+- * The code contained herein is licensed under the GNU General Public
+- * License. You may obtain a copy of the GNU General Public License
+- * Version 2 or later at the following locations:
+- *
+- * http://www.opensource.org/licenses/gpl-license.html
+- * http://www.gnu.org/copyleft/gpl.html
+- */
+-
+-#include <dt-bindings/gpio/gpio.h>
+-#include <dt-bindings/input/input.h>
+-
+-/ {
+-	regulators {
+-		reg_audio: wm8962_supply {
+-			compatible = "regulator-fixed";
+-			regulator-name = "wm8962-supply";
+-			gpio = <&gpio1 17 0>;
+-			enable-active-high;
+-		};
+-	};
+-
+-	sound {
+-		compatible = "fsl,imx6q-sabresd-wm8962",
+-			   "fsl,imx-audio-wm8962";
+-		model = "wm8962-audio";
+-		cpu-dai = <&ssi2>;
+-		audio-codec = <&codec>;
+-		asrc-controller = <&asrc>;
+-		audio-routing =
+-			"Headphone Jack", "HPOUTL",
+-			"Headphone Jack", "HPOUTR",
+-			"Ext Spk", "SPKOUTL",
+-			"Ext Spk", "SPKOUTR",
+-			"AMIC", "MICBIAS",
+-			"IN3R", "AMIC",
+-			"DMIC", "MICBIAS",
+-			"DMICDAT", "DMIC",
+-			"CPU-Playback", "ASRC-Playback",
+-			"Playback", "CPU-Playback",
+-			"ASRC-Capture", "CPU-Capture",
+-			"CPU-Capture", "Capture";
+-			mux-int-port = <2>;
+-			mux-ext-port = <3>;
+-			mic-det-gpios = <&gpio3 6 1>;
+-	};
+-};
+-
+-&audmux {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_audmux>;
+-	status = "okay";
+-};
+-
+-&usdhc2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_usdhc2>;
+-	bus-width = <4>;
+-	cd-gpios = <&gpio2 2 0>;
+-	wp-gpios = <&gpio2 3 0>;
+-	no-1-8-v;
+-	keep-power-in-suspend;
+-	enable-sdio-wakeup;
+-	status = "okay";
+-};
+-
+-&i2c1 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_i2c1>;
+-	status = "okay";
+-
+-	codec: wm8962@1a {
+-		compatible = "wlf,wm8962";
+-		reg = <0x1a>;
+-		clocks = <&clks 201>;
+-		DCVDD-supply = <&reg_audio>;
+-		DBVDD-supply = <&reg_audio>;
+-		AVDD-supply = <&reg_audio>;
+-		CPVDD-supply = <&reg_audio>;
+-		MICVDD-supply = <&reg_audio>;
+-		PLLVDD-supply = <&reg_audio>;
+-		SPKVDD1-supply = <&reg_audio>;
+-		SPKVDD2-supply = <&reg_audio>;
+-		gpio-cfg = <
+-			0x0000 /* 0:Default */
+-			0x0000 /* 1:Default */
+-			0x0013 /* 2:FN_DMICCLK */
+-			0x0000 /* 3:Default */
+-			0x8014 /* 4:FN_DMICCDAT */
+-			0x0000 /* 5:Default */
+-		>;
+-		amic-mono;
+-	};
+-
+-	pmic: pfuze100@08 {
+-		compatible = "fsl,pfuze100";
+-		reg = <0x08>;
+-
+-		regulators {
+-			sw1a_reg: sw1ab {
+-				regulator-min-microvolt = <300000>;
+-				regulator-max-microvolt = <1875000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-				regulator-ramp-delay = <6250>;
+-			};
+-
+-			sw1c_reg: sw1c {
+-				regulator-min-microvolt = <300000>;
+-				regulator-max-microvolt = <1875000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-				regulator-ramp-delay = <6250>;
+-			};
+-
+-			sw2_reg: sw2 {
+-				regulator-min-microvolt = <800000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-				regulator-ramp-delay = <6250>;
+-			};
+-
+-			sw3a_reg: sw3a {
+-				regulator-min-microvolt = <400000>;
+-				regulator-max-microvolt = <1975000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-			};
+-
+-			sw3b_reg: sw3b {
+-				regulator-min-microvolt = <400000>;
+-				regulator-max-microvolt = <1975000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-			};
+-
+-			sw4_reg: sw4 {
+-				regulator-min-microvolt = <800000>;
+-				regulator-max-microvolt = <3300000>;
+-			};
+-
+-			swbst_reg: swbst {
+-				regulator-min-microvolt = <5000000>;
+-				regulator-max-microvolt = <5150000>;
+-			};
+-
+-			snvs_reg: vsnvs {
+-				regulator-min-microvolt = <1000000>;
+-				regulator-max-microvolt = <3000000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-			};
+-
+-			vref_reg: vrefddr {
+-				regulator-boot-on;
+-				regulator-always-on;
+-			};
+-
+-			vgen1_reg: vgen1 {
+-				regulator-min-microvolt = <800000>;
+-				regulator-max-microvolt = <1550000>;
+-			};
+-
+-			vgen2_reg: vgen2 {
+-				regulator-min-microvolt = <800000>;
+-				regulator-max-microvolt = <1550000>;
+-			};
+-
+-			vgen3_reg: vgen3 {
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <3300000>;
+-			};
+-
+-			vgen4_reg: vgen4 {
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-always-on;
+-			};
+-
+-			vgen5_reg: vgen5 {
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-always-on;
+-			};
+-
+-			vgen6_reg: vgen6 {
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-always-on;
+-			};
+-		};
+-	};
+-
+-	mma8451@1c {
+-		compatible = "fsl,mma8451";
+-		reg = <0x1c>;
+-		position = <0>;
+-		interrupt-parent = <&gpio1>;
+-		interrupts = <18 8>;
+-		interrupt-route = <1>;
+-	};
+-
+-	rx8010@32 {
+-		compatible = "epson,rx8010";
+-		reg = <0x32>;
+-	};
+-};
+-
+-&i2c2 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_i2c2>;
+-	status = "okay";
+-
+-	hdmi: edid@50 {
+-		compatible = "fsl,imx6-hdmi-i2c";
+-		reg = <0x50>;
+-	};
+-};
+-
+-&i2c3 {
+-        clock-frequency = <100000>;
+-        pinctrl-names = "default";
+-        pinctrl-0 = <&pinctrl_i2c3>;
+-        status = "okay";
+-};
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
+deleted file mode 100644
+index 5afffe2..0000000
+--- a/kernel/arch/arm/boot/dts/imx6qdl-rev-sa01-wm8326.dtsi
++++ /dev/null
+@@ -1,131 +0,0 @@
+-/*
+- * Copyright 2012-2015 Freescale Semiconductor, Inc.
+- * Copyright 2011 Linaro Ltd.
+- *
+- * The code contained herein is licensed under the GNU General Public
+- * License. You may obtain a copy of the GNU General Public License
+- * Version 2 or later at the following locations:
+- *
+- * http://www.opensource.org/licenses/gpl-license.html
+- * http://www.gnu.org/copyleft/gpl.html
+- */
+-
+-#include <dt-bindings/gpio/gpio.h>
+-#include <dt-bindings/input/input.h>
+-
+-/ {
+-	regulators {
+-		reg_audio: wm8962_supply {
+-			compatible = "regulator-fixed";
+-			regulator-name = "wm8962-supply";
+-			gpio = <&gpio1 17 0>;
+-			enable-active-high;
+-		};
+-	};
+-
+-	sound {
+-		compatible =	"fsl,imx6q-sabresd-wm8962",
+-				"fsl,imx-audio-wm8962";
+-		model = "wm8962-audio";
+-		cpu-dai = <&ssi2>;
+-		audio-codec = <&codec>;
+-		asrc-controller = <&asrc>;
+-		audio-routing =
+-			"Headphone Jack", "HPOUTL",
+-			"Headphone Jack", "HPOUTR",
+-			"Ext Spk", "SPKOUTL",
+-			"Ext Spk", "SPKOUTR",
+-			"AMIC", "MICBIAS",
+-			"IN3R", "AMIC",
+-			"DMIC", "MICBIAS",
+-			"DMICDAT", "DMIC",
+-			"CPU-Playback", "ASRC-Playback",
+-			"Playback", "CPU-Playback",
+-			"ASRC-Capture", "CPU-Capture",
+-			"CPU-Capture", "Capture";
+-		mux-int-port = <2>;
+-		mux-ext-port = <3>;
+-		mic-det-gpios = <&gpio1 9 1>;
+-	};
+-};
+-
+-&audmux {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_audmux>;
+-	status = "okay";
+-};
+-
+-&usdhc2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_usdhc2>;
+-	bus-width = <4>;
+-	cd-gpios = <&gpio3 14 0>;
+-	wp-gpios = <&gpio3 13 0>;
+-	no-1-8-v;
+-	keep-power-in-suspend;
+-	enable-sdio-wakeup;
+-	status = "okay";
+-};
+-
+-&i2c1 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_i2c1>;
+-	status = "okay";
+-
+-	codec: wm8962@1a {
+-		compatible = "wlf,wm8962";
+-		reg = <0x1a>;
+-		clocks = <&clks 201>;
+-		DCVDD-supply = <&reg_audio>;
+-		DBVDD-supply = <&reg_audio>;
+-		AVDD-supply = <&reg_audio>;
+-		CPVDD-supply = <&reg_audio>;
+-		MICVDD-supply = <&reg_audio>;
+-		PLLVDD-supply = <&reg_audio>;
+-		SPKVDD1-supply = <&reg_audio>;
+-		SPKVDD2-supply = <&reg_audio>;
+-		gpio-cfg = <
+-			0x0000 /* 0:Default */
+-			0x0000 /* 1:Default */
+-			0x0013 /* 2:FN_DMICCLK */
+-			0x0000 /* 3:Default */
+-			0x8014 /* 4:FN_DMICCDAT */
+-			0x0000 /* 5:Default */
+-		>;
+-		amic-mono;
+-       };
+-
+-	mma8451@1c {
+-		compatible = "fsl,mma8451";
+-		reg = <0x1c>;
+-		position = <0>;
+-		interrupt-parent = <&gpio1>;
+-		interrupts = <18 8>;
+-		interrupt-route = <1>;
+-	};
+-
+-	rx8010@32 {
+-		compatible = "epson,rx8010";
+-		reg = <0x32>;
+-	};
+-};
+-
+-&i2c2 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_i2c2>;
+-	status = "okay";
+-
+-	hdmi: edid@50 {
+-		compatible = "fsl,imx6-hdmi-i2c";
+-		reg = <0x50>;
+-	};
+-};
+-
+-&i2c3 {
+-        clock-frequency = <100000>;
+-        pinctrl-names = "default";
+-        pinctrl-0 = <&pinctrl_i2c3>;
+-        status = "okay";
+-};
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+index 0a20905..5717123 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+@@ -818,3 +818,15 @@
+ 	fsl,wdog_b;
+ 	status = "okay";
+ };
++
++&can1 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_flexcan1>;
++    status = "okay";
++};
++
++&can2 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_flexcan2>;
++    status = "okay";
++};
+diff --git a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+index 80f10fe..7c4e9ba 100644
+--- a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
++++ b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dts
+@@ -14,7 +14,6 @@
+ 
+ #include "imx6dl.dtsi"
+ #include "imx6qdl-smarc.dtsi"
+-#include "imx6qdl-rev-sa01-pfuze100.dtsi"
+ 
+ / {
+ 	model = "Freescale i.MX6 SOLO SMARC REV-SA01 Device Board";
+@@ -23,25 +22,14 @@
+ 
+ &ldb {
+ 	lvds-channel@0 {
+-		crtc = "ipu2-di0";
++        crtc = "ipu2-di1";
+ 	};
+ 
+ 	lvds-channel@1 {
+-		crtc = "ipu2-di1";
++        crtc = "ipu2-di0";
+ 	};
+ };
+ 
+ &mxcfb1 {
+ 	status = "okay";
+ };
+-
+-&cpu0 {
+-	arm-supply = <&sw1a_reg>;
+-	soc-supply = <&sw1c_reg>;
+-};
+-
+-&gpc {
+-	/* use ldo-bypass, u-boot will check it and configure */
+-	fsl,ldo-bypass = <1>;
+-	fsl,wdog-reset = <2>;
+-};
+diff --git a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts b/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
+deleted file mode 100644
+index 16ce63f..0000000
+--- a/kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dts
++++ /dev/null
+@@ -1,36 +0,0 @@
+-/*
+- * Copyright 2012=2015 Freescale Semiconductor, Inc.
+- * Copyright 2011 Linaro Ltd.
+- *
+- * The code contained herein is licensed under the GNU General Public
+- * License. You may obtain a copy of the GNU General Public License
+- * Version 2 or later at the following locations:
+- *
+- * http://www.opensource.org/licenses/gpl-license.html
+- * http://www.gnu.org/copyleft/gpl.html
+- */
+-
+-/dts-v1/;
+-
+-#include "imx6dl.dtsi"
+-#include "imx6qdl-smarc.dtsi"
+-#include "imx6qdl-rev-sa01-wm8326.dtsi"
+-
+-/ {
+-	model = "Freescale i.MX6 SOLO SMARC REV-SA01 Device Board";
+-	compatible = "fsl,imx6solo-smarc", "fsl,imx6q";
+-};
+-
+-&ldb {
+-	lvds-channel@0 {
+-		crtc = "ipu2-di0";
+-	};
+-
+-	lvds-channel@1 {
+-		crtc = "ipu2-di1";
+-	};
+-};
+-
+-&mxcfb1 {
+-	status = "okay";
+-};
+-- 
+1.9.1
+
