@@ -1,6 +1,6 @@
-From 4bb9139792076b556185cef39311848805daef7b Mon Sep 17 00:00:00 2001
+From cfa569e45ef57d9f5aacb19a1a4e181c7897b8fc Mon Sep 17 00:00:00 2001
 From: Nick Liu <nick_liu@avalue.com.tw>
-Date: Wed, 1 Jun 2016 16:59:29 +0800
+Date: Wed, 22 Jun 2016 16:37:21 +0800
 Subject: [PATCH 1/1] maintain
 
 1. Add wm8326 configure.
@@ -8,8 +8,30 @@ Subject: [PATCH 1/1] maintain
 3. Modify pfuze100 configure.
 4. Modify pfuze100 dts.
 5. Modify LVDS parameter(640x480 -> 1024x768).
+
+modified:   Makefile
+modified:   kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
+modified:   kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+modified:   u-boot/board/freescale/mx6smarc/mx6smarc.c
+deleted:    u-boot/configs/mx6dlsmarc_defconfig
+deleted:    u-boot/configs/mx6qsmarc_defconfig
+deleted:    u-boot/configs/mx6solosmarc_defconfig
+new file:   u-boot/configs/mx6dlsmarc_pfuze100_defconfig
+new file:   u-boot/configs/mx6dlsmarc_wm8326_defconfig
+new file:   u-boot/configs/mx6qsmarc_pfuze100_defconfig
+new file:   u-boot/configs/mx6qsmarc_wm8326_defconfig
+new file:   u-boot/configs/mx6solosmarc_pfuze100_defconfig
+new file:   u-boot/configs/mx6solosmarc_wm8326_defconfig
+modified:   u-boot/include/configs/mx6smarc.h
+modified:   u-boot/run.sh
+
+Squashed commit of the following:
+
+commit 49551cc450e2b63a8157523273239fb583d72f96
+Author: Nick Liu <nick_liu@avalue.com.tw>
+Date:   Wed Jun 15 16:16:06 2016 +0800
 ---
- Makefile                                           |  38 +-
+ Makefile                                           |  34 +-
  kernel/arch/arm/boot/dts/Makefile                  |   8 +-
  .../arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dts  |   2 +-
  kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts |  51 ++
@@ -30,7 +52,7 @@ Subject: [PATCH 1/1] maintain
  u-boot/configs/mx6solosmarc_wm8326_defconfig       |   5 +
  u-boot/include/configs/mx6smarc.h                  |  47 +-
  u-boot/run.sh                                      |  25 +-
- 21 files changed, 1793 insertions(+), 897 deletions(-)
+ 21 files changed, 1792 insertions(+), 894 deletions(-)
  create mode 100644 kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dts
  create mode 100644 kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
  create mode 100644 kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
@@ -47,10 +69,10 @@ Subject: [PATCH 1/1] maintain
  create mode 100644 u-boot/configs/mx6solosmarc_wm8326_defconfig
 
 diff --git a/Makefile b/Makefile
-index e7354d6..86ca639 100644
+index 884f4e2..86ca639 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -15,42 +15,50 @@ kernel: kernel.bin
+@@ -15,40 +15,50 @@ kernel: kernel.bin
  kernel.bin: cleankernel
  	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/ imx_v7_defconfig
  	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/
@@ -59,10 +81,7 @@ index e7354d6..86ca639 100644
 +
  	install kernel/arch/arm/boot/zImage out/zImage
  	install kernel/arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dtb out/imx6q-rev-sa01-pfuze100.dtb
--	#install kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dtb out/imx6q-rev-sa01-wm8326.dtb
--	#install kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dtb out/imx6solo-rev-sa01-pfuze100.dtb
--	#install kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dtb out/imx6solo-rev-sa01-wm8326.dtb
-+	install kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dtb out/imx6solo-rev-sa01-pfuze100.dtb
+ 	install kernel/arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dtb out/imx6solo-rev-sa01-pfuze100.dtb
 +	install kernel/arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dtb out/imx6q-rev-sa01-wm8326.dtb
 +	install kernel/arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dtb out/imx6solo-rev-sa01-wm8326.dtb
  
