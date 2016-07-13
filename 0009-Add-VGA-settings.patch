@@ -1,0 +1,174 @@
+From b1fa26012c35a67dd39d60c9652ee1f56c0585bf Mon Sep 17 00:00:00 2001
+From: Nick Liu <nick_liu@avalue.com.tw>
+Date: Wed, 13 Jul 2016 11:58:39 +0800
+Subject: [PATCH 2/2] Add VGA settings.
+
+1. add VGA settings in device tree.
+2. add 1024x768 parameter.
+
+modified:   arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
+modified:   arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+modified:   drivers/video/fbdev/mxc/mxc_lcdif.c
+---
+ .../arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi  | 25 +++++++++----------
+ kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi | 25 +++++++++----------
+ kernel/drivers/video/fbdev/mxc/mxc_lcdif.c         | 28 ++++++++++++++--------
+ 3 files changed, 40 insertions(+), 38 deletions(-)
+
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
+index 14a9597..7d800c6 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
+@@ -141,7 +141,7 @@
+ 		compatible = "fsl,mxc_sdc_fb";
+ 		disp_dev = "hdmi";
+ 		interface_pix_fmt = "RGB24";
+-		mode_str ="1920x1080M@60";
++        mode_str = "1920x1080M@60";
+ 		default_bpp = <24>;
+ 		int_clk = <0>;
+ 		late_init = <0>;
+@@ -151,9 +151,9 @@
+ 	mxcfb2: fb@1 {
+ 		compatible = "fsl,mxc_sdc_fb";
+ 		disp_dev = "lcd";
+-		interface_pix_fmt = "RGB565";
+-		mode_str ="CLAA-WVGA";
+-		default_bpp = <16>;
++        interface_pix_fmt = "RGB24";
++        mode_str = "1024x768";
++        default_bpp = <24>;
+ 		int_clk = <0>;
+ 		late_init = <0>;
+ 		status = "disabled";
+@@ -183,7 +183,7 @@
+ 		compatible = "fsl,lcd";
+ 		ipu_id = <0>;
+ 		disp_id = <0>;
+-		default_ifmt = "RGB565";
++        default_ifmt = "RGB24";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_ipu1>;
+ 		status = "okay";
+@@ -680,15 +680,12 @@
+                 clock-frequency = <65000000>;
+                 hactive = <1024>;
+                 vactive = <768>;
+-                hback-porch = <23 228 496>;
+-                hfront-porch = <3 32 70>;
+-                hsync-len = <6 60 130>;
+-                vback-porch = <3 27 158>;
+-                vfront-porch = <1 8 22>;
+-                vsync-len = <0 3 42>;
+-                hsync-active = <1>;
+-                vsync-active = <1>;
+-                de-active = <1>;
++                hback-porch = <168>;
++                hfront-porch = <8>;
++                vback-porch = <29>;
++                vfront-porch = <3>;
++                hsync-len = <144>;
++                vsync-len = <6>;
+ 
+                 /* FG050722DSSWDGT1 */
+                 /*
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+index b5e0af7..e9bc1ec 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+@@ -139,7 +139,7 @@
+ 		compatible = "fsl,mxc_sdc_fb";
+ 		disp_dev = "hdmi";
+ 		interface_pix_fmt = "RGB24";
+-		mode_str ="1920x1080M@60";
++        mode_str = "1920x1080M@60";
+ 		default_bpp = <24>;
+ 		int_clk = <0>;
+ 		late_init = <0>;
+@@ -149,9 +149,9 @@
+ 	mxcfb2: fb@1 {
+ 		compatible = "fsl,mxc_sdc_fb";
+ 		disp_dev = "lcd";
+-		interface_pix_fmt = "RGB565";
+-		mode_str ="CLAA-WVGA";
+-		default_bpp = <16>;
++        interface_pix_fmt = "RGB24";
++        mode_str = "1024x768";
++        default_bpp = <24>;
+ 		int_clk = <0>;
+ 		late_init = <0>;
+ 		status = "disabled";
+@@ -181,7 +181,7 @@
+ 		compatible = "fsl,lcd";
+ 		ipu_id = <0>;
+ 		disp_id = <0>;
+-		default_ifmt = "RGB565";
++        default_ifmt = "RGB24";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_ipu1>;
+ 		status = "okay";
+@@ -573,15 +573,12 @@
+                 clock-frequency = <65000000>;
+                 hactive = <1024>;
+                 vactive = <768>;
+-                hback-porch = <23 228 496>;
+-                hfront-porch = <3 32 70>;
+-                hsync-len = <6 60 130>;
+-                vback-porch = <3 27 158>;
+-                vfront-porch = <1 8 22>;
+-                vsync-len = <0 3 42>;
+-                hsync-active = <1>;
+-                vsync-active = <1>;
+-                de-active = <1>;
++                hback-porch = <168>;
++                hfront-porch = <8>;
++                vback-porch = <29>;
++                vfront-porch = <3>;
++                hsync-len = <144>;
++                vsync-len = <6>;
+ 
+                 /* FG050722DSSWDGT1 */
+                 /*
+diff --git a/kernel/drivers/video/fbdev/mxc/mxc_lcdif.c b/kernel/drivers/video/fbdev/mxc/mxc_lcdif.c
+index 59d429c..f4ae328 100644
+--- a/kernel/drivers/video/fbdev/mxc/mxc_lcdif.c
++++ b/kernel/drivers/video/fbdev/mxc/mxc_lcdif.c
+@@ -37,17 +37,25 @@ struct mxc_lcdif_data {
+ 
+ static struct fb_videomode lcdif_modedb[] = {
+ 	{
+-	/* 800x480 @ 57 Hz , pixel clk @ 27MHz */
+-	"CLAA-WVGA", 57, 800, 480, 37037, 40, 60, 10, 10, 20, 10,
+-	FB_SYNC_CLK_LAT_FALL,
+-	FB_VMODE_NONINTERLACED,
+-	0,},
++        /* 800x480 @ 57 Hz , pixel clk @ 27MHz */
++        "CLAA-WVGA", 57, 800, 480, 37037, 40, 60, 10, 10, 20, 10,
++        FB_SYNC_CLK_LAT_FALL,
++        FB_VMODE_NONINTERLACED
++    },
++
+ 	{
+-	/* 800x480 @ 60 Hz , pixel clk @ 32MHz */
+-	"SEIKO-WVGA", 60, 800, 480, 29850, 89, 164, 23, 10, 10, 10,
+-	FB_SYNC_CLK_LAT_FALL,
+-	FB_VMODE_NONINTERLACED,
+-	0,},
++        /* 800x480 @ 60 Hz , pixel clk @ 32MHz */
++        "SEIKO-WVGA", 60, 800, 480, 29850, 89, 164, 23, 10, 10, 10,
++        FB_SYNC_CLK_LAT_FALL,
++        FB_VMODE_NONINTERLACED
++    },
++
++    {
++        // 1024x768 @ 60 Hz, 48.4 kHz hsync
++        "1024x768", 60, 1024, 768, 15384, 168, 8, 29, 3, 144, 6,
++        FB_ACCEL_TRIPLE_FLAG,
++        FB_VMODE_NONINTERLACED
++    }
+ };
+ static int lcdif_modedb_sz = ARRAY_SIZE(lcdif_modedb);
+ 
+-- 
+1.9.1
+
