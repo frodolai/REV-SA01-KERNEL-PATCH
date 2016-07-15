@@ -1,0 +1,39 @@
+From c49456130e256edcde74277896bfb220d14bec54 Mon Sep 17 00:00:00 2001
+From: Nick Liu <nick_liu@avalue.com.tw>
+Date: Fri, 15 Jul 2016 16:10:45 +0800
+Subject: [PATCH] Fixed VGA cannot work.
+
+modified:   kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
+modified:   kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+---
+ kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi | 1 -
+ kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi   | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
+index 7d800c6..ed5d1e6 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc-pfuze100.dtsi
+@@ -499,7 +499,6 @@
+ 				MX6QDL_PAD_RGMII_RD2__RGMII_RD2		0x1b0b0
+ 				MX6QDL_PAD_RGMII_RD3__RGMII_RD3		0x1b0b0
+ 				MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL	0x1b0b0
+-				MX6QDL_PAD_GPIO_16__ENET_REF_CLK	0x4001b0a8
+ 			>;
+ 		};
+ 
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+index e9bc1ec..b680a03 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+@@ -392,7 +392,6 @@
+ 				MX6QDL_PAD_RGMII_RD2__RGMII_RD2		0x1b0b0
+ 				MX6QDL_PAD_RGMII_RD3__RGMII_RD3		0x1b0b0
+ 				MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL	0x1b0b0
+-				MX6QDL_PAD_GPIO_16__ENET_REF_CLK	0x4001b0a8
+ 			>;
+ 		};
+ 
+-- 
+1.9.1
+
