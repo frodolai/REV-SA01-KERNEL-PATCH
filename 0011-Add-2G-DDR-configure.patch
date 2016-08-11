@@ -1,0 +1,486 @@
+From 67dbc212ef29de056d005f765833b703df80bd0f Mon Sep 17 00:00:00 2001
+From: Nick Liu <nick_liu@avalue.com.tw>
+Date: Thu, 11 Aug 2016 15:21:35 +0800
+Subject: [PATCH] Add 2G DDR configure
+
+modified:   Makefile
+modified:   kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+modified:   kernel/run.sh
+modified:   u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg
+new file:   u-boot/board/freescale/mx6smarc/mx6q_micron_2g.cfg
+new file:   u-boot/configs/mx6qsmarc_pfuze100_2g_defconfig
+new file:   u-boot/configs/mx6qsmarc_wm8326_2g_defconfig
+modified:   u-boot/include/configs/mx6smarc.h
+modified:   u-boot/run.sh
+---
+ Makefile                                           |  54 ++++---
+ kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi |   4 +-
+ kernel/run.sh                                      |  12 +-
+ u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg |   4 +-
+ u-boot/board/freescale/mx6smarc/mx6q_micron_2g.cfg | 163 +++++++++++++++++++++
+ u-boot/configs/mx6qsmarc_pfuze100_2g_defconfig     |   5 +
+ u-boot/configs/mx6qsmarc_wm8326_2g_defconfig       |   5 +
+ u-boot/include/configs/mx6smarc.h                  |  12 ++
+ u-boot/run.sh                                      |  47 ++++--
+ 9 files changed, 261 insertions(+), 45 deletions(-)
+ create mode 100644 u-boot/board/freescale/mx6smarc/mx6q_micron_2g.cfg
+ create mode 100644 u-boot/configs/mx6qsmarc_pfuze100_2g_defconfig
+ create mode 100644 u-boot/configs/mx6qsmarc_wm8326_2g_defconfig
+
+diff --git a/Makefile b/Makefile
+index 86ca639..7b0fd92 100644
+--- a/Makefile
++++ b/Makefile
+@@ -12,9 +12,9 @@ kernel: kernel.bin
+ ##########
+ # Kernel #
+ ##########
+-kernel.bin: cleankernel
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/ imx_v7_defconfig
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/
++kernel.bin:
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/ imx_v7_defconfig
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/
+ 
+ 	mkdir -p out
+ 
+@@ -27,39 +27,49 @@ kernel.bin: cleankernel
+ ##########
+ # U-Boot #
+ ##########
+-uboot.bin: cleanuboot
++uboot.bin:
+ 	mkdir -p out
+ 
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6qsmarc_pfuze100_defconfig
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6qsmarc_pfuze100_defconfig
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
+ 	install u-boot/u-boot.imx out/u-boot-6q-pfuze100.imx
+ 
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6solosmarc_pfuze100_defconfig
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6solosmarc_pfuze100_defconfig
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
+ 	install u-boot/u-boot.imx out/u-boot-6solo-pfuze100.imx
+ 
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6dlsmarc_pfuze100_defconfig
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6dlsmarc_pfuze100_defconfig
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
+ 	install u-boot/u-boot.imx out/u-boot-6dl-pfuze100.imx
+ 
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6qsmarc_wm8326_defconfig
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6qsmarc_wm8326_defconfig
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
+ 	install u-boot/u-boot.imx out/u-boot-6q-wm8326.imx
+ 
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6solosmarc_wm8326_defconfig
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6solosmarc_wm8326_defconfig
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
+ 	install u-boot/u-boot.imx out/u-boot-6solo-wm8326.imx
+ 
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6dlsmarc_wm8326_defconfig
+-	$(MAKE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6dlsmarc_wm8326_defconfig
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
+ 	install u-boot/u-boot.imx out/u-boot-6dl-wm8326.imx
+ 
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6qsmarc_pfuze100_2g_defconfig
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6q-pfuze100-2g.imx
++
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ mx6qsmarc_wm8326_2g_defconfig
++	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/
++	install u-boot/u-boot.imx out/u-boot-6q-wm8326-2g.imx
++
+ clean:
+ 	$(MAKE) CROSS_COMPILE=$(CROSS_COMPILE) -C u-boot/ distclean
+ 	$(MAKE) CROSS_COMPILE=$(CROSS_COMPILE) -C kernel/ distclean
+diff --git a/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi b/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+index b680a03..610a651 100644
+--- a/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
++++ b/kernel/arch/arm/boot/dts/imx6qdl-smarc-wm8326.dtsi
+@@ -135,7 +135,7 @@
+ 		hdmi-controller = <&hdmi_audio>;
+ 	};
+ 
+-    mxcfb3: fb@2 {
++    mxcfb1: fb@0 {
+ 		compatible = "fsl,mxc_sdc_fb";
+ 		disp_dev = "hdmi";
+ 		interface_pix_fmt = "RGB24";
+@@ -157,7 +157,7 @@
+ 		status = "disabled";
+ 	};
+ 
+-    mxcfb1: fb@0 {
++    mxcfb3: fb@2 {
+ 		compatible = "fsl,mxc_sdc_fb";
+ 		disp_dev = "ldb";
+         interface_pix_fmt = "RGB666";
+diff --git a/kernel/run.sh b/kernel/run.sh
+index 9600e34..336f3d1 100755
+--- a/kernel/run.sh
++++ b/kernel/run.sh
+@@ -2,7 +2,6 @@
+ 
+ ARCH=arm
+ CROSS_COMPILE=../fsl/bin/arm-fsl-linux-gnueabi-
+-JOBS=$1
+ 
+ if [ $1 == "distclean" ]; then
+     make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE distclean
+@@ -31,9 +30,8 @@ if [ ! -d ../out ]; then
+     mkdir ../out
+ fi
+ 
+-install arch/arm/boot/zImage                                ../out/zImage
+-install arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dtb       ../out/imx6q-rev-sa01-pfuze100.dtb
+-install arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dtb    ../out/imx6solo-rev-sa01-pfuze100.dtb
+-install arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dtb         ../out/imx6q-rev-sa01-wm8326.dtb
+-install arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dtb      ../out/imx6solo-rev-sa01-wm8326.dtb
+-
++cp ./arch/arm/boot/zImage                                ../out/zImage
++cp ./arch/arm/boot/dts/imx6q-rev-sa01-pfuze100.dtb       ../out/imx6q-rev-sa01-pfuze100.dtb
++cp ./arch/arm/boot/dts/imx6solo-rev-sa01-pfuze100.dtb    ../out/imx6solo-rev-sa01-pfuze100.dtb
++cp ./arch/arm/boot/dts/imx6q-rev-sa01-wm8326.dtb         ../out/imx6q-rev-sa01-wm8326.dtb
++cp ./arch/arm/boot/dts/imx6solo-rev-sa01-wm8326.dtb      ../out/imx6solo-rev-sa01-wm8326.dtb
+diff --git a/u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg b/u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg
+index c253d22..dd97cb0 100644
+--- a/u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg
++++ b/u-boot/board/freescale/mx6smarc/mx6q_micron_1g.cfg
+@@ -84,7 +84,7 @@ DATA 4, 0x020e0514, 0x00000030
+ DATA 4, 0x020e0510, 0x00000030
+ DATA 4, 0x020e05bc, 0x00000030
+ DATA 4, 0x020e05c4, 0x00000030
+-DATA 4, 0x021b0800, 0xa1390003
++DATA 4, 0x021b0800, 0xA1390003
+ DATA 4, 0x021b080c, 0x001F001F
+ DATA 4, 0x021b0810, 0x001F001F
+ DATA 4, 0x021b480c, 0x001F001F
+@@ -114,7 +114,7 @@ DATA 4, 0x021b0010, 0xFF538F64
+ DATA 4, 0x021b0014, 0x01FF00DB
+ DATA 4, 0x021b0018, 0x00001740
+ DATA 4, 0x021b001c, 0x00008000
+-DATA 4, 0x021b002c, 0x000026d2
++DATA 4, 0x021b002c, 0x000026D2
+ DATA 4, 0x021b0030, 0x005A1023
+ DATA 4, 0x021b0040, 0x00000027
+ DATA 4, 0x021b0000, 0x831A0000
+diff --git a/u-boot/board/freescale/mx6smarc/mx6q_micron_2g.cfg b/u-boot/board/freescale/mx6smarc/mx6q_micron_2g.cfg
+new file mode 100644
+index 0000000..3f000f2
+--- /dev/null
++++ b/u-boot/board/freescale/mx6smarc/mx6q_micron_2g.cfg
+@@ -0,0 +1,163 @@
++/*
++ * Copyright (C) 2011-2014 Freescale Semiconductor, Inc.
++ * Jason Liu <r64343@freescale.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ *
++ * Refer doc/README.imximage for more details about how-to configure
++ * and create imximage boot image
++ *
++ * The syntax is taken as close as possible with the kwbimage
++ */
++
++#define __ASSEMBLY__
++#include <config.h>
++/* image version */
++IMAGE_VERSION 2
++
++/*
++ * Boot Device : one of spi, sd, sata
++ * the board has no nand and eimnor
++ * spinor: flash_offset: 0x0400
++ * sata:   flash_offset: 0x0400
++ * sd/mmc: flash_offset: 0x0400
++ */
++
++/* the same flash_offset as sd */
++BOOT_FROM      sd
++
++#ifdef CONFIG_USE_PLUGIN
++/*PLUGIN    plugin-binary-file    IRAM_FREE_START_ADDR*/
++PLUGIN	board/freescale/mx6smarc/plugin.bin 0x00907000
++#else
++
++#ifdef CONFIG_SECURE_BOOT
++CSF CONFIG_CSF_SIZE
++#endif
++
++/*
++ * Device Configuration Data (DCD)
++ *
++ * Each entry must have the format:
++ * Addr-type           Address        Value
++ *
++ * where:
++ *      Addr-type register length (1,2 or 4 bytes)
++ *      Address   absolute address of the register
++ *      value     value to be stored in the register
++ */
++DATA 4, 0x020e0798, 0x000C0000
++DATA 4, 0x020e0758, 0x00000000
++DATA 4, 0x020e0588, 0x00000030
++DATA 4, 0x020e0594, 0x00000030
++DATA 4, 0x020e056c, 0x00000030
++DATA 4, 0x020e0578, 0x00000030
++DATA 4, 0x020e074c, 0x00000030
++DATA 4, 0x020e057c, 0x00000030
++DATA 4, 0x020e058c, 0x00000000
++DATA 4, 0x020e059c, 0x00000030
++DATA 4, 0x020e05a0, 0x00000030
++DATA 4, 0x020e078c, 0x00000030
++DATA 4, 0x020e0750, 0x00020000
++DATA 4, 0x020e05a8, 0x00000030
++DATA 4, 0x020e05b0, 0x00000030
++DATA 4, 0x020e0524, 0x00000030
++DATA 4, 0x020e051c, 0x00000030
++DATA 4, 0x020e0518, 0x00000030
++DATA 4, 0x020e050c, 0x00000030
++DATA 4, 0x020e05b8, 0x00000030
++DATA 4, 0x020e05c0, 0x00000030
++DATA 4, 0x020e0774, 0x00020000
++DATA 4, 0x020e0784, 0x00000030
++DATA 4, 0x020e0788, 0x00000030
++DATA 4, 0x020e0794, 0x00000030
++DATA 4, 0x020e079c, 0x00000030
++DATA 4, 0x020e07a0, 0x00000030
++DATA 4, 0x020e07a4, 0x00000030
++DATA 4, 0x020e07a8, 0x00000030
++DATA 4, 0x020e0748, 0x00000030
++DATA 4, 0x020e05ac, 0x00000030
++DATA 4, 0x020e05b4, 0x00000030
++DATA 4, 0x020e0528, 0x00000030
++DATA 4, 0x020e0520, 0x00000030
++DATA 4, 0x020e0514, 0x00000030
++DATA 4, 0x020e0510, 0x00000030
++DATA 4, 0x020e05bc, 0x00000030
++DATA 4, 0x020e05c4, 0x00000030
++DATA 4, 0x021b0800, 0xA1390003
++DATA 4, 0x021b080c, 0x001F001F
++DATA 4, 0x021b0810, 0x001F001F
++DATA 4, 0x021b480c, 0x001F001F
++DATA 4, 0x021b4810, 0x001F001F
++DATA 4, 0x021b083c, 0x4544054C
++DATA 4, 0x021b0840, 0x05280530
++DATA 4, 0x021b483c, 0x45400550
++DATA 4, 0x021b4840, 0x052C050C
++DATA 4, 0x021b0848, 0x3A343638
++DATA 4, 0x021b4848, 0x3634303C
++DATA 4, 0x021b0850, 0x3634423C
++DATA 4, 0x021b4850, 0x48364A3E
++DATA 4, 0x021b081c, 0x33333333
++DATA 4, 0x021b0820, 0x33333333
++DATA 4, 0x021b0824, 0x33333333
++DATA 4, 0x021b0828, 0x33333333
++DATA 4, 0x021b481c, 0x33333333
++DATA 4, 0x021b4820, 0x33333333
++DATA 4, 0x021b4824, 0x33333333
++DATA 4, 0x021b4828, 0x33333333
++DATA 4, 0x021b08b8, 0x00000800
++DATA 4, 0x021b48b8, 0x00000800
++DATA 4, 0x021b0004, 0x00020036
++DATA 4, 0x021b0008, 0x09444040
++DATA 4, 0x021b000c, 0x8A8F79A4
++DATA 4, 0x021b0010, 0xDB538E64
++DATA 4, 0x021b0014, 0x01FF00DB
++DATA 4, 0x021b0018, 0x00001740
++DATA 4, 0x021b001c, 0x00008000
++DATA 4, 0x021b002c, 0x000026D2
++DATA 4, 0x021b0030, 0x008F1023
++DATA 4, 0x021b0040, 0x00000047
++DATA 4, 0x021b0000, 0x841A0000
++DATA 4, 0x021b001c, 0x04088032
++DATA 4, 0x021b001c, 0x0408803a
++DATA 4, 0x021b001c, 0x00008033
++DATA 4, 0x021b001c, 0x0000803b
++DATA 4, 0x021b001c, 0x00048031
++DATA 4, 0x021b001c, 0x00048039
++DATA 4, 0x021b001c, 0x09408030
++DATA 4, 0x021b001c, 0x09408038
++DATA 4, 0x021b001c, 0x04008040
++DATA 4, 0x021b001c, 0x04008048
++DATA 4, 0x021b0020, 0x00005800
++DATA 4, 0x021b0818, 0x00011117
++DATA 4, 0x021b4818, 0x00011117
++DATA 4, 0x021b0004, 0x00025576
++DATA 4, 0x021b0404, 0x00011006
++DATA 4, 0x021b001c, 0x00000000
++
++/* set the default clock gate to save power */
++DATA 4, 0x020c4068, 0x00C03F3F
++DATA 4, 0x020c406c, 0x0030FC03
++DATA 4, 0x020c4070, 0x0FFFC000
++DATA 4, 0x020c4074, 0x3FF00000
++DATA 4, 0x020c4078, 0x00FFF300
++DATA 4, 0x020c407c, 0x0F0000F3
++DATA 4, 0x020c4080, 0x000003FF
++
++/* enable AXI cache for VDOA/VPU/IPU */
++DATA 4, 0x020e0010, 0xF00000CF
++/* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
++DATA 4, 0x020e0018, 0x007F007F
++DATA 4, 0x020e001c, 0x007F007F
++
++/*
++ * Setup CCM_CCOSR register as follows:
++ *
++ * cko1_en  = 1	   --> CKO1 enabled
++ * cko1_div = 111  --> divide by 8
++ * cko1_sel = 1011 --> ahb_clk_root
++ *
++ * This sets CKO1 at ahb_clk_root/8 = 132/8 = 16.5 MHz
++ */
++DATA 4, 0x020c4060, 0x000000fb
++#endif
+diff --git a/u-boot/configs/mx6qsmarc_pfuze100_2g_defconfig b/u-boot/configs/mx6qsmarc_pfuze100_2g_defconfig
+new file mode 100644
+index 0000000..a5db337
+--- /dev/null
++++ b/u-boot/configs/mx6qsmarc_pfuze100_2g_defconfig
+@@ -0,0 +1,5 @@
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6smarc/mx6q_micron_2g.cfg,MX6Q,SYS_USE_SPINOR,SMARC_PCIE_PFUZE100_2G"
++CONFIG_ARM=y
++CONFIG_TARGET_MX6SMARC=y
++CONFIG_DM=y
++CONFIG_DM_THERMAL=y
+diff --git a/u-boot/configs/mx6qsmarc_wm8326_2g_defconfig b/u-boot/configs/mx6qsmarc_wm8326_2g_defconfig
+new file mode 100644
+index 0000000..b55c177
+--- /dev/null
++++ b/u-boot/configs/mx6qsmarc_wm8326_2g_defconfig
+@@ -0,0 +1,5 @@
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6smarc/mx6q_micron_2g.cfg,MX6Q,SYS_USE_SPINOR,SMARC_PCIE_WM8326_2G"
++CONFIG_ARM=y
++CONFIG_TARGET_MX6SMARC=y
++CONFIG_DM=y
++CONFIG_DM_THERMAL=y
+diff --git a/u-boot/include/configs/mx6smarc.h b/u-boot/include/configs/mx6smarc.h
+index 72e1311..4c6f005 100644
+--- a/u-boot/include/configs/mx6smarc.h
++++ b/u-boot/include/configs/mx6smarc.h
+@@ -53,6 +53,18 @@
+ 
+     #endif
+ 
++#elif defined(CONFIG_SMARC_PCIE_PFUZE100_2G)
++    #if defined(CONFIG_MX6Q)
++        #define CONFIG_DEFAULT_FDT_FILE "imx6q-rev-sa01-pfuze100.dtb"
++        #define PHYS_SDRAM_SIZE         (2u * 1024 * 1024 * 1024)
++    #endif
++
++#elif defined(CONFIG_SMARC_PCIE_WM8326_2G)
++    #if defined(CONFIG_MX6Q)
++        #define CONFIG_DEFAULT_FDT_FILE	"imx6q-rev-sa01-wm8326.dtb"
++        #define PHYS_SDRAM_SIZE         (2u * 1024 * 1024 * 1024)
++    #endif
++
+ #endif
+ 
+ #include "mx6smarc_common.h"
+diff --git a/u-boot/run.sh b/u-boot/run.sh
+index a1f403c..202b55f 100755
+--- a/u-boot/run.sh
++++ b/u-boot/run.sh
+@@ -1,43 +1,66 @@
+ #!/bin/bash
+ 
+-LOCAL_PATH=`pwd`
+ ARCH=arm
+-CROSS_COMPILE=$LOCAL_PATH/../fsl/bin/arm-fsl-linux-gnueabi-
++CROSS_COMPILE=../fsl/bin/arm-fsl-linux-gnueabi-
+ 
+ if [ $1 == "distclean" ]; then
+-	make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE distclean
+-	exit;
++    make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE distclean
++    exit;
+ fi
+ 
+-if [ $1 == "sabresd" ]; then
+-	PLATFORM=mx6qsabresd_defconfig
++if [ $1 == "clean" ]; then
++    make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE clean
++    exit;
+ fi
+ 
+ if [ $1 == "quad-p" ]; then
+-	PLATFORM=mx6qsmarc_pfuze100_defconfig
++    PLATFORM=mx6qsmarc_pfuze100_defconfig
++    INSTALL_NAME=u-boot-6q-pfuze100.imx
+ fi
+ 
+ if [ $1 == "solo-p" ]; then
+-	PLATFORM=mx6solosmarc_pfuze100_defconfig
++    PLATFORM=mx6solosmarc_pfuze100_defconfig
++    INSTALL_NAME=u-boot-6solo-pfuze100.imx
+ fi
+ 
+ if [ $1 == "dl-p" ]; then
+-	PLATFORM=mx6dlsmarc_pfuze100_defconfig
++    PLATFORM=mx6dlsmarc_pfuze100_defconfig
++    INSTALL_NAME=u-boot-6dl-pfuze100.imx
+ fi
+ 
+ if [ $1 == "quad-w" ]; then
+-	PLATFORM=mx6qsmarc_wm8326_defconfig
++    PLATFORM=mx6qsmarc_wm8326_defconfig
++    INSTALL_NAME=u-boot-6q-wm8326.imx
+ fi
+ 
+ if [ $1 == "solo-w" ]; then
+-	PLATFORM=mx6solosmarc_wm8326_defconfig
++    PLATFORM=mx6solosmarc_wm8326_defconfig
++    INSTALL_NAME=u-boot-6solo-wm8326.imx
+ fi
+ 
+ if [ $1 == "dl-w" ]; then
+-	PLATFORM=mx6dlsmarc_wm8326_defconfig
++    PLATFORM=mx6dlsmarc_wm8326_defconfig
++    INSTALL_NAME=u-boot-6dl-wm8326.imx
++fi
++
++if [ $1 == "quad-p-2g" ]; then
++    PLATFORM=mx6qsmarc_pfuze100_2g_defconfig
++    INSTALL_NAME=u-boot-6q-pfuze100-2g.imx
++fi
++
++if [ $1 == "quad-w-2g" ]; then
++    PLATFORM=mx6qsmarc_wm8326_2g_defconfig
++    INSTALL_NAME=u-boot-6q-wm8326-2g.imx
+ fi
+ 
+ JOBS=$2
+ 
+ make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE $PLATFORM
+ make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE $JOBS
++
++if [ ! -d ../out ]; then
++    mkdir ../out
++fi
++
++cp ./u-boot.imx ../out/$INSTALL_NAME
++
+-- 
+1.9.1
+
