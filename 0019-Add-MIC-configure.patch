@@ -1,0 +1,91 @@
+From a7026000747cb1d5bf7f38e8bf8e824163f917d2 Mon Sep 17 00:00:00 2001
+From: Ben Tsai <ben_tsai@avalue.com.tw>
+Date: Mon, 13 Feb 2017 14:20:09 +0800
+Subject: [PATCH 1/1] Add MIC configure
+
+    Default: AMIC
+---
+ kernel/arch/arm/configs/imx6_rev_sa01_defconfig |  2 ++
+ kernel/arch/arm/mach-mx6/smarc/Kconfig          | 16 ++++++++++++++++
+ kernel/arch/arm/mach-mx6/smarc/rev_sa01.c       |  7 ++++---
+ kernel/sound/soc/imx/imx-wm8962.c               |  4 ++++
+ 4 files changed, 26 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/arch/arm/configs/imx6_rev_sa01_defconfig b/kernel/arch/arm/configs/imx6_rev_sa01_defconfig
+index 706177c..d9ed0a8 100644
+--- a/kernel/arch/arm/configs/imx6_rev_sa01_defconfig
++++ b/kernel/arch/arm/configs/imx6_rev_sa01_defconfig
+@@ -2613,6 +2613,8 @@ CONFIG_SMARC_REV_SA01=y
+ CONFIG_SMARC_DISPLAY_LVDS=y
+ CONFIG_SMARC_PMIC_PFUZE=y
+ # CONFIG_SMARC_PMIC_WM8326 is not set
++CONFIG_SMARC_AMIC=y
++# CONFIG_SMARC_DMIC is not set
+ 
+ #
+ # File systems
+diff --git a/kernel/arch/arm/mach-mx6/smarc/Kconfig b/kernel/arch/arm/mach-mx6/smarc/Kconfig
+index bc59d7d..1635deb 100644
+--- a/kernel/arch/arm/mach-mx6/smarc/Kconfig
++++ b/kernel/arch/arm/mach-mx6/smarc/Kconfig
+@@ -56,4 +56,20 @@ config SMARC_PMIC_WM8326
+ 	  SMARC PMIC is wm8326
+ endchoice
+ 
++choice SMARC_MIC_CONFIG
++	prompt "SMARC MICROPHONE Configure"
++	default SMARC_AMIC
++
++config SMARC_AMIC
++	bool "SMARC Analog MICROPHONE"
++	help
++	  SMARC Analog Microphone config
++
++config SMARC_DMIC
++	bool "SMARC Digital MICROPHONE"
++	help
++	  SMARC Digital Microphone config
++
++endchoice
++
+ endif
+diff --git a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
+index 3929e9e..9cb9f62 100644
+--- a/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
++++ b/kernel/arch/arm/mach-mx6/smarc/rev_sa01.c
+@@ -121,12 +121,13 @@ void set_smarc_gpio(void)
+ 	gpio_set_value(SMARC_GPIO8, 0);
+ 	gpio_export(SMARC_GPIO8, 1);
+ 
+-	/* --> MIC detect pin
++	#ifdef	CONFIG_SMARC_AMIC
++	/* --> MIC detect pin */
+ 	gpio_request(SMARC_GPIO9, "smarc-gpio9");
+-	gpio_direction_output(SMARC_GPIO9, 1);
++	gpio_direction_input(SMARC_GPIO9);
+ 	gpio_set_value(SMARC_GPIO9, 0);
+ 	gpio_export(SMARC_GPIO9, 1);
+-	*/
++	#endif
+ 
+ 	gpio_request(SMARC_GPIO10, "smarc-gpio10");
+ 	gpio_direction_output(SMARC_GPIO10, 1);
+diff --git a/kernel/sound/soc/imx/imx-wm8962.c b/kernel/sound/soc/imx/imx-wm8962.c
+index 8cf4bdd..f3d7d5c 100644
+--- a/kernel/sound/soc/imx/imx-wm8962.c
++++ b/kernel/sound/soc/imx/imx-wm8962.c
+@@ -450,7 +450,11 @@ static int imx_wm8962_init(struct snd_soc_pcm_runtime *rtd)
+ 
+ 	if (plat->mic_gpio != -1) {
+ 		imx_mic_jack_gpio.gpio = plat->mic_gpio;
++		#ifdef	CONFIG_SMARC_AMIC
++		snd_soc_jack_new(codec, "AMIC", SND_JACK_MICROPHONE,
++		#else
+ 		snd_soc_jack_new(codec, "DMIC", SND_JACK_MICROPHONE,
++		#endif
+ 				&imx_mic_jack);
+ 		snd_soc_jack_add_pins(&imx_mic_jack,
+ 					ARRAY_SIZE(imx_mic_jack_pins),
+-- 
+2.7.4
+
