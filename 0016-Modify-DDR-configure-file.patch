@@ -1,0 +1,144 @@
+From 7c9fbdc969b207272f0b69e678456ce588aa7804 Mon Sep 17 00:00:00 2001
+From: Nick Liu <nick_liu@avalue.com.tw>
+Date: Fri, 17 Feb 2017 16:48:18 +0800
+Subject: [PATCH] Modify DDR configure file.
+
+1. Quad 2G: e14s6104g52h, e14s6104g58h
+2. Adjust CPU max, min temperature.
+
+modified:   u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g52h.cfg
+modified:   u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g58h.cfg
+modified:   u-boot/drivers/thermal/imx_thermal.c
+---
+ .../mx6smarc/mx6q_micron_2g_e14s6104g52h.cfg       | 35 ++++++++++------------
+ .../mx6smarc/mx6q_micron_2g_e14s6104g58h.cfg       | 26 ++++++++--------
+ u-boot/drivers/thermal/imx_thermal.c               |  4 +--
+ 3 files changed, 30 insertions(+), 35 deletions(-)
+
+diff --git a/u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g52h.cfg b/u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g52h.cfg
+index 3f000f2..6e375c0 100644
+--- a/u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g52h.cfg
++++ b/u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g52h.cfg
+@@ -85,18 +85,18 @@ DATA 4, 0x020e0510, 0x00000030
+ DATA 4, 0x020e05bc, 0x00000030
+ DATA 4, 0x020e05c4, 0x00000030
+ DATA 4, 0x021b0800, 0xA1390003
+-DATA 4, 0x021b080c, 0x001F001F
+-DATA 4, 0x021b0810, 0x001F001F
+-DATA 4, 0x021b480c, 0x001F001F
+-DATA 4, 0x021b4810, 0x001F001F
+-DATA 4, 0x021b083c, 0x4544054C
+-DATA 4, 0x021b0840, 0x05280530
+-DATA 4, 0x021b483c, 0x45400550
+-DATA 4, 0x021b4840, 0x052C050C
+-DATA 4, 0x021b0848, 0x3A343638
+-DATA 4, 0x021b4848, 0x3634303C
+-DATA 4, 0x021b0850, 0x3634423C
+-DATA 4, 0x021b4850, 0x48364A3E
++DATA 4, 0x021b080c, 0x0027002C
++DATA 4, 0x021b0810, 0x003F0036
++DATA 4, 0x021b480c, 0x001D0034
++DATA 4, 0x021b4810, 0x00180022
++DATA 4, 0x021b083c, 0x454C0560
++DATA 4, 0x021b0840, 0x0538053C
++DATA 4, 0x021b483c, 0x45300540
++DATA 4, 0x021b4840, 0x051C0500
++DATA 4, 0x021b0848, 0x40343A40
++DATA 4, 0x021b4848, 0x383A3442
++DATA 4, 0x021b0850, 0x383A403E
++DATA 4, 0x021b4850, 0x42364C44
+ DATA 4, 0x021b081c, 0x33333333
+ DATA 4, 0x021b0820, 0x33333333
+ DATA 4, 0x021b0824, 0x33333333
+@@ -112,25 +112,20 @@ DATA 4, 0x021b0008, 0x09444040
+ DATA 4, 0x021b000c, 0x8A8F79A4
+ DATA 4, 0x021b0010, 0xDB538E64
+ DATA 4, 0x021b0014, 0x01FF00DB
+-DATA 4, 0x021b0018, 0x00001740
++DATA 4, 0x021b0018, 0x00081740
+ DATA 4, 0x021b001c, 0x00008000
+ DATA 4, 0x021b002c, 0x000026D2
+ DATA 4, 0x021b0030, 0x008F1023
+ DATA 4, 0x021b0040, 0x00000047
+ DATA 4, 0x021b0000, 0x841A0000
+ DATA 4, 0x021b001c, 0x04088032
+-DATA 4, 0x021b001c, 0x0408803a
+ DATA 4, 0x021b001c, 0x00008033
+-DATA 4, 0x021b001c, 0x0000803b
+ DATA 4, 0x021b001c, 0x00048031
+-DATA 4, 0x021b001c, 0x00048039
+ DATA 4, 0x021b001c, 0x09408030
+-DATA 4, 0x021b001c, 0x09408038
+ DATA 4, 0x021b001c, 0x04008040
+-DATA 4, 0x021b001c, 0x04008048
+ DATA 4, 0x021b0020, 0x00005800
+-DATA 4, 0x021b0818, 0x00011117
+-DATA 4, 0x021b4818, 0x00011117
++DATA 4, 0x021b0818, 0x00022227
++DATA 4, 0x021b4818, 0x00022227
+ DATA 4, 0x021b0004, 0x00025576
+ DATA 4, 0x021b0404, 0x00011006
+ DATA 4, 0x021b001c, 0x00000000
+diff --git a/u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g58h.cfg b/u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g58h.cfg
+index 26c0c2c..e7271c6 100644
+--- a/u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g58h.cfg
++++ b/u-boot/board/freescale/mx6smarc/mx6q_micron_2g_e14s6104g58h.cfg
+@@ -85,18 +85,18 @@ DATA 4, 0x020e0510, 0x00000030
+ DATA 4, 0x020e05bc, 0x00000030
+ DATA 4, 0x020e05c4, 0x00000030
+ DATA 4, 0x021b0800, 0xA1390003
+-DATA 4, 0x021b080c, 0x001F001F
+-DATA 4, 0x021b0810, 0x001F001F
+-DATA 4, 0x021b480c, 0x001F001F
+-DATA 4, 0x021b4810, 0x001F001F
+-DATA 4, 0x021b083c, 0x45340540
+-DATA 4, 0x021b0840, 0x05240528
++DATA 4, 0x021b080c, 0x00210021
++DATA 4, 0x021b0810, 0x002E002B
++DATA 4, 0x021b480c, 0x00130027
++DATA 4, 0x021b4810, 0x0019001D
++DATA 4, 0x021b083c, 0x45240530
++DATA 4, 0x021b0840, 0x05140510
+ DATA 4, 0x021b483c, 0x451C0528
+-DATA 4, 0x021b4840, 0x0510046C
+-DATA 4, 0x021b0848, 0x443C4040
+-DATA 4, 0x021b4848, 0x3C3C3644
+-DATA 4, 0x021b0850, 0x3C3A3E3C
+-DATA 4, 0x021b4850, 0x4A384C40
++DATA 4, 0x021b4840, 0x05140470
++DATA 4, 0x021b0848, 0x4A424248
++DATA 4, 0x021b4848, 0x4C4C424E
++DATA 4, 0x021b0850, 0x383C3C40
++DATA 4, 0x021b4850, 0x44384C40
+ DATA 4, 0x021b081c, 0x33333333
+ DATA 4, 0x021b0820, 0x33333333
+ DATA 4, 0x021b0824, 0x33333333
+@@ -124,8 +124,8 @@ DATA 4, 0x021b001c, 0x00048031
+ DATA 4, 0x021b001c, 0x09408030
+ DATA 4, 0x021b001c, 0x04008040
+ DATA 4, 0x021b0020, 0x00005800
+-DATA 4, 0x021b0818, 0x00011117
+-DATA 4, 0x021b4818, 0x00011117
++DATA 4, 0x021b0818, 0x00022227
++DATA 4, 0x021b4818, 0x00022227
+ DATA 4, 0x021b0004, 0x00025576
+ DATA 4, 0x021b0404, 0x00011006
+ DATA 4, 0x021b001c, 0x00000000
+diff --git a/u-boot/drivers/thermal/imx_thermal.c b/u-boot/drivers/thermal/imx_thermal.c
+index 5a1caf2..bbcc6cc 100644
+--- a/u-boot/drivers/thermal/imx_thermal.c
++++ b/u-boot/drivers/thermal/imx_thermal.c
+@@ -21,8 +21,8 @@
+ #include <imx_thermal.h>
+ 
+ #if defined(CONFIG_MX6)
+-#define TEMPERATURE_MIN		-40
+-#define TEMPERATURE_HOT		80
++#define TEMPERATURE_MIN		-45
++#define TEMPERATURE_HOT		100
+ #define TEMPERATURE_MAX		125
+ #define FACTOR0			10000000
+ #define FACTOR1			15423
+-- 
+1.9.1
+
